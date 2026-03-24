@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 7 — Model Binding and Validation in Minimal APIs</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 7</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link" data-target="what-is-binding" onclick="scrollPageTo('what-is-binding')">
+      <span class="dot"></span>What is model binding?
+    </button>
+    <button class="nav-link" data-target="binding-sources" onclick="scrollPageTo('binding-sources')">
+      <span class="dot"></span>Binding sources
+    </button>
+    <button class="nav-link" data-target="simple-types" onclick="scrollPageTo('simple-types')">
+      <span class="dot"></span>Binding simple types
+    </button>
+    <button class="nav-link" data-target="explicit-attrs" onclick="scrollPageTo('explicit-attrs')">
+      <span class="dot"></span>Explicit binding attributes
+    </button>
+    <button class="nav-link" data-target="tryparse" onclick="scrollPageTo('tryparse')">
+      <span class="dot"></span>Custom types with TryParse
+    </button>
+    <button class="nav-link" data-target="complex-types" onclick="scrollPageTo('complex-types')">
+      <span class="dot"></span>Binding complex types (body)
+    </button>
+    <button class="nav-link" data-target="arrays" onclick="scrollPageTo('arrays')">
+      <span class="dot"></span>Binding arrays
+    </button>
+    <button class="nav-link" data-target="optional-nullable" onclick="scrollPageTo('optional-nullable')">
+      <span class="dot"></span>Optional &amp; nullable params
+    </button>
+    <button class="nav-link" data-target="special-types" onclick="scrollPageTo('special-types')">
+      <span class="dot"></span>Well-known &amp; special types
+    </button>
+    <button class="nav-link" data-target="file-uploads" onclick="scrollPageTo('file-uploads')">
+      <span class="dot"></span>File uploads (IFormFile)
+    </button>
+    <button class="nav-link" data-target="bind-async" onclick="scrollPageTo('bind-async')">
+      <span class="dot"></span>Custom binding (BindAsync)
+    </button>
+    <button class="nav-link" data-target="binding-priority" onclick="scrollPageTo('binding-priority')">
+      <span class="dot"></span>Binding source priority
+    </button>
+    <button class="nav-link" data-target="as-parameters" onclick="scrollPageTo('as-parameters')">
+      <span class="dot"></span>[AsParameters]
+    </button>
+    <button class="nav-link" data-target="validation" onclick="scrollPageTo('validation')">
+      <span class="dot"></span>Model validation
+    </button>
+    <button class="nav-link" data-target="data-annotations" onclick="scrollPageTo('data-annotations')">
+      <span class="dot"></span>DataAnnotations attributes
+    </button>
+    <button class="nav-link" data-target="ivalidatable" onclick="scrollPageTo('ivalidatable')">
+      <span class="dot"></span>IValidatableObject
+    </button>
+    <button class="nav-link" data-target="validation-filter" onclick="scrollPageTo('validation-filter')">
+      <span class="dot"></span>Validation filter
+    </button>
+
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link done" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link done" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link done" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link done" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link done" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link done" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link active" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 7</div>
+    <h1 class="chapter-title">Model Binding and Validation in Minimal APIs</h1>
+    <p class="chapter-subtitle">How ASP.NET Core automatically extracts values from an HTTP request and turns them into C# handler parameters — and how to validate those values before using them.</p>
+  </div>
+
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="what-is-binding">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">What is Model Binding?</h2>
+    </div>
+
+    <p><strong>Model binding</strong> extracts values from an incoming HTTP request and uses them to create .NET objects. These objects are then passed as method parameters to your endpoint handler.</p>
+    <p>This is a <strong>one-way</strong> population of objects from the request — not the two-way data binding used in desktop or mobile development. ASP.NET Core automatically creates the arguments passed to your handler by examining the request URL, headers, and body.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">When does model binding happen?</div>
+        <div class="callout-text">
+          Model binding happens <strong>after routing selects the endpoint but before your handler executes</strong>.<br><br>
+          The <strong>RoutingMiddleware</strong> matches the URL and extracts raw string route values.<br>
+          The <strong>EndpointMiddleware</strong> then converts those strings to the real C# types your handler needs (e.g. a route value <code>"42"</code> becomes <code>int 42</code>), and also reads the request body and query string.
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline visual -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);">Request lifecycle — binding's place in the pipeline</div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;font-family:var(--mono);">
+        <div style="padding:10px 16px;background:rgba(9,105,218,0.07);border:1px solid rgba(9,105,218,0.2);border-radius:6px;color:var(--blue);">① RoutingMiddleware — matches URL, extracts raw string route values</div>
+        <div style="padding:10px 16px;background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent2);">② Filter pipeline runs (if any endpoint filters are registered)</div>
+        <div style="padding:10px 16px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.2);border-radius:6px;color:var(--accent);">③ Model Binding — converts strings → real types, reads body/query</div>
+        <div style="padding:10px 16px;background:rgba(45,164,78,0.07);border:1px solid rgba(45,164,78,0.2);border-radius:6px;color:var(--green);">④ Your endpoint handler executes with fully-populated parameters</div>
+      </div>
+    </div>
+
+    <div id="quiz-mb1" class="quiz-block">
+      <div class="quiz-question">🧠 The route template is <code>/products/{id}</code>. A request arrives for <code>GET /products/42</code>. When does the string <code>"42"</code> get converted to <code>int 42</code> for the handler?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mb1',false)">During RoutingMiddleware — it converts types as it extracts route values</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb1',true)">During EndpointMiddleware — RoutingMiddleware only extracts raw strings; EndpointMiddleware runs model binding to convert them to the handler's declared types</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb1',false)">Inside the handler itself — the handler receives a string and must call int.Parse()</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb1',false)">Before RoutingMiddleware — the framework pre-parses all possible types at startup</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mb1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="binding-sources">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Binding Sources</h2>
+    </div>
+
+    <p>ASP.NET Core can extract handler parameter values from several different parts of the request. These are called <strong>binding sources</strong>.</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(0,212,170,0.04);border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;flex-shrink:0;">🔗</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Route values</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Values captured from URL segments defined in the route template. <code>/products/{id}</code> → id comes from the URL path.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(124,106,247,0.04);border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;flex-shrink:0;">❓</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Query string values</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Values appended at the end of the URL after <code>?</code>. Not used during routing — only during model binding. <code>/products?page=2&amp;size=10</code></div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(9,105,218,0.04);border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;flex-shrink:0;">📨</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Header values</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Values from HTTP request headers. <strong>Cannot be bound automatically</strong> — requires the explicit <code>[FromHeader]</code> attribute.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(247,140,108,0.04);border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;flex-shrink:0;">📦</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">JSON body</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">A <strong>single</strong> complex type parameter is deserialized from the request body JSON. Minimal APIs only support JSON bodies (not form data) automatically.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(45,164,78,0.04);border-bottom:1px solid var(--border);">
+        <div style="font-size:22px;flex-shrink:0;">💉</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Dependency Injected services</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Services registered in the DI container are automatically injected as handler parameters. No attribute needed.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;">
+        <div style="font-size:22px;flex-shrink:0;">🔧</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Custom binding</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">For advanced scenarios, implement <code>TryParse()</code> or <code>BindAsync()</code> on your type to control exactly how binding works.</div></div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Minimal APIs do NOT auto-bind form data</div>
+        <div class="callout-text">Unlike MVC controllers and Razor Pages, Minimal APIs <strong>only auto-bind JSON request bodies</strong>. Form data (<code>application/x-www-form-urlencoded</code>) is not automatically bound. If you need form data in a minimal API handler, access it manually via <code>HttpRequest.Form</code> or use MVC/Razor Pages instead.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="simple-types">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Binding Simple Types</h2>
+    </div>
+
+    <p>ASP.NET Core follows a two-step convention for automatically binding <strong>simple types</strong> (int, string, bool, Guid, etc.) without any attributes:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(0,212,170,0.05);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);color:var(--accent);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Check the route template first</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">If the handler parameter name matches a <strong>route parameter</strong> in the template, bind from the route value.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(124,106,247,0.05);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);color:var(--accent2);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:14px;">Fall back to the query string</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">If no matching route parameter exists, look for a <strong>query string key</strong> with the same name as the handler parameter.</div></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Simple type binding — route vs query string</span></div>
+      <div class="code-body"><span class="cm">// ① "id" is in the route template → binds from route value</span>
+<span class="cm">// GET /products/42   →  id = 42</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>, (<span class="kw">int</span> id) => <span class="str">$"Product {id}"</span>);
+
+<span class="cm">// ② "page" and "size" are NOT in the template → bind from query string</span>
+<span class="cm">// GET /products?page=2&amp;size=10   →  page = 2, size = 10</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products"</span>,
+    (<span class="kw">int</span> page = <span class="nm">1</span>, <span class="kw">int</span> size = <span class="nm">20</span>) =>
+        <span class="str">$"Page {page}, size {size}"</span>);
+
+<span class="cm">// ③ Mixed: "id" from route, "verbose" from query string</span>
+<span class="cm">// GET /products/5?verbose=true</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>,
+    (<span class="kw">int</span> id, <span class="kw">bool</span>? verbose) =>
+        verbose == <span class="kw">true</span> ? <span class="str">$"Full details for {id}"</span> : <span class="str">$"Product {id}"</span>);</div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body">
+        <div class="callout-title">Binding failure → 400 Bad Request</div>
+        <div class="callout-text">When the minimal API infrastructure fails to bind a parameter due to an incompatible format (e.g. the URL contains <code>id=abc</code> but the handler expects <code>int id</code>), it throws a <strong>BadHttpRequestException</strong> and returns a <strong>400 Bad Request</strong> response. Your handler never executes.</div>
+      </div>
+    </div>
+
+    <div id="quiz-mb2" class="quiz-block">
+      <div class="quiz-question">🧠 Handler: <code>(<span style="font-family:var(--mono)">int id, string? search</span>)</code>. Route: <code>/items/{id}</code>. Request: <code>GET /items/7?search=apple</code>. How are the parameters bound?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mb2',false)">Both id and search come from the query string</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb2',false)">Both id and search come from the route</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb2',true)">id=7 from the route (matches {id}); search="apple" from the query string (no matching route parameter)</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb2',false)">id=7 from the route; search fails binding and the request returns 400</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mb2-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="explicit-attrs">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Explicit Binding Attributes</h2>
+    </div>
+
+    <p>When you need to override the automatic convention and <strong>force binding from a specific source</strong>, use one of the binding attributes:</p>
+
+    <table class="data-table">
+      <thead><tr><th>Attribute</th><th>Binds from</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>[FromRoute]</code></td><td>Route values</td><td>Useful when parameter name differs from route placeholder name</td></tr>
+        <tr><td><code>[FromQuery]</code></td><td>Query string</td><td>Useful to force query string binding even when a route param has the same name</td></tr>
+        <tr><td><code>[FromHeader]</code></td><td>HTTP request headers</td><td><strong>Required</strong> for header binding — no automatic convention exists for headers</td></tr>
+        <tr><td><code>[FromBody]</code></td><td>JSON request body</td><td>Usually inferred automatically for complex types</td></tr>
+        <tr><td><code>[FromServices]</code></td><td>DI container</td><td>Usually inferred automatically; can be made explicit</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Explicit binding attributes in action</span></div>
+      <div class="code-body"><span class="cm">// [FromHeader] — only way to bind from request headers</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/secure"</span>,
+    ([<span class="tp">FromHeader</span>(Name = <span class="str">"X-Api-Key"</span>)] string? apiKey) =>
+        apiKey == <span class="str">"secret"</span> ? <span class="str">"Authorized"</span> : <span class="str">"Denied"</span>);
+
+<span class="cm">// [FromRoute] with a different parameter name</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>,
+    ([<span class="tp">FromRoute</span>(Name = <span class="str">"id"</span>)] <span class="kw">int</span> productId) =>
+        <span class="str">$"Product {productId}"</span>);
+
+<span class="cm">// [FromQuery] — force query string even if route has same name</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/search/{id}"</span>,
+    (<span class="kw">int</span> id, [<span class="tp">FromQuery</span>] string? q) =>
+        <span class="str">$"Item {id}, query: {q}"</span>);
+
+<span class="cm">// ⚠️ If [FromRoute] references a parameter that doesn't</span>
+<span class="cm">// exist in the template, you get a runtime exception</span></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">[FromRoute] requires a matching template placeholder</div>
+        <div class="callout-text">If you apply <code>[FromRoute(Name = "foo")]</code> but there is no <code>{foo}</code> parameter in the route template, you will get a <strong>runtime exception</strong> when the app receives its first request — not at startup.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="tryparse">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Custom Types with TryParse</h2>
+    </div>
+
+    <p>A <strong>simple type</strong> is defined as any type that implements one of the following static <code>TryParse</code> methods. Built-in types like <code>int</code>, <code>bool</code>, <code>Guid</code>, and <code>DateTime</code> all implement these, which is why they bind automatically from route values and query strings.</p>
+    <p>You can create your own types that implement <code>TryParse</code> — ASP.NET Core will treat them as simple types and bind them from a single source (route or query string) automatically.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Custom type with TryParse — ProductId example from the slides</span></div>
+      <div class="code-body"><span class="cm">// ❶ ProductId is a C# 10 record struct</span>
+<span class="cm">// ❷ Implements TryParse → treated as simple type by minimal APIs</span>
+<span class="cm">// ❸ Binds from route: GET /products/p-42  →  ProductId { Value = 42 }</span>
+
+app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>, (<span class="tp">ProductId</span> id) => <span class="str">$"Product {id.Value}"</span>);
+
+<span class="kw">public record struct</span> <span class="tp">ProductId</span>(<span class="kw">int</span> Value)
+{
+    <span class="cm">// ❹ Must match one of these two signatures:</span>
+    <span class="cm">//   static bool TryParse(string? value, out T result)</span>
+    <span class="cm">//   static bool TryParse(string? value, IFormatProvider?, out T result)</span>
+    <span class="kw">public static bool</span> <span class="fn">TryParse</span>(string? value, <span class="kw">out</span> <span class="tp">ProductId</span> result)
+    {
+        <span class="cm">// ❺ Checks that string starts with 'p'</span>
+        <span class="kw">if</span> (value <span class="kw">is not null</span> && value[<span class="nm">0</span>] == <span class="str">'p'</span>
+            <span class="cm">// ❻ Parses remaining chars as int (skips first char efficiently)</span>
+            && <span class="kw">int</span>.<span class="fn">TryParse</span>(value.<span class="fn">AsSpan</span>(<span class="nm">1</span>), <span class="kw">out var</span> id))
+        {
+            <span class="cm">// ❼ Parsed successfully → return true with the value</span>
+            result = <span class="kw">new</span> <span class="tp">ProductId</span>(id);
+            <span class="kw">return true</span>;
+        }
+        <span class="cm">// ❽ Failed → return false, assign default</span>
+        result = <span class="kw">default</span>;
+        <span class="kw">return false</span>;
+    }
+}</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Consider implementing IParsable&lt;T&gt; for modern C#</div>
+        <div class="callout-text">C# 11 introduced the <code>IParsable&lt;T&gt;</code> interface (using static abstract interface members). Implementing it alongside <code>TryParse</code> makes your type compatible with both ASP.NET Core model binding and general parsing APIs.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="complex-types">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Binding Complex Types from the JSON Body</h2>
+    </div>
+
+    <p>Complex types (classes, records — anything without a <code>TryParse</code>) are automatically deserialized from the <strong>JSON request body</strong>. ASP.NET Core uses the built-in <code>System.Text.Json</code> library for deserialization.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Complex type binding — POST with JSON body</span></div>
+      <div class="code-body"><span class="cm">// POST /product</span>
+<span class="cm">// Body: { "id": 1, "name": "Shoes", "stock": 12 }</span>
+<span class="cm">// ASP.NET Core deserializes the body into a Product instance</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/product"</span>, (<span class="tp">Product</span> product) =>
+{
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Created</span>(<span class="str">$"/product/{product.Id}"</span>, product);
+});
+
+<span class="kw">record</span> <span class="tp">Product</span>(<span class="kw">int</span> Id, string Name, <span class="kw">int</span> Stock);</div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body">
+        <div class="callout-title">Three important rules for body binding</div>
+        <div class="callout-text">
+          <strong>Rule 1 — Only one complex type per handler.</strong> If two parameters are both eligible for body binding, you get a runtime exception on the first request.<br><br>
+          <strong>Rule 2 — Body must be valid JSON.</strong> If the body is not JSON (wrong Content-Type), EndpointMiddleware returns <strong>415 Unsupported Media Type</strong>.<br><br>
+          <strong>Rule 3 — Only POST/PUT/PATCH.</strong> Trying to bind to the body for GET, HEAD, DELETE, OPTIONS, TRACE, or CONNECT causes a runtime exception — these verbs normally don't carry a body.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-mb3" class="quiz-block">
+      <div class="quiz-question">🧠 A handler has two complex-type parameters: <code>(OrderRequest order, CustomerInfo customer)</code>. What happens when the app receives its first request?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mb3',false)">Both are bound from the JSON body using array indexing</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb3',false)">The first parameter binds from the body; the second returns null</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb3',true)">A runtime exception is thrown — only one complex type can bind to the body per handler</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb3',false)">ASP.NET Core tries query string binding for the second parameter</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mb3-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="arrays">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Binding Arrays</h2>
+    </div>
+
+    <p>Arrays of simple types can be bound from the <strong>query string</strong> by repeating the same key: <code>?id=1&amp;id=2&amp;id=3</code>. The parameter name in the handler must match the query string key exactly.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Array binding from the query string</span></div>
+      <div class="code-body"><span class="cm">// GET /products?id=1&amp;id=2&amp;id=3</span>
+<span class="cm">// int[] id = [1, 2, 3]</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products"</span>, (<span class="kw">int</span>[] id) =>
+    <span class="str">$"IDs: {string.Join(", ", id)}"</span>);
+
+<span class="cm">// ⚠️ The parameter MUST be named "id" (not "ids")</span>
+<span class="cm">// so it matches the query string key ?id=...</span>
+<span class="cm">// Using "ids" would require ?ids=1&amp;ids=2 in the URL</span></div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">When does array binding use the query string vs the body?</div>
+        <div class="callout-text">
+          Arrays bind from the <strong>query string</strong> only when <strong>both</strong> conditions are true:<br>
+          1. The HTTP verb is one that typically has no body (GET, HEAD, DELETE)<br>
+          2. The array is of a simple type (or <code>string[]</code> or <code>StringValues</code>)<br><br>
+          If <em>either</em> condition is false — e.g. a POST request, or an array of complex objects — ASP.NET Core attempts to bind the array from the <strong>JSON body</strong> instead.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="optional-nullable">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Optional &amp; Nullable Parameters</h2>
+    </div>
+
+    <p>By default, if a required parameter cannot be found in the request, EndpointMiddleware throws an exception and returns a <strong>400 Bad Request</strong>. To make a parameter optional, mark it as <strong>nullable</strong> (<code>int?</code>, <code>string?</code>) or give it a <strong>default value</strong>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Making parameters optional with nullable and default values</span></div>
+      <div class="code-body"><span class="cm">// ① Nullable — parameter is optional, null if absent</span>
+<span class="cm">// GET /stock/123 → id = 123</span>
+<span class="cm">// GET /stock     → id = null</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/stock/{id?}"</span>,
+    (<span class="kw">int</span>? id) => id.HasValue ? <span class="str">$"Stock {id}"</span> : <span class="str">"All stock"</span>);
+
+<span class="cm">// ② Default value — parameter is optional, uses default if absent</span>
+<span class="cm">// GET /products?page=3 → page = 3</span>
+<span class="cm">// GET /products        → page = 1 (default)</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products"</span>,
+    (<span class="kw">int</span> page = <span class="nm">1</span>, <span class="kw">int</span> pageSize = <span class="nm">20</span>) =>
+        <span class="str">$"Page {page} of {pageSize} items"</span>);
+
+<span class="cm">// ③ Optional string — empty string vs null are different!</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/search"</span>,
+    (string? q) =>
+        q <span class="kw">is null</span> ? <span class="str">"No query"</span> : <span class="str">$"Searching: {q}"</span>);</div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="special-types">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Well-Known &amp; Special Types</h2>
+    </div>
+
+    <p>Some types are <strong>hardcoded</strong> into ASP.NET Core — the framework recognises them automatically and injects them directly, without looking at the request or DI container. Others come from DI.</p>
+
+    <table class="data-table">
+      <thead><tr><th>Type</th><th>Source</th><th>Equivalent to</th></tr></thead>
+      <tbody>
+        <tr><td><code>HttpContext</code></td><td>Well-known</td><td>All details on request and response</td></tr>
+        <tr><td><code>HttpRequest</code></td><td>Well-known</td><td><code>HttpContext.Request</code></td></tr>
+        <tr><td><code>HttpResponse</code></td><td>Well-known</td><td><code>HttpContext.Response</code></td></tr>
+        <tr><td><code>CancellationToken</code></td><td>Well-known</td><td><code>HttpContext.RequestAborted</code> — cancelled if client disconnects</td></tr>
+        <tr><td><code>ClaimsPrincipal</code></td><td>Well-known</td><td><code>HttpContext.User</code> — authentication info about the user</td></tr>
+        <tr><td><code>Stream</code></td><td>Well-known</td><td><code>HttpRequest.Body</code> — raw request body stream</td></tr>
+        <tr><td><code>PipeReader</code></td><td>Well-known</td><td><code>HttpContext.BodyReader</code> — higher-level async body reader</td></tr>
+        <tr><td><code>IFormFile</code></td><td>Well-known</td><td>A single uploaded file</td></tr>
+        <tr><td><code>IFormFileCollection</code></td><td>Well-known</td><td>Multiple uploaded files</td></tr>
+        <tr><td>Any service type in DI</td><td>DI container</td><td>Auto-detected if registered; use <code>[FromServices]</code> to be explicit</td></tr>
+      </tbody>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Injecting well-known types and DI services</span></div>
+      <div class="code-body"><span class="cm">// Well-known types injected directly — no attribute needed</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/info"</span>, (<span class="tp">HttpContext</span> ctx, <span class="tp">CancellationToken</span> ct) =>
+{
+    <span class="kw">var</span> ip   = ctx.Connection.RemoteIpAddress;
+    <span class="kw">var</span> path = ctx.Request.Path;
+    <span class="kw">return</span> <span class="str">$"Request from {ip} for {path}"</span>;
+});
+
+<span class="cm">// DI service auto-detected — no [FromServices] needed</span>
+<span class="cm">// (but you can add it to be explicit)</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/link"</span>, (<span class="tp">LinkGenerator</span> linkGen) =>
+    linkGen.<span class="fn">GetPathByName</span>(<span class="str">"Home"</span>));
+
+<span class="cm">// Explicit [FromServices] — same result, more readable</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/link2"</span>,
+    ([<span class="tp">FromServices</span>] <span class="tp">LinkGenerator</span> linkGen) =>
+        linkGen.<span class="fn">GetPathByName</span>(<span class="str">"Home"</span>));</div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="file-uploads">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">File Uploads with IFormFile</h2>
+    </div>
+
+    <p>ASP.NET Core supports file uploads via the <code>IFormFile</code> interface (single file) or <code>IFormFileCollection</code> (multiple files). When your handler declares one of these types, ASP.NET Core reads the multipart form data and populates the parameter automatically.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Single and multiple file uploads</span></div>
+      <div class="code-body"><span class="cm">// Single file upload</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/upload"</span>, <span class="kw">async</span> (<span class="tp">IFormFile</span> file) =>
+{
+    <span class="kw">await using var</span> stream = file.<span class="fn">OpenReadStream</span>();
+    <span class="cm">// Read file content from stream...</span>
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>(<span class="kw">new</span>
+    {
+        file.FileName,
+        file.ContentType,
+        file.Length        <span class="cm">// size in bytes</span>
+    });
+});
+
+<span class="cm">// Multiple files</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/upload-many"</span>, <span class="kw">async</span> (<span class="tp">IFormFileCollection</span> files) =>
+{
+    <span class="kw">foreach</span> (<span class="kw">var</span> file <span class="kw">in</span> files)
+    {
+        <span class="cm">// Process each file...</span>
+    }
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>(<span class="str">$"{files.Count} files received"</span>);
+});</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">IFormFile buffers the entire file in memory first</div>
+        <div class="callout-text">When your handler accepts <code>IFormFile</code>, ASP.NET Core buffers the entire file in memory and on disk before your handler runs. This is fine for small files. For large files (videos, archives), buffering everything may exhaust memory — you should stream the file directly instead, though that is significantly more complex to implement.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="bind-async">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Custom Binding with BindAsync</h2>
+    </div>
+
+    <p>For advanced scenarios where <code>TryParse</code> is not enough (e.g. you need access to <code>HttpContext</code> or need to do async work), implement a static <code>BindAsync</code> method on your type.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">BindAsync signatures and usage</span></div>
+      <div class="code-body"><span class="cm">// Two valid signatures for BindAsync — implement either:</span>
+<span class="cm">// static ValueTask&lt;T?&gt; BindAsync(HttpContext ctx)</span>
+<span class="cm">// static ValueTask&lt;T?&gt; BindAsync(HttpContext ctx, ParameterInfo param)</span>
+
+<span class="kw">public class</span> <span class="tp">PaginationParams</span>
+{
+    <span class="kw">public int</span> Page { <span class="kw">get</span>; <span class="kw">init</span>; }
+    <span class="kw">public int</span> Size { <span class="kw">get</span>; <span class="kw">init</span>; }
+
+    <span class="kw">public static</span> <span class="tp">ValueTask</span>&lt;<span class="tp">PaginationParams</span>?&gt; <span class="fn">BindAsync</span>(<span class="tp">HttpContext</span> ctx)
+    {
+        <span class="cm">// Read from query string manually — can access full HttpContext</span>
+        <span class="kw">int</span>.<span class="fn">TryParse</span>(ctx.Request.Query[<span class="str">"page"</span>], <span class="kw">out var</span> page);
+        <span class="kw">int</span>.<span class="fn">TryParse</span>(ctx.Request.Query[<span class="str">"size"</span>], <span class="kw">out var</span> size);
+        <span class="kw">return</span> <span class="tp">ValueTask</span>.<span class="fn">FromResult</span>&lt;<span class="tp">PaginationParams</span>?&gt;(
+            <span class="kw">new</span> <span class="tp">PaginationParams</span>
+            {
+                Page = page > <span class="nm">0</span> ? page : <span class="nm">1</span>,
+                Size = size > <span class="nm">0</span> ? size : <span class="nm">20</span>
+            });
+    }
+}
+
+<span class="cm">// Usage — PaginationParams binds automatically via BindAsync</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/products"</span>, (<span class="tp">PaginationParams</span> pagination) =>
+    <span class="str">$"Page {pagination.Page}, size {pagination.Size}"</span>);</div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="binding-priority">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Binding Source Priority</h2>
+    </div>
+
+    <p>When ASP.NET Core needs to bind a parameter, it follows a strict <strong>priority order</strong>. The first matching source wins — it does not try multiple sources for the same parameter.</p>
+
+    <div style="display:flex;flex-direction:column;gap:6px;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(124,106,247,0.25);color:var(--accent2);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div><strong style="color:var(--text);font-size:13px;">Explicit attribute</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;"><code>[FromRoute]</code>, <code>[FromQuery]</code>, <code>[FromBody]</code>, <code>[FromHeader]</code>, <code>[FromServices]</code> — if present, this always wins.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(9,105,218,0.08);border:1px solid rgba(9,105,218,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(9,105,218,0.25);color:var(--blue);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div><strong style="color:var(--text);font-size:13px;">Well-known types</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;"><code>HttpContext</code>, <code>HttpRequest</code>, <code>Stream</code>, <code>IFormFile</code>, etc. — hardcoded in the framework.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(0,212,170,0.25);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+        <div><strong style="color:var(--text);font-size:13px;">BindAsync</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">If the type implements a static <code>BindAsync()</code> method, call it.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(210,153,34,0.08);border:1px solid rgba(210,153,34,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(210,153,34,0.25);color:var(--yellow);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+        <div><strong style="color:var(--text);font-size:13px;">Simple type / TryParse</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">If the type is a string or has <code>TryParse</code>: bind from <strong>route value</strong> if name matches a template parameter, otherwise from <strong>query string</strong>.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(247,140,108,0.08);border:1px solid rgba(247,140,108,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(247,140,108,0.25);color:var(--accent3);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>
+        <div><strong style="color:var(--text);font-size:13px;">Array of simple types (on GET/HEAD/DELETE)</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">If the request has no body, bind arrays from the <strong>query string</strong>.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(45,164,78,0.25);color:var(--green);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">6</div>
+        <div><strong style="color:var(--text);font-size:13px;">DI service</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">If the type is registered in the DI container, inject it from the container.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 18px;background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.25);border-radius:8px;">
+        <div style="width:26px;height:26px;border-radius:50%;background:rgba(248,81,73,0.25);color:var(--red);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">7</div>
+        <div><strong style="color:var(--text);font-size:13px;">JSON body (last resort)</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">If nothing else matched, deserialize from the <strong>JSON request body</strong>. If binding fails and the parameter is not optional, return 400 Bad Request.</div></div>
+      </div>
+
+    </div>
+
+    <div id="quiz-mb4" class="quiz-block">
+      <div class="quiz-question">🧠 A handler parameter is <code>[FromQuery] int id</code>. The route template is <code>/items/{id}</code>. The URL is <code>/items/5?id=99</code>. What value does <code>id</code> receive?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mb4',false)">5 — route values always take priority over query string</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb4',true)">99 — the explicit [FromQuery] attribute overrides the automatic convention, forcing binding from the query string</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb4',false)">400 Bad Request — conflicting values in route and query string cause a binding error</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb4',false)">The first value found (5), because route values are checked before query strings</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mb4-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 13 ══ -->
+  <section class="section" id="as-parameters">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">[AsParameters] — Grouping Parameters</h2>
+    </div>
+
+    <p>When a handler has many parameters, the signature gets long. <code>[AsParameters]</code> lets you <strong>group related parameters into a single struct or class</strong> without forcing them to come from the JSON body.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Without [AsParameters]</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.9;">
+<span class="cm">// Long, hard-to-read signature</span>
+<span class="cm">// Without [AsParameters], if you group</span>
+<span class="cm">// params in a class it binds from BODY</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/search"</span>,
+  (string? q, <span class="kw">int</span> page, <span class="kw">int</span> size,
+   string? sort, bool desc) =>
+     <span class="str">$"q={q} p={page}"</span>);</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With [AsParameters]</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.9;">
+<span class="cm">// Clean handler + grouped params</span>
+<span class="cm">// Each property still binds from its</span>
+<span class="cm">// natural source (route / query)</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/search"</span>,
+  ([<span class="tp">AsParameters</span>] <span class="tp">SearchParams</span> p) =>
+    <span class="str">$"q={p.Q} page={p.Page}"</span>);
+
+<span class="kw">record</span> <span class="tp">SearchParams</span>(
+  string? Q, <span class="kw">int</span> Page = <span class="nm">1</span>,
+  <span class="kw">int</span> Size = <span class="nm">20</span>);</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Without [AsParameters], a class parameter binds from the body</div>
+        <div class="callout-text">If you pass a custom class as a handler parameter <em>without</em> <code>[AsParameters]</code>, ASP.NET Core treats it as a complex type and tries to deserialize it from the JSON body. <code>[AsParameters]</code> tells the framework to instead bind each <strong>property of the class individually</strong> using the normal binding rules (route, query string, etc.).</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 14 ══ -->
+  <section class="section" id="validation">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2 class="section-title">Why Validate User Input?</h2>
+    </div>
+
+    <p>You should validate your endpoint handler parameters <strong>before</strong> using them to touch your domain logic, database, or infrastructure — or before doing anything that could leak information to an attacker.</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);">What validation catches</div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">
+        <span style="font-size:20px;flex-shrink:0;">📧</span>
+        <div><strong style="color:var(--text);font-size:14px;">Incorrect format</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">Email fields must look like email addresses. Phone numbers must be valid telephone formats.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">
+        <span style="font-size:20px;flex-shrink:0;">🔢</span>
+        <div><strong style="color:var(--text);font-size:14px;">Out-of-range values</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">You can't buy -1 copies of a book. A month value can't be 13. A page number can't be 0.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">
+        <span style="font-size:20px;flex-shrink:0;">✅</span>
+        <div><strong style="color:var(--text);font-size:14px;">Required vs optional</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">Some fields are required (name on a profile), others are optional (phone number). Missing required fields must be rejected.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;">
+        <span style="font-size:20px;flex-shrink:0;">🏢</span>
+        <div><strong style="color:var(--text);font-size:14px;">Business rules</strong><div style="font-size:13px;color:var(--text2);margin-top:2px;">You can't convert a currency to itself. A product SKU must follow a specific pattern. These rules are specific to your domain.</div></div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 15 ══ -->
+  <section class="section" id="data-annotations">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2 class="section-title">DataAnnotations Validation Attributes</h2>
+    </div>
+
+    <p><strong>DataAnnotations attributes</strong> let you declare validation rules directly on your model's properties using standard attributes from <code>System.ComponentModel.DataAnnotations</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">UserModel with DataAnnotations from the slides</span></div>
+      <div class="code-body"><span class="kw">using</span> System.ComponentModel.DataAnnotations;  <span class="cm">// ❶ Required using</span>
+
+<span class="kw">public class</span> <span class="tp">UserModel</span>
+{
+    [<span class="tp">Required</span>]                           <span class="cm">// ❸ Must not be null/empty</span>
+    [<span class="tp">StringLength</span>(<span class="nm">100</span>)]                 <span class="cm">// ❹ Max 100 characters</span>
+    [<span class="tp">Display</span>(Name = <span class="str">"Full Name"</span>)]      <span class="cm">// ❺ Display name for error messages</span>
+    <span class="kw">public string</span>? Name { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">Required</span>]
+    [<span class="tp">EmailAddress</span>]                       <span class="cm">// ❻ Must look like an email</span>
+    <span class="kw">public string</span>? Email { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">Phone</span>]                              <span class="cm">// ❼ Valid phone number format</span>
+    <span class="kw">public string</span>? PhoneNumber { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="cm">// ❷ The API takes a UserModel and binds it from the JSON body</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/user"</span>, (<span class="tp">UserModel</span> user) =>
+    <span class="tp">Results</span>.<span class="fn">Ok</span>(user));</div>
+    </div>
+
+    <p>Here is a quick reference of the most commonly used DataAnnotations attributes:</p>
+
+    <table class="data-table">
+      <thead><tr><th>Attribute</th><th>Validates</th></tr></thead>
+      <tbody>
+        <tr><td><code>[Required]</code></td><td>Property must not be null</td></tr>
+        <tr><td><code>[StringLength(max)]</code></td><td>String has at most <em>max</em> characters</td></tr>
+        <tr><td><code>[MinLength(min)]</code></td><td>Collection / string has at least <em>min</em> items</td></tr>
+        <tr><td><code>[Range(min, max)]</code></td><td>Numeric value is between <em>min</em> and <em>max</em></td></tr>
+        <tr><td><code>[EmailAddress]</code></td><td>Value has a valid email address format</td></tr>
+        <tr><td><code>[Phone]</code></td><td>Value has a valid phone number format</td></tr>
+        <tr><td><code>[CreditCard]</code></td><td>Value has a valid credit card format</td></tr>
+        <tr><td><code>[Url]</code></td><td>Value has a valid URL format</td></tr>
+        <tr><td><code>[RegularExpression(regex)]</code></td><td>Value matches the given regex pattern</td></tr>
+        <tr><td><code>[Compare("OtherProp")]</code></td><td>Value equals another property (e.g. Email == ConfirmEmail)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+
+  <!-- ══ SECTION 16 ══ -->
+  <section class="section" id="ivalidatable">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2 class="section-title">IValidatableObject — Cross-Property Rules</h2>
+    </div>
+
+    <p>DataAnnotation attributes validate individual properties in isolation. When you need to validate rules that <strong>depend on multiple properties together</strong> (e.g. "start date must be before end date"), implement <code>IValidatableObject</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">IValidatableObject for cross-property validation</span></div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">DateRangeModel</span> : <span class="tp">IValidatableObject</span>
+{
+    [<span class="tp">Required</span>] <span class="kw">public</span> <span class="tp">DateTime</span> StartDate { <span class="kw">get</span>; <span class="kw">set</span>; }
+    [<span class="tp">Required</span>] <span class="kw">public</span> <span class="tp">DateTime</span> EndDate   { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="cm">// Called automatically after all [Required] / [Range] etc. pass</span>
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">ValidationResult</span>&gt; <span class="fn">Validate</span>(
+        <span class="tp">ValidationContext</span> validationContext)
+    {
+        <span class="kw">if</span> (EndDate <= StartDate)
+        {
+            <span class="cm">// yield return produces validation errors lazily</span>
+            <span class="kw">yield return new</span> <span class="tp">ValidationResult</span>(
+                <span class="str">"EndDate must be after StartDate"</span>,
+                <span class="kw">new</span>[] { <span class="kw">nameof</span>(EndDate) });
+        }
+    }
+}</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">IValidatableObject.Validate() only runs if all attribute validations pass first</div>
+        <div class="callout-text">If any <code>[Required]</code>, <code>[Range]</code>, or other attribute validation fails, the <code>Validate()</code> method is never called. This means cross-property rules are only checked when the individual property values are already structurally valid.<br><br>For very complex validation, consider the <strong>FluentValidation</strong> library (<code>https://github.com/JeremySkinner/FluentValidation</code>) which gives you full flexibility including access to app services.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 17 ══ -->
+  <section class="section" id="validation-filter">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2 class="section-title">Adding a Validation Filter to Minimal APIs</h2>
+    </div>
+
+    <p>Unlike MVC and Razor Pages, <strong>Minimal APIs have no built-in DataAnnotations validation</strong>. You must add it explicitly. The easiest way is via the <strong>MinimalApis.Extensions</strong> NuGet package, which provides a <code>WithParameterValidation()</code> extension method.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">bash</span><span class="code-label">Install the package</span></div>
+      <div class="code-body">dotnet add package MinimalApis.Extensions</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">WithParameterValidation() — automatic 400 on invalid models</span></div>
+      <div class="code-body"><span class="cm">// ❶ Add .WithParameterValidation() to your endpoint</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/user"</span>, (<span class="tp">UserModel</span> user) =>
+    <span class="tp">Results</span>.<span class="fn">Ok</span>(user))
+   .<span class="fn">WithParameterValidation</span>();  <span class="cm">// ← adds validation filter</span>
+
+<span class="cm">// Request lifecycle with WithParameterValidation():</span>
+<span class="cm">// 1. Model binding runs   → UserModel populated from JSON body</span>
+<span class="cm">// 2. Validation filter    → checks DataAnnotations attributes</span>
+<span class="cm">// 3a. If VALID            → handler executes → 200 OK</span>
+<span class="cm">// 3b. If INVALID          → 400 Problem Details returned</span>
+<span class="cm">//                           handler NEVER runs</span>
+
+<span class="cm">// The 400 response body looks like this:</span>
+<span class="cm">// {</span>
+<span class="cm">//   "type": "...",</span>
+<span class="cm">//   "errors": {</span>
+<span class="cm">//     "Email": ["The Email field is not a valid e-mail address."],</span>
+<span class="cm">//     "Name":  ["The Name field is required."]</span>
+<span class="cm">//   }</span>
+<span class="cm">// }</span></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">WithParameterValidation() only works on complex types with DataAnnotations</div>
+        <div class="callout-text">The validation filter checks the properties of complex types for <code>[Required]</code>, <code>[Range]</code>, etc. It does <strong>not</strong> validate simple types like <code>int id</code> directly. Adding attributes to a handler parameter like <code>([Range(1, 100)] int id)</code> does not work — the attributes must be on <strong>properties</strong> of a class or record, not on the handler parameter itself.</div>
+      </div>
+    </div>
+
+    <div id="quiz-mb5" class="quiz-block">
+      <div class="quiz-question">🧠 A POST endpoint has <code>.WithParameterValidation()</code>. A request arrives with a body where the required <code>Email</code> field is missing. What is the response, and does the handler execute?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mb5',false)">200 OK — the handler executes with Email set to null and should validate it manually</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb5',false)">500 Internal Server Error — missing required fields cause an unhandled exception</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb5',true)">400 Bad Request with Problem Details listing the errors — the validation filter short-circuits and the handler never executes</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mb5',false)">415 Unsupported Media Type — DataAnnotations failures are reported as media type errors</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mb5-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+const feedbackOk = {
+  'quiz-mb1': "Correct! RoutingMiddleware only extracts raw strings. It's EndpointMiddleware that runs model binding — converting those strings to the actual C# types the handler's signature declares.",
+  'quiz-mb2': "Correct! The convention is simple: if the parameter name matches a route placeholder, bind from the route. Otherwise fall back to the query string. id matches {id} → route; search has no template placeholder → query string.",
+  'quiz-mb3': "Correct! Only one complex type per handler can bind to the JSON body. Two eligible complex types cause a runtime exception on the first request — not at startup.",
+  'quiz-mb4': "Correct! An explicit binding attribute always wins — it is the highest priority in the binding source order. [FromQuery] forces binding from the query string regardless of what the route template says.",
+  'quiz-mb5': "Correct! The validation filter runs after model binding but before the handler. When a DataAnnotations rule fails, the filter short-circuits, returns a 400 Problem Details response with the error list, and the handler never runs."
+};
+const feedbackErr = {
+  'quiz-mb1': "Not quite. RoutingMiddleware only knows about URLs — it extracts raw string values from route segments. The actual type conversion (string → int, string → Guid, etc.) happens later in EndpointMiddleware during model binding.",
+  'quiz-mb2': "Not quite. ASP.NET Core uses a simple naming convention: if the parameter name matches a route placeholder, it binds from the route; if not, it looks in the query string. id matches {id} in the template; search does not — so search comes from the query string.",
+  'quiz-mb3': "Not quite. You can only bind one complex type per handler to the JSON body. Having two eligible complex types isn't silently ignored — it throws a runtime exception as soon as the first request arrives.",
+  'quiz-mb4': "Not quite. Explicit binding attributes override all automatic conventions. [FromQuery] is the highest priority source — it forces id to come from the query string (99), even though a route value (5) also exists for the same name.",
+  'quiz-mb5': "Not quite. WithParameterValidation() adds a filter that runs after model binding. When validation fails, the filter immediately returns a 400 Bad Request with a Problem Details JSON body listing all errors. The handler never gets control."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal'); });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function scrollPageTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+</script>
+</body>
+</html>

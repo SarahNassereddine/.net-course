@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 5 — Creating a JSON API with Minimal APIs</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 5</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="what-is-api" onclick="scrollPageTo('what-is-api')">
+      <span class="dot"></span>What is an HTTP API?
+    </button>
+    <button class="nav-link" data-target="spa" onclick="scrollPageTo('spa')">
+      <span class="dot"></span>SPAs &amp; the API model
+    </button>
+    <button class="nav-link" data-target="endpoints" onclick="scrollPageTo('endpoints')">
+      <span class="dot"></span>Defining endpoints
+    </button>
+    <button class="nav-link" data-target="verbs" onclick="scrollPageTo('verbs')">
+      <span class="dot"></span>HTTP verbs
+    </button>
+    <button class="nav-link" data-target="handlers" onclick="scrollPageTo('handlers')">
+      <span class="dot"></span>Route handlers (5 ways)
+    </button>
+    <button class="nav-link" data-target="body-binding" onclick="scrollPageTo('body-binding')">
+      <span class="dot"></span>Body binding &amp; records
+    </button>
+    <button class="nav-link" data-target="iresult" onclick="scrollPageTo('iresult')">
+      <span class="dot"></span>IResult &amp; return types
+    </button>
+    <button class="nav-link" data-target="results" onclick="scrollPageTo('results')">
+      <span class="dot"></span>Results vs TypedResults
+    </button>
+    <button class="nav-link" data-target="http-response" onclick="scrollPageTo('http-response')">
+      <span class="dot"></span>Writing HttpResponse manually
+    </button>
+    <button class="nav-link" data-target="status-codes" onclick="scrollPageTo('status-codes')">
+      <span class="dot"></span>Status codes
+    </button>
+    <button class="nav-link" data-target="problem-details" onclick="scrollPageTo('problem-details')">
+      <span class="dot"></span>Problem Details
+    </button>
+    <button class="nav-link" data-target="problem-convert" onclick="scrollPageTo('problem-convert')">
+      <span class="dot"></span>Auto-converting errors
+    </button>
+    <button class="nav-link" data-target="other-types" onclick="scrollPageTo('other-types')">
+      <span class="dot"></span>Returning files &amp; streams
+    </button>
+    <button class="nav-link" data-target="filters" onclick="scrollPageTo('filters')">
+      <span class="dot"></span>Endpoint filters
+    </button>
+    <button class="nav-link" data-target="multi-filters" onclick="scrollPageTo('multi-filters')">
+      <span class="dot"></span>Multiple filters &amp; pipeline
+    </button>
+    <button class="nav-link" data-target="iendpointfilter" onclick="scrollPageTo('iendpointfilter')">
+      <span class="dot"></span>IEndpointFilter interface
+    </button>
+    <button class="nav-link" data-target="filters-vs-mw" onclick="scrollPageTo('filters-vs-mw')">
+      <span class="dot"></span>Filters vs Middleware
+    </button>
+    <button class="nav-link" data-target="groups" onclick="scrollPageTo('groups')">
+      <span class="dot"></span>Route groups
+    </button>
+    <button class="nav-link" data-target="full-example" onclick="scrollPageTo('full-example')">
+      <span class="dot"></span>Complete example
+    </button>
+
+  </div>
+
+  <div class="nav-section" style="margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link active" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+       <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 5</div>
+    <h1 class="chapter-title">Creating a JSON API with Minimal APIs</h1>
+    <p class="chapter-subtitle">
+      The complete reference for building HTTP JSON APIs with ASP.NET Core 8 Minimal APIs.
+      Every concept, every code example, every slide note — in one place.
+    </p>
+  </div>
+
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="what-is-api">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">What is an HTTP API?</h2>
+    </div>
+
+    <p>Traditional web applications built with <strong>Razor Pages</strong> return a complete <strong>HTML page</strong> on every request. The server renders the full page and sends it. This is called <strong>server-side rendering</strong>.</p>
+    <p>An <strong>HTTP API</strong> works differently — instead of returning HTML, it returns <strong>raw data</strong>, almost always as <strong>JSON</strong>. The caller is responsible for deciding what to do with that data.</p>
+    <p>HTTP APIs are also called <strong>web APIs</strong>, <strong>JSON APIs</strong>, or <strong>REST APIs</strong> depending on the design specifics. In ASP.NET Core, "web API" refers to a specific older technology using controllers — <strong>Minimal APIs</strong> are the modern, low-ceremony replacement.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📱</div>
+      <div class="callout-body">
+        <div class="callout-title">When to use an HTTP API</div>
+        <div class="callout-text">
+          • Your frontend is a <strong>React / Vue / Angular / Blazor WebAssembly</strong> SPA<br>
+          • You are building a <strong>mobile app</strong> backend (Android, iOS)<br>
+          • <strong>Other backend services</strong> need to call your server (microservices)<br>
+          • You want <strong>one backend to serve many different clients</strong> simultaneously<br>
+          • Example: a web application that sends emails can expose an HTTP API so other services can trigger it
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">Traditional App (Razor Pages)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Browser → GET /products</span>
+<span class="cm">// Server builds and returns:</span>
+<span class="str">&lt;html&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Products&lt;/h1&gt;
+    &lt;ul&gt;&lt;li&gt;Apple&lt;/li&gt;&lt;/ul&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</span>
+<span class="cm">// HTML is ready to display — server did all work</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">HTTP API (Minimal API)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Browser → GET /products</span>
+<span class="cm">// Server returns:</span>
+<span class="str">[{"id":"apple","name":"Apple","stock":10}]</span>
+
+<span class="cm">// Just data — no HTML</span>
+<span class="cm">// The client decides how to display it</span>
+<span class="cm">// Works for browsers, mobile apps, other services</span></div>
+      </div>
+    </div>
+
+    <div id="quiz-api1" class="quiz-block">
+      <div class="quiz-question">🧠 A company wants one backend to serve both a React web app and an Android mobile app. What is the correct architecture?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-api1',false)">Build two separate Razor Pages apps — one per client</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-api1',true)">Build one HTTP API that returns JSON — both clients consume the same endpoints</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-api1',false)">Build an HTTP API for mobile and a Razor Pages app for the browser, with shared database</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-api1',false)">The Android app must always talk directly to the database</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-api1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="spa">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">SPAs and the API Model</h2>
+    </div>
+
+    <p>A <strong>Single Page Application (SPA)</strong> is a web app that loads once in the browser and never does a full page reload again. Frameworks like Angular, React, and Vue build SPAs. <strong>Blazor WebAssembly</strong> is a newer SPA framework from Microsoft that lets you write C# instead of JavaScript — it runs in the browser using the WebAssembly web standard.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Flow</span><span class="code-label">Complete SPA ↔ API lifecycle</span></div>
+      <div class="code-body"><span class="cm">// Step 1 — User visits the site for the first time</span>
+Browser  → GET https://myapp.com
+Server   ← index.html + the full JavaScript bundle (your React/Vue/Angular app)
+
+<span class="cm">// Step 2 — JavaScript runs in browser, SPA initializes</span>
+<span class="cm">//          No more full page reloads after this. The SPA controls the UI.</span>
+
+<span class="cm">// Step 3 — SPA needs data, calls the ASP.NET Core API</span>
+Browser  → GET https://myapp.com/api/fruit
+Server   ← <span class="str">[{"id":"apple","name":"Apple","stock":10}]</span>  ← JSON only, no HTML
+
+<span class="cm">// Step 4 — SPA parses the JSON and generates HTML dynamically in the browser</span>
+<span class="cm">//          The server never touched the HTML rendering.</span>
+
+<span class="cm">// Step 5 — User clicks "Delete Apple"</span>
+Browser  → DELETE https://myapp.com/api/fruit/apple
+Server   ← 204 No Content   ← success, nothing to return
+<span class="cm">//          SPA removes the item from its local state — no page reload</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Key mental model</div>
+        <div class="callout-text">
+          The server is <strong>data-only</strong>. It does not know or care what the UI looks like.
+          The same API endpoint serves a React web app, an Android app, and an iOS app simultaneously.
+          All three clients get the same JSON — each renders it differently.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-spa1" class="quiz-block">
+      <div class="quiz-question">🧠 In the SPA model, what does the server send when a user navigates to a different page within the SPA (e.g., from /home to /products)?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-spa1',false)">A complete new HTML page from the server</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-spa1',false)">Nothing — the browser is completely offline after initial load</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-spa1',true)">Only the data needed (JSON), or nothing — the SPA handles routing client-side</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-spa1',false)">A new JavaScript bundle for each page</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-spa1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="endpoints">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Defining Minimal API Endpoints</h2>
+    </div>
+
+    <p>A <strong>Minimal API endpoint</strong> maps a URL (route) to a C# function (handler). No controller classes, no attributes — just a URL pattern and a function. ASP.NET Core automatically serializes your C# return value to JSON.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Route parameters — extracted automatically from the URL</span></div>
+      <div class="code-body"><span class="cm">// The {name} in the route template is a route parameter</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/person/{name}"</span>, (<span class="tp">string</span> name) =>
+{
+    <span class="cm">// GET /person/Andrew → name = "Andrew"</span>
+    <span class="cm">// GET /person/Al     → name = "Al"</span>
+    <span class="kw">return new</span> <span class="tp">Person</span>(name, <span class="str">"Pacino"</span>);
+    <span class="cm">// Automatically serialized to JSON:</span>
+    <span class="cm">// [{"firstName":"Al","lastName":"Pacino"}]</span>
+});
+
+<span class="cm">// By default, minimal APIs serialize C# objects to JSON automatically.</span>
+<span class="cm">// You never call JsonSerializer.Serialize() yourself.</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">C# Records — data carriers for your API</div>
+        <div class="callout-text">
+          A <code>record</code> is a reference type introduced in C# 9.0 for representing <strong>immutable data</strong>.
+          All properties are <strong>read-only by default</strong> — once created, the data cannot change.
+          Records give you value-based equality: two records with the same data are considered equal.
+          They also auto-generate a constructor, <code>Equals()</code>, <code>GetHashCode()</code>, <code>ToString()</code>, and a deconstructor.
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">Class — 15 lines of boilerplate</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="kw">public class</span> <span class="tp">Fruit</span>
+{
+    <span class="kw">public</span> <span class="tp">string</span> Name  { <span class="kw">get</span>; <span class="kw">init</span>; }
+    <span class="kw">public</span> <span class="tp">int</span>    Stock { <span class="kw">get</span>; <span class="kw">init</span>; }
+    <span class="kw">public</span> <span class="fn">Fruit</span>(<span class="tp">string</span> name, <span class="tp">int</span> stock)
+    {
+        Name  = name;
+        Stock = stock;
+    }
+    <span class="cm">// Plus manual Equals(), GetHashCode(),</span>
+    <span class="cm">// ToString() if you want them</span>
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">Record — 1 line, same result</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="kw">record</span> <span class="tp">Fruit</span>(<span class="tp">string</span> Name, <span class="tp">int</span> Stock);
+
+<span class="cm">// That's it. You get:</span>
+<span class="cm">// ✓ Constructor: new Fruit("Apple", 10)</span>
+<span class="cm">// ✓ Read-only properties</span>
+<span class="cm">// ✓ Value equality</span>
+<span class="cm">// ✓ ToString(), Equals(), GetHashCode()</span>
+<span class="cm">// ✓ Deconstructor</span></div>
+      </div>
+    </div>
+
+    <div id="quiz-ep1" class="quiz-block">
+      <div class="quiz-question">🧠 You define: <code>app.MapGet("/fruit/{id}", (string id) => ...)</code>. A request arrives for <code>GET /fruit/banana</code>. What is the value of <code>id</code> inside the handler?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-ep1',false)">"{id}" — the literal template string</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ep1',true)">"banana" — ASP.NET Core extracts the segment from the URL path</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ep1',false)">null — you must read it from HttpContext manually</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ep1',false)">The full URL string "/fruit/banana"</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-ep1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="verbs">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">HTTP Verbs — Mapping the Right Verb to Each Action</h2>
+    </div>
+
+    <p>Every HTTP request carries a <strong>verb (method)</strong> that describes the <em>intent</em> of the request. Using the right verb is not optional for an API — it is a semantic contract. Minimal APIs use different <code>Map*()</code> functions for each verb.</p>
+
+    <table class="data-table">
+      <tr><th>Verb</th><th>Meaning</th><th>Minimal API method</th><th>Notes</th></tr>
+      <tr><td><strong>GET</strong></td><td>Retrieve data. Never modify anything.</td><td><code>app.MapGet()</code></td><td>Safe + Idempotent</td></tr>
+      <tr><td><strong>POST</strong></td><td>Create a new resource.</td><td><code>app.MapPost()</code></td><td>Body contains the new data</td></tr>
+      <tr><td><strong>PUT</strong></td><td>Replace an existing resource completely.</td><td><code>app.MapPut()</code></td><td>Idempotent</td></tr>
+      <tr><td><strong>DELETE</strong></td><td>Remove a resource.</td><td><code>app.MapDelete()</code></td><td>Returns 204 on success</td></tr>
+      <tr><td><strong>PATCH</strong></td><td>Partially update a resource.</td><td><code>app.MapPatch()</code></td><td>Only send changed fields</td></tr>
+      <tr><td><strong>Any verb</strong></td><td>Handle multiple verbs on one endpoint.</td><td><code>app.MapMethods()</code></td><td>Avoid unless necessary</td></tr>
+      <tr><td><strong>All verbs</strong></td><td>Match any verb (no specific one).</td><td><code>app.Map()</code></td><td>Avoid unless necessary</td></tr>
+      <tr><td><strong>Fallback</strong></td><td>Matches if no other endpoint matched.</td><td><code>app.MapFallback()</code></td><td>Useful for SPA client-side routing</td></tr>
+    </table>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body">
+        <div class="callout-title">405 Method Not Allowed</div>
+        <div class="callout-text">
+          If your endpoint is registered with <strong>MapGet</strong> but a client sends a <strong>POST</strong> request,
+          ASP.NET Core returns <strong>405 Method Not Allowed</strong> automatically — your handler code <strong>never runs</strong>.
+          Always match the verb in your request to the verb in your <code>Map*()</code> call.
+          Even if the URL is correct, a wrong verb triggers this response.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Why not just use GET and POST for everything?</div>
+        <div class="callout-text">
+          Razor Pages and HTML forms only support GET and POST, so many Razor apps use only those two. 
+          This is acceptable for server-rendered apps. But for an API, you should use HTTP verbs with the correct semantics — 
+          it makes the API self-documenting and allows intermediaries (caches, proxies) to behave correctly.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-verb1" class="quiz-block">
+      <div class="quiz-question">🧠 You have <code>app.MapGet("/orders/{id}", ...)</code>. A client sends <code>POST /orders/5</code>. What happens?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-verb1',false)">The GET handler runs because the URL matches</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-verb1',true)">ASP.NET Core returns 405 Method Not Allowed — the handler never runs</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-verb1',false)">A 404 Not Found is returned because POST /orders/{id} is not defined</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-verb1',false)">The request is silently ignored with no response</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-verb1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="handlers">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Route Handlers — Five Ways to Define the Same Handler</h2>
+    </div>
+
+    <p>The function you pass to <code>MapGet()</code> (or any <code>Map*()</code>) is called a <strong>route handler</strong>. C# gives you five syntactically different ways to write it — they all compile to the same behavior. The slides mark each one with a callout number:</p>
+
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'h1')">❶ Lambda</button>
+        <button class="tab-btn" onclick="tab(this,'h2')">❷ Named lambda</button>
+        <button class="tab-btn" onclick="tab(this,'h3')">❸ Static method</button>
+        <button class="tab-btn" onclick="tab(this,'h4')">❹ Instance method</button>
+        <button class="tab-btn" onclick="tab(this,'h5')">❺ Local function</button>
+      </div>
+
+      <div id="h1" class="tab-panel active">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">❶ Inline lambda — simplest, least descriptive</span></div>
+        <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, () => <span class="tp">Fruit</span>.All);
+<span class="cm">// ✓ Concise, good for very short endpoints</span>
+<span class="cm">// ✗ The function has no name — harder to debug in stack traces</span></div></div>
+      </div>
+
+      <div id="h2" class="tab-panel">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">❷ Named lambda variable — adds a name to the lambda</span></div>
+        <div class="code-body"><span class="tp">var</span> getFruit = () => <span class="tp">Fruit</span>.All;
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, getFruit);
+<span class="cm">// ✓ Same as ❶ but now has the name 'getFruit'</span>
+<span class="cm">// ✓ Easier to read when Program.cs gets long</span></div></div>
+      </div>
+
+      <div id="h3" class="tab-panel">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">❸ Static method — recommended for large projects</span></div>
+        <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, <span class="tp">FruitHandlers</span>.GetAll);
+
+<span class="cm">// --- In a separate file: FruitHandlers.cs ---</span>
+<span class="kw">public static class</span> <span class="tp">FruitHandlers</span>
+{
+    <span class="kw">public static</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">Fruit</span>&gt; <span class="fn">GetAll</span>() => <span class="tp">Fruit</span>.All.Values;
+}
+<span class="cm">// ✓ Keeps Program.cs clean</span>
+<span class="cm">// ✓ Each endpoint module lives in its own file</span></div></div>
+      </div>
+
+      <div id="h4" class="tab-panel">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">❹ Instance method — for handlers needing DI</span></div>
+        <div class="code-body"><span class="tp">var</span> handlers = <span class="kw">new</span> <span class="tp">FruitHandlers</span>();
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, handlers.GetAll);
+
+<span class="kw">public class</span> <span class="tp">FruitHandlers</span>
+{
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">Fruit</span>&gt; <span class="fn">GetAll</span>() => <span class="tp">Fruit</span>.All.Values;
+}
+<span class="cm">// ✓ Use when the handler class needs injected services in its constructor</span></div></div>
+      </div>
+
+      <div id="h5" class="tab-panel">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">❺ Local function — C# 7.0+, defined in the same scope</span></div>
+        <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, GetFruit);
+
+<span class="tp">IEnumerable</span>&lt;<span class="tp">Fruit</span>&gt; <span class="fn">GetFruit</span>() => <span class="tp">Fruit</span>.All.Values;
+<span class="cm">// Defined below the MapGet call in the same scope (Program.cs top-level)</span>
+<span class="cm">// ✓ Has a name, still inline — middle ground between ❶ and ❸</span></div></div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Which to use?</div>
+        <div class="callout-text">
+          Minimal APIs are flexible by design — you can organize endpoints <strong>any way you choose</strong>.
+          For production, extract endpoints into separate files (option ❸ or ❹) to keep your code modular and testable.
+          The book recommends embracing this modularity — it's the way Minimal APIs were intended to be used.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-h1" class="quiz-block">
+      <div class="quiz-question">🧠 Which handler style provides the best IntelliSense and autocompletion when defining the handler signature, and is recommended when the handler logic becomes complex?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-h1',false)">Inline lambda — because it's the most common in examples</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-h1',false)">Named lambda variable — because it has a name</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-h1',true)">Static method in a separate class — gives full IDE support, is testable, and keeps Program.cs clean</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-h1',false)">Local function — because it's defined closest to the MapGet call</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-h1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="body-binding">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Body Binding — Reading Complex Types from the Request</h2>
+    </div>
+
+    <p>Route parameters like <code>{id}</code> are <strong>simple types</strong> extracted directly from the URL. But what about sending a full object to the server (e.g., a new fruit to add)? Minimal APIs automatically <strong>deserialize the JSON request body</strong> into any complex type parameter in your handler.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Minimal API binding limitation — important for the exam</div>
+        <div class="callout-text">
+          Unlike ASP.NET Core Web API controllers (which support multiple binding sources and multiple JSON libraries),
+          <strong>Minimal APIs can only bind to JSON bodies</strong> and always use
+          <strong><code>System.Text.Json</code></strong> for deserialization.
+          They do not support XML bodies or other binding sources like form data natively.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Complete Fruit API — data model + all handlers</span></div>
+      <div class="code-body"><span class="cm">// The data model — a record with a static dictionary to store all fruits</span>
+<span class="kw">record</span> <span class="tp">Fruit</span>(<span class="tp">string</span> Name, <span class="tp">int</span> Stock)
+{
+    <span class="cm">// Static dictionary shared by all requests (in-memory storage)</span>
+    <span class="kw">public static</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">Fruit</span>&gt; All { <span class="kw">get</span>; } =
+        <span class="kw">new</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">Fruit</span>&gt;();
+}
+
+<span class="cm">// Handler class with static and instance methods</span>
+<span class="kw">class</span> <span class="tp">Handlers</span>
+{
+    <span class="cm">// ❸ Static method — replaces an existing fruit by id</span>
+    <span class="kw">public static</span> <span class="kw">void</span> <span class="fn">ReplaceFruit</span>(<span class="tp">string</span> id, <span class="tp">Fruit</span> fruit)
+    {
+        <span class="cm">// 'fruit' is deserialized FROM THE JSON REQUEST BODY automatically</span>
+        <span class="cm">// Both id (from URL) and fruit (from body) are bound automatically</span>
+        <span class="tp">Fruit</span>.All[id] = fruit;
+    }
+
+    <span class="cm">// ❹ Instance method</span>
+    <span class="kw">public</span> <span class="kw">void</span> <span class="fn">AddFruit</span>(<span class="tp">string</span> id, <span class="tp">Fruit</span> fruit)
+    {
+        <span class="tp">Fruit</span>.All.Add(id, fruit);
+    }
+}
+
+<span class="cm">// Wiring everything up in Program.cs:</span>
+<span class="kw">var</span> handler = <span class="kw">new</span> <span class="tp">Handlers</span>();
+app.<span class="fn">MapPut</span>(<span class="str">"/fruit/{id}"</span>, <span class="tp">Handlers</span>.ReplaceFruit); <span class="cm">// static ❸</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/fruit/{id}"</span>, handler.AddFruit);      <span class="cm">// instance ❹</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">How binding works — the rule</div>
+        <div class="callout-text">
+          <strong>Simple types</strong> (<code>string</code>, <code>int</code>, <code>bool</code>, etc.) → extracted from <strong>route parameters or query string</strong>.<br>
+          <strong>Complex types</strong> (records, classes, objects) → deserialized from the <strong>JSON request body</strong>.<br>
+          A handler can receive <strong>both</strong> simultaneously: <code>(string id, Fruit fruit)</code> — <code>id</code> from the URL, <code>fruit</code> from the body.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-bind1" class="quiz-block">
+      <div class="quiz-question">🧠 Your handler is <code>app.MapPost("/orders/{customerId}", (string customerId, Order order) => ...)</code>. The client sends a POST request with a JSON body. Where does ASP.NET Core get <code>customerId</code> and where does it get <code>order</code>?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-bind1',false)">Both from the JSON body</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-bind1',false)">Both from the URL route segment</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-bind1',true)"><code>customerId</code> from the URL route, <code>order</code> deserialized from the JSON body</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-bind1',false)">You must manually parse both from HttpContext — Minimal APIs don't bind automatically</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-bind1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="iresult">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">IResult — Controlling the HTTP Response</h2>
+    </div>
+
+    <p>By default, returning a C# object gives a <code>200 OK</code> with a JSON body. Real APIs need precise status codes. The <strong><code>IResult</code></strong> interface lets you specify the exact response — status code, body, and headers.</p>
+    <p>The endpoint middleware handles each return type according to a specific ruleset:</p>
+
+    <table class="data-table">
+      <tr><th>What you return</th><th>Status code</th><th>Body</th><th>Content-Type</th></tr>
+      <tr><td><strong>void</strong> or <strong>Task</strong></td><td>200 OK</td><td>Empty</td><td>—</td></tr>
+      <tr><td><strong>string</strong> or <strong>Task&lt;string&gt;</strong></td><td>200 OK</td><td>The string as-is</td><td>text/plain</td></tr>
+      <tr><td><strong>POCO / record / any object</strong></td><td>200 OK</td><td>JSON of the object</td><td>application/json</td></tr>
+      <tr><td><strong>IResult</strong> or <strong>Task&lt;IResult&gt;</strong></td><td>Depends on the implementation</td><td>Depends on the implementation</td><td>Depends</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Using IResult with ConcurrentDictionary (thread-safe)</span></div>
+      <div class="code-body"><span class="cm">// ConcurrentDictionary is used instead of Dictionary</span>
+<span class="cm">// because multiple HTTP requests can arrive simultaneously.</span>
+<span class="cm">// Dictionary is NOT thread-safe — two simultaneous requests can corrupt it.</span>
+<span class="cm">// ConcurrentDictionary uses fine-grained locking internally — safe for concurrent access.</span>
+<span class="kw">var</span> _fruit = <span class="kw">new</span> <span class="tp">ConcurrentDictionary</span>&lt;<span class="tp">string</span>, <span class="tp">Fruit</span>&gt;();
+
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, (<span class="tp">string</span> id) =>
+{
+    <span class="cm">// TryGetValue: returns true if key exists, assigns the value to 'fruit'</span>
+    <span class="cm">// 'out var fruit' declares and assigns in one step</span>
+    <span class="cm">// 'out' = output parameter — the method writes into it</span>
+    <span class="kw">return</span> _fruit.<span class="fn">TryGetValue</span>(id, <span class="kw">out var</span> fruit)
+        ? <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(fruit)    <span class="cm">// found → 200 OK + JSON body</span>
+        : <span class="tp">Results</span>.<span class="fn">NotFound</span>();         <span class="cm">// not found → 404</span>
+    <span class="cm">// ↑ Ternary operator: condition ? valueIfTrue : valueIfFalse</span>
+});</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Why ConcurrentDictionary?</div>
+        <div class="callout-text">
+          A web server handles <strong>multiple requests simultaneously</strong> (multi-threaded).
+          A regular <code>Dictionary</code> is not thread-safe — if two requests try to write at the same time, the dictionary can get corrupted.
+          <code>ConcurrentDictionary</code> provides built-in support for concurrent access via fine-grained locking, preventing data corruption or race conditions.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-ir1" class="quiz-block">
+      <div class="quiz-question">🧠 You return a plain C# record <code>new Fruit("Apple", 10)</code> from a GET endpoint. What status code and Content-Type does the response have?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-ir1',false)">201 Created, application/json</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ir1',true)">200 OK, application/json</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ir1',false)">200 OK, text/plain</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ir1',false)">You must use TypedResults.Ok() — returning a plain object throws an exception</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-ir1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="results">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Results vs TypedResults</h2>
+    </div>
+
+    <p>Both <code>Results</code> and <code>TypedResults</code> are <strong>static helper types</strong> in <code>Microsoft.AspNetCore.Http</code> that generate common HTTP responses. They perform <strong>exactly the same function at runtime</strong>. The only difference is the compile-time return type.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">Results — returns IResult (opaque)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Return type: IResult</span>
+<span class="cm">// Compiler sees a black box</span>
+<span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>(fruit);
+
+<span class="cm">// In unit tests — painful casting:</span>
+<span class="kw">var</span> r = result <span class="kw">as</span> <span class="tp">IValueHttpResult</span>;
+<span class="kw">var</span> v = (<span class="tp">Fruit</span>)r!.Value!; <span class="cm">// ugly, fragile</span>
+
+<span class="cm">// Swagger can't infer the response type</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">TypedResults — returns Ok&lt;T&gt; (concrete)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Return type: Ok&lt;Fruit&gt;</span>
+<span class="cm">// Compiler knows exactly what's inside</span>
+<span class="kw">return</span> <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(fruit);
+
+<span class="cm">// In unit tests — clean:</span>
+<span class="kw">var</span> ok = result <span class="kw">as</span> <span class="tp">Ok</span>&lt;<span class="tp">Fruit</span>&gt;;
+<span class="kw">var</span> v  = ok!.Value!.Name; <span class="cm">// clear, type-safe</span>
+
+<span class="cm">// Swagger can generate the correct response schema</span></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Simple decision rule</div>
+        <div class="callout-text">
+          Use <strong>TypedResults</strong> in production — better testability and Swagger docs.<br>
+          Use <strong>Results</strong> for quick prototypes, or when a handler mixes many different return types that make TypedResults signatures awkward.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-res1" class="quiz-block">
+      <div class="quiz-question">🧠 An endpoint returns either <code>TypedResults.Ok(fruit)</code> or <code>Results.NotFound()</code>. What is the return type of the handler function?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-res1',false)">Ok&lt;Fruit&gt; — because TypedResults is used for the success case</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-res1',false)">NotFound — because that's the error case</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-res1',true)">IResult — because the two return types differ, the compiler infers the common base interface</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-res1',false)">The code won't compile — you can't mix Results and TypedResults in one handler</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-res1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="http-response">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Writing the Response Manually with HttpResponse</h2>
+    </div>
+
+    <p>For cases where <code>Results</code> / <code>TypedResults</code> don't give enough control, you can access the raw <code>HttpResponse</code> object directly. You write the status code, headers, and body yourself using streams.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Manual HttpResponse — for advanced control</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/manual"</span>, <span class="kw">async</span> (<span class="tp">HttpResponse</span> response) =>
+{
+    <span class="cm">// Set the status code manually</span>
+    response.StatusCode = <span class="nm">200</span>;
+
+    <span class="cm">// Set headers</span>
+    response.ContentType = <span class="str">"application/json"</span>;
+
+    <span class="cm">// Write the body as a string (async)</span>
+    <span class="kw">await</span> response.<span class="fn">WriteAsync</span>(<span class="str">"{\"message\":\"Hello!\"}"</span>);
+
+    <span class="cm">// Return void — the response is already written</span>
+    <span class="cm">// No return value needed when using HttpResponse directly</span>
+});
+
+<span class="cm">// ASP.NET Core injects HttpResponse automatically — same as route params.</span>
+<span class="cm">// You can combine it with other params:</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/manual/{id}"</span>, <span class="kw">async</span> (<span class="tp">string</span> id, <span class="tp">HttpResponse</span> response) =>
+{
+    response.StatusCode = <span class="nm">200</span>;
+    <span class="kw">await</span> response.<span class="fn">WriteAsJsonAsync</span>(<span class="kw">new</span> { Id = id });
+});</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Use this sparingly</div>
+        <div class="callout-text">
+          Writing to <code>HttpResponse</code> directly means you lose the type-safety and Swagger integration of <code>TypedResults</code>.
+          Only use it when you need streaming, chunked transfer, or very fine-grained control over headers.
+          For most endpoints, prefer <code>Results</code> / <code>TypedResults</code>.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="status-codes">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Status Codes — Click to Explore</h2>
+    </div>
+
+    <p>Status codes are the language of HTTP. Every response carries one. Click each badge to see the exact use case, what the body looks like, and the C# code to produce it.</p>
+
+    <div class="status-row">
+      <div class="status-badge s200" onclick="toggleStatus('s200')">200 OK</div>
+      <div class="status-badge s201" onclick="toggleStatus('s201')">201 Created</div>
+      <div class="status-badge s204" onclick="toggleStatus('s204')">204 No Content</div>
+      <div class="status-badge s400" onclick="toggleStatus('s400')">400 Bad Request</div>
+      <div class="status-badge s404" onclick="toggleStatus('s404')">404 Not Found</div>
+      <div class="status-badge s409" onclick="toggleStatus('s409')">409 Conflict</div>
+      <div class="status-badge s500" onclick="toggleStatus('s500')">500 Server Error</div>
+    </div>
+
+    <div class="status-detail" id="detail-s200">
+      <strong>200 OK</strong> — Standard success. Body contains the requested data.<br>
+      <strong>Use for:</strong> Successful GET, successful PUT/PATCH when you return the updated item.<br>
+      <strong>Body:</strong> JSON of the object.<br>
+      <strong>Code:</strong> <code>return TypedResults.Ok(fruit);</code>
+    </div>
+    <div class="status-detail" id="detail-s201">
+      <strong>201 Created</strong> — A new resource was successfully created.<br>
+      <strong>Use for:</strong> Successful POST that created a new item.<br>
+      <strong>Body:</strong> JSON of the newly created object + a <code>Location</code> header pointing to the new resource's URL.<br>
+      <strong>Code:</strong> <code>return TypedResults.Created($"/fruit/{id}", fruit);</code><br>
+      <strong>Note:</strong> The <code>Location</code> header tells the client where to find the new item.
+    </div>
+    <div class="status-detail" id="detail-s204">
+      <strong>204 No Content</strong> — Success, but there is nothing to return.<br>
+      <strong>Use for:</strong> Successful DELETE. The item is gone — nothing to send back.<br>
+      <strong>Body:</strong> <em>Completely empty — no JSON, no text, nothing.</em><br>
+      <strong>Code:</strong> <code>return Results.NoContent();</code>
+    </div>
+    <div class="status-detail" id="detail-s400">
+      <strong>400 Bad Request</strong> — The client sent invalid or malformed data.<br>
+      <strong>Use for:</strong> A required field is missing, a value fails validation, wrong format.<br>
+      <strong>Body:</strong> Problem Details JSON with an <code>errors</code> field listing field-level issues.<br>
+      <strong>Code:</strong> <code>return Results.ValidationProblem(new Dictionary&lt;string,string[]&gt; { ["Name"] = new[]{"Required."} });</code>
+    </div>
+    <div class="status-detail" id="detail-s404">
+      <strong>404 Not Found</strong> — The requested resource does not exist.<br>
+      <strong>Use for:</strong> GET or DELETE where the id matches no existing item.<br>
+      <strong>Body:</strong> Problem Details JSON with a title and optional detail message.<br>
+      <strong>Code:</strong> <code>return Results.NotFound();</code> or <code>return Results.Problem(statusCode:404, title:"Fruit not found");</code>
+    </div>
+    <div class="status-detail" id="detail-s409">
+      <strong>409 Conflict</strong> — The request conflicts with the current server state.<br>
+      <strong>Use for:</strong> POST tries to create an item that already exists (duplicate key).<br>
+      <strong>Body:</strong> Problem Details JSON explaining the conflict.<br>
+      <strong>Code:</strong> <code>return Results.Conflict("A fruit with this id already exists.");</code>
+    </div>
+    <div class="status-detail" id="detail-s500">
+      <strong>500 Internal Server Error</strong> — Something crashed on the server.<br>
+      <strong>Use for:</strong> Database failure, unexpected exception, null reference, etc.<br>
+      <strong>Body:</strong> Problem Details — but <em>never expose internal details</em> (no stack trace, no connection strings).<br>
+      <strong>Code:</strong> <code>return Results.Problem(title:"Unexpected error", detail:"Please try again.", statusCode:500);</code>
+    </div>
+
+    <div id="quiz-sc1" class="quiz-block">
+      <div class="quiz-question">🧠 A client sends <code>POST /orders</code> to create a new order. The order is created successfully. The response should include the URL of the new order (e.g., <code>/orders/42</code>). Which status code and method is correct?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-sc1',false)">200 OK — <code>return TypedResults.Ok(order);</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-sc1',true)">201 Created — <code>return TypedResults.Created("/orders/42", order);</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-sc1',false)">204 No Content — creation never has a body</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-sc1',false)">202 Accepted — because the order needs processing</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-sc1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="problem-details">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Problem Details — Structured Error Responses</h2>
+    </div>
+
+    <p><strong>Problem Details</strong> is a web standard (RFC 7807) that defines a consistent JSON format for HTTP API errors. Instead of a bare 404 or a plain text message, you return a JSON object that any client can parse and understand programmatically.</p>
+
+    <p>Enable Problem Details globally in <code>Program.cs</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — enabling Problem Details</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// Register the IProblemDetailsService — required for automatic conversion</span>
+builder.Services.<span class="fn">AddProblemDetails</span>();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Convert unhandled exceptions → Problem Details (500)</span>
+<span class="cm">// When called without a path, it uses IProblemDetailsService automatically</span>
+app.<span class="fn">UseExceptionHandler</span>();
+
+<span class="cm">// Convert raw 404/405/etc responses → Problem Details automatically</span>
+app.<span class="fn">UseStatusCodePages</span>();</div>
+    </div>
+
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'pd1')">Results.Problem()</button>
+        <button class="tab-btn" onclick="tab(this,'pd2')">Results.ValidationProblem()</button>
+        <button class="tab-btn" onclick="tab(this,'pd3')">Side-by-side comparison</button>
+      </div>
+
+      <div id="pd1" class="tab-panel active">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">Results.Problem() — for server/resource errors, defaults to 500</span></div>
+        <div class="code-body"><span class="cm">// All parameters are optional</span>
+<span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Problem</span>(
+    title:      <span class="str">"Fruit not found"</span>,           <span class="cm">// your label</span>
+    detail:     <span class="str">"No fruit with id 'x' exists"</span>, <span class="cm">// longer explanation</span>
+    statusCode: <span class="nm">404</span>                            <span class="cm">// default is 500 if omitted!</span>
+);</div></div>
+        <div class="json-preview">
+<span class="jp">{</span>
+  <span class="jk">"type"</span><span class="jp">:</span>       <span class="jv">"https://tools.ietf.org/html/rfc7231#section-6.5.4"</span><span class="jp">,</span>
+  <span class="jk">"title"</span><span class="jp">:</span>      <span class="jv">"Fruit not found"</span><span class="jp">,</span>
+  <span class="jk">"status"</span><span class="jp">:</span>     <span class="jn">404</span><span class="jp">,</span>
+  <span class="jk">"detail"</span><span class="jp">:</span>     <span class="jv">"No fruit with id 'x' exists"</span><span class="jp">,</span>
+  <span class="jk">"traceId"</span><span class="jp">:</span>    <span class="jv">"00-abc123def456..."</span>
+<span class="jp">}</span></div>
+      </div>
+
+      <div id="pd2" class="tab-panel">
+        <div class="code-block"><div class="code-header"><span class="code-lang">C#</span><span class="code-label">Results.ValidationProblem() — for client input errors, always 400</span></div>
+        <div class="code-body"><span class="cm">// Requires a Dictionary of field → string[] errors</span>
+<span class="cm">// Each field can have MULTIPLE error messages — hence string[]</span>
+<span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(
+    <span class="kw">new</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">string</span>[]&gt;
+    {
+        [<span class="str">"Name"</span>]  = <span class="kw">new</span>[] { <span class="str">"Name is required."</span> },
+        [<span class="str">"Stock"</span>] = <span class="kw">new</span>[] { <span class="str">"Must be positive."</span>, <span class="str">"Must be a number."</span> }
+    },
+    title: <span class="str">"One or more validation errors occurred"</span>
+);</div></div>
+        <div class="json-preview">
+<span class="jp">{</span>
+  <span class="jk">"type"</span><span class="jp">:</span>    <span class="jv">"https://tools.ietf.org/html/rfc7231#section-6.5.1"</span><span class="jp">,</span>
+  <span class="jk">"title"</span><span class="jp">:</span>   <span class="jv">"One or more validation errors occurred"</span><span class="jp">,</span>
+  <span class="jk">"status"</span><span class="jp">:</span>  <span class="jn">400</span><span class="jp">,</span>
+  <span class="jk">"errors"</span><span class="jp">:</span>  <span class="jp">{</span>
+    <span class="jk">"Name"</span><span class="jp">:</span>  <span class="jp">[</span><span class="jv">"Name is required."</span><span class="jp">],</span>
+    <span class="jk">"Stock"</span><span class="jp">:</span> <span class="jp">[</span><span class="jv">"Must be positive."</span><span class="jp">,</span> <span class="jv">"Must be a number."</span><span class="jp">]</span>
+  <span class="jp">}</span>
+<span class="jp">}</span></div>
+      </div>
+
+      <div id="pd3" class="tab-panel">
+        <table class="data-table">
+          <tr><th></th><th>Results.Problem()</th><th>Results.ValidationProblem()</th></tr>
+          <tr><td>Default status code</td><td><span class="pill red">500</span></td><td><span class="pill yellow">400</span></td></tr>
+          <tr><td>Has <code>errors</code> field</td><td>No</td><td>Yes (required)</td></tr>
+          <tr><td>Whose fault</td><td>Server</td><td>Client (bad input)</td></tr>
+          <tr><td>TypedResults equivalent</td><td><code>TypedResults.Problem()</code></td><td><code>TypedResults.ValidationProblem()</code></td></tr>
+          <tr><td>Use when</td><td>DB crash, resource missing, unexpected exception</td><td>Missing field, value out of range, format wrong</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div id="quiz-pd1" class="quiz-block">
+      <div class="quiz-question">🧠 You call <code>Results.Problem(title: "Server error")</code> without specifying <code>statusCode</code>. What status code does the response have?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-pd1',false)">400 Bad Request</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pd1',false)">404 Not Found</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pd1',true)">500 Internal Server Error — that is the default for Results.Problem()</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pd1',false)">200 OK — Problem() doesn't set a status code</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-pd1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="problem-convert">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Auto-Converting All Errors to Problem Details</h2>
+    </div>
+
+    <p>A minimal API application can generate error responses in several ways. It's important to understand <strong>all the sources</strong> and how to handle them consistently:</p>
+
+    <table class="data-table">
+      <tr><th>Error source</th><th>Handled by</th></tr>
+      <tr><td>Endpoint handler returns an error status code (e.g., <code>Results.NotFound()</code>)</td><td>Your handler code — returns Problem Details if you call <code>Results.Problem()</code></td></tr>
+      <tr><td>Exception thrown inside an endpoint handler</td><td><code>UseExceptionHandler()</code> + <code>IProblemDetailsService</code></td></tr>
+      <tr><td>No endpoint matched the request (URL not found)</td><td><code>UseStatusCodePages()</code> converts the raw 404</td></tr>
+      <tr><td>Middleware throws an exception</td><td><code>UseExceptionHandler()</code> wraps it</td></tr>
+      <tr><td>Authentication middleware rejects the request (missing credentials)</td><td>Depends on auth middleware configuration</td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Two classes of errors</div>
+        <div class="callout-text">
+          <strong>Exceptions</strong> — handled by <code>UseExceptionHandler()</code> or <code>DeveloperExceptionPageMiddleware</code>.<br>
+          <strong>Error status code responses</strong> (non-exception, like a raw 404) — handled by <code>UseStatusCodePages()</code>.<br>
+          You need both middlewares to cover all cases automatically.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Converting exceptions to Problem Details — how it works</span></div>
+      <div class="code-body"><span class="cm">// IProblemDetailsService — new service introduced in ASP.NET Core</span>
+<span class="cm">// Register it by calling AddProblemDetails()</span>
+builder.Services.<span class="fn">AddProblemDetails</span>();
+
+<span class="cm">// UseExceptionHandler() with NO path argument:</span>
+<span class="cm">// → ExceptionHandlerMiddleware catches any thrown exception</span>
+<span class="cm">// → It calls IProblemDetailsService to generate a Problem Details response</span>
+<span class="cm">// → Result: a clean 500 JSON response instead of a crash page</span>
+app.<span class="fn">UseExceptionHandler</span>();
+
+<span class="cm">// UseStatusCodePages():</span>
+<span class="cm">// → Detects when a response has an error status code (4xx/5xx) with NO body</span>
+<span class="cm">// → Adds a Problem Details body automatically</span>
+app.<span class="fn">UseStatusCodePages</span>();
+
+<span class="cm">// DeveloperExceptionPageMiddleware also supports Problem Details when:</span>
+<span class="cm">// 1. You've registered IProblemDetailsService (AddProblemDetails)</span>
+<span class="cm">// 2. The request indicates it does NOT support HTML</span>
+<span class="cm">//    (i.e., API clients that send Accept: application/json)</span>
+<span class="cm">// If the client supports HTML → the HTML dev error page is shown instead</span></div>
+    </div>
+
+    <div id="quiz-pc1" class="quiz-block">
+      <div class="quiz-question">🧠 You have <code>AddProblemDetails()</code> and <code>UseExceptionHandler()</code> registered. An endpoint throws an unhandled <code>NullReferenceException</code>. What does the client receive?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-pc1',false)">The full exception message and stack trace in the response body</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pc1',false)">A 200 OK with an empty body — exceptions are silently swallowed</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pc1',true)">A 500 Problem Details JSON response with a vague message — no internal details exposed</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-pc1',false)">The server crashes and no response is sent</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-pc1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 13 ══ -->
+  <section class="section" id="other-types">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Returning Files, Binary Data, and Streams</h2>
+    </div>
+
+    <p><code>Results</code> and <code>TypedResults</code> can return more than just JSON. Three helpers for non-JSON data:</p>
+
+    <table class="data-table">
+      <tr><th>Method</th><th>What it does</th><th>Example use</th></tr>
+      <tr><td><code>Results.File(path)</code></td><td>Pass a file path — ASP.NET Core streams it to the client</td><td>PDF downloads, image serving</td></tr>
+      <tr><td><code>Results.Bytes(byte[])</code></td><td>Pass a byte array of binary data</td><td>In-memory generated files, thumbnails</td></tr>
+      <tr><td><code>Results.Stream(stream)</code></td><td>Pipe a Stream to the client asynchronously</td><td>Large files, real-time data</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">File, Bytes, and Stream examples</span></div>
+      <div class="code-body"><span class="cm">// ── Results.File() ──────────────────────────────────────────────────</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/download/report"</span>, () =>
+    <span class="tp">Results</span>.<span class="fn">File</span>(<span class="str">"/var/data/report.pdf"</span>, <span class="str">"application/pdf"</span>, <span class="str">"report.pdf"</span>)
+);
+<span class="cm">// ↑ path on server | Content-Type | suggested filename for download</span>
+
+<span class="cm">// ── Results.Bytes() ─────────────────────────────────────────────────</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/thumbnail/{id}"</span>, (<span class="tp">string</span> id) =>
+{
+    <span class="tp">byte</span>[] imageBytes = <span class="fn">GenerateThumbnail</span>(id);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Bytes</span>(imageBytes, <span class="str">"image/png"</span>);
+});
+
+<span class="cm">// ── Results.Stream() ────────────────────────────────────────────────</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/export"</span>, <span class="kw">async</span> () =>
+{
+    <span class="tp">Stream</span> dataStream = <span class="kw">await</span> <span class="fn">GetLargeDataStreamAsync</span>();
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Stream</span>(dataStream, <span class="str">"application/octet-stream"</span>);
+});</div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 14 ══ -->
+  <section class="section" id="filters">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2 class="section-title">Endpoint Filters — Separating Cross-Cutting Concerns</h2>
+    </div>
+
+    <p>An <strong>endpoint filter</strong> runs code <em>before and/or after</em> your handler — without cluttering the handler itself. It's analogous to middleware, but scoped to one specific endpoint (or group). The filter pipeline mirrors the middleware pipeline in structure.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Without filter — cluttered handler</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8">app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, (<span class="tp">string</span> id) =>
+{
+  <span class="cm">// Validation mixed into business logic</span>
+  <span class="kw">if</span> (<span class="tp">string</span>.<span class="fn">IsNullOrEmpty</span>(id)
+      || !id.<span class="fn">StartsWith</span>(<span class="str">'f'</span>))
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(...);
+
+  <span class="kw">return</span> _fruit.<span class="fn">TryGetValue</span>(id, <span class="kw">out var</span> f)
+    ? <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(f)
+    : <span class="tp">Results</span>.<span class="fn">NotFound</span>();
+});</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With filter — clean separation</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8">app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, (<span class="tp">string</span> id) =>
+{
+  <span class="cm">// Only business logic here</span>
+  <span class="kw">return</span> _fruit.<span class="fn">TryGetValue</span>(id, <span class="kw">out var</span> f)
+    ? <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(f)
+    : <span class="tp">Results</span>.<span class="fn">NotFound</span>();
+})
+.<span class="fn">AddEndpointFilter</span>(<span class="kw">async</span> (ctx, next) =>
+{
+  <span class="kw">var</span> id = ctx.<span class="fn">GetArgument</span>&lt;<span class="tp">string</span>&gt;(<span class="nm">0</span>);
+  <span class="kw">if</span> (<span class="tp">string</span>.<span class="fn">IsNullOrEmpty</span>(id) || !id.<span class="fn">StartsWith</span>(<span class="str">'f'</span>))
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(...);
+  <span class="kw">return await</span> <span class="fn">next</span>(ctx);
+});</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Filter parameters explained</div>
+        <div class="callout-text">
+          The filter function takes two parameters:<br>
+          • <strong><code>context</code></strong> — provides details about the endpoint (arguments, metadata). Use <code>context.GetArgument&lt;T&gt;(index)</code> to read handler parameters by position.<br>
+          • <strong><code>next</code></strong> — represents the rest of the filter pipeline. Calling <code>await next(context)</code> passes control to the next filter (or the handler if no more filters remain).
+          If you do NOT call <code>next</code>, the pipeline is <strong>short-circuited</strong> and the handler never runs.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-f1" class="quiz-block">
+      <div class="quiz-question">🧠 In an endpoint filter, what happens if you return a result WITHOUT calling <code>await next(context)</code>?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-f1',false)">The handler still runs, but the filter's result is ignored</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-f1',true)">The pipeline is short-circuited — the handler never runs, and your returned result is sent as the response</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-f1',false)">An exception is thrown — you must always call next()</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-f1',false)">The request hangs with no response</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-f1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 15 ══ -->
+  <section class="section" id="multi-filters">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2 class="section-title">Multiple Filters — Building a Filter Pipeline</h2>
+    </div>
+
+    <p>You can chain multiple <code>AddEndpointFilter()</code> calls on one endpoint. This builds an <strong>endpoint filter pipeline</strong>, which works exactly like the middleware pipeline — filters execute in order, and each can short-circuit the rest.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Two filters chained on one endpoint</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, (<span class="tp">string</span> id) => _fruit[id])
+   .<span class="fn">AddEndpointFilter</span>(<span class="kw">async</span> (ctx, next) =>   <span class="cm">// Filter 1 — validates id format</span>
+   {
+       <span class="tp">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Filter 1: BEFORE"</span>);
+       <span class="kw">var</span> id = ctx.<span class="fn">GetArgument</span>&lt;<span class="tp">string</span>&gt;(<span class="nm">0</span>);
+       <span class="kw">if</span> (<span class="tp">string</span>.<span class="fn">IsNullOrEmpty</span>(id) || !id.<span class="fn">StartsWith</span>(<span class="str">'f'</span>))
+           <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(...); <span class="cm">// short-circuits here</span>
+       <span class="kw">var</span> result = <span class="kw">await</span> <span class="fn">next</span>(ctx);             <span class="cm">// passes to Filter 2</span>
+       <span class="tp">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Filter 1: AFTER"</span>);
+       <span class="kw">return</span> result;
+   })
+   .<span class="fn">AddEndpointFilter</span>(<span class="kw">async</span> (ctx, next) =>   <span class="cm">// Filter 2 — logs the request</span>
+   {
+       <span class="tp">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Filter 2: BEFORE"</span>);
+       <span class="kw">var</span> result = <span class="kw">await</span> <span class="fn">next</span>(ctx);             <span class="cm">// passes to handler</span>
+       <span class="tp">Console</span>.<span class="fn">WriteLine</span>(<span class="str">"Filter 2: AFTER"</span>);
+       <span class="kw">return</span> result;
+   });</div>
+    </div>
+
+    <p>The order of execution for a valid request (<em>id passes validation</em>):</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Log output</span><span class="code-label">Valid request — all filters and handler run</span></div>
+      <div class="code-body"><span class="cm">// Request: GET /fruit/f-apple  (passes filter 1)</span>
+Filter 1: BEFORE
+Filter 2: BEFORE
+<span class="cm">// Handler runs here</span>
+Filter 2: AFTER
+Filter 1: AFTER</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Log output</span><span class="code-label">Invalid request — short-circuited at Filter 1</span></div>
+      <div class="code-body"><span class="cm">// Request: GET /fruit/INVALID  (fails filter 1 — no 'f' prefix)</span>
+Filter 1: BEFORE
+<span class="cm">// Filter 1 returns ValidationProblem — neither Filter 2 nor handler runs</span>
+<span class="cm">// Response: 400 Bad Request (Problem Details)</span></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Keep it simple — filters have a cost</div>
+        <div class="callout-text">
+          Moving code to filters reduces clutter in handlers, but it makes the application flow <strong>harder to follow</strong>.
+          Only use filters when you find <strong>the same logic duplicated in multiple endpoints</strong>.
+          Even then, prefer a filter over a plain method call only if it significantly simplifies the code.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-mf1" class="quiz-block">
+      <div class="quiz-question">🧠 You have two filters on an endpoint. Filter 1 runs first and calls <code>next()</code>. Filter 2 runs second and does NOT call <code>next()</code>, returning its own result instead. Does the endpoint handler ever execute?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mf1',false)">Yes — Filter 1 already called next(), so the handler runs regardless of Filter 2</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mf1',true)">No — Filter 2 short-circuits by not calling next(), so the handler never runs</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mf1',false)">Yes — filters can't prevent the handler from running</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mf1',false)">An exception is thrown because the pipeline was not completed</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mf1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 16 ══ -->
+  <section class="section" id="iendpointfilter">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2 class="section-title">IEndpointFilter — Reusable, Class-Based Filters</h2>
+    </div>
+
+    <p>Writing filters as inline lambdas can be frustrating — the compiler requires a specific signature, and IDE autocompletion is limited. The <strong><code>IEndpointFilter</code></strong> interface lets you define a class with a single required method, giving you full IntelliSense and making the filter reusable across endpoints.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">IEndpointFilter implementation</span></div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">ValidateIdFilter</span> : <span class="tp">IEndpointFilter</span>
+{
+    <span class="cm">// IEndpointFilter requires exactly this method signature</span>
+    <span class="kw">public async</span> <span class="tp">ValueTask</span>&lt;<span class="tp">object</span>?&gt; <span class="fn">InvokeAsync</span>(
+        <span class="tp">EndpointFilterInvocationContext</span> context,   <span class="cm">// same as 'ctx' in lambda filters</span>
+        <span class="tp">EndpointFilterDelegate</span> next)                <span class="cm">// same as 'next' in lambda filters</span>
+    {
+        <span class="kw">var</span> id = context.<span class="fn">GetArgument</span>&lt;<span class="tp">string</span>&gt;(<span class="nm">0</span>); <span class="cm">// first param of the handler</span>
+
+        <span class="kw">if</span> (<span class="tp">string</span>.<span class="fn">IsNullOrEmpty</span>(id) || !id.<span class="fn">StartsWith</span>(<span class="str">'f'</span>))
+        {
+            <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(
+                <span class="kw">new</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">string</span>[]&gt;
+                { [<span class="str">"id"</span>] = <span class="kw">new</span>[] { <span class="str">"Id must start with the letter 'f'."</span> } }
+            );
+        }
+
+        <span class="kw">return await</span> <span class="fn">next</span>(context); <span class="cm">// pass to next filter or handler</span>
+    }
+}
+
+<span class="cm">// Apply with the generic overload — clean one-liner:</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, (<span class="tp">string</span> id) => _fruit[id])
+   .<span class="fn">AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Lambda vs IEndpointFilter — when to use each</div>
+        <div class="callout-text">
+          Use <strong>lambda filters</strong> for quick, one-off checks on a single endpoint.<br>
+          Use <strong>IEndpointFilter</strong> when the filter is reused across multiple endpoints or becomes complex enough to warrant its own class and unit tests.<br>
+          Note: there is no IEndpointFilter equivalent for the filter-factory pattern — that only works with lambdas.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 17 ══ -->
+  <section class="section" id="filters-vs-mw">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2 class="section-title">Filters vs Middleware — Which to Choose?</h2>
+    </div>
+
+    <p>Both filters and middleware intercept requests. The key difference is <strong>where in the pipeline they run</strong> and <strong>what they have access to</strong>.</p>
+
+    <table class="data-table">
+      <tr><th></th><th>Middleware</th><th>Endpoint Filters</th></tr>
+      <tr><td>Runs for</td><td>Every request in the app</td><td>Only the specific endpoint(s) it is attached to</td></tr>
+      <tr><td>Access to handler return value</td><td>No — runs before/after the entire pipeline</td><td><strong>Yes</strong> — can inspect or modify the IResult returned by the handler</td></tr>
+      <tr><td>Access to endpoint metadata</td><td>Limited</td><td><strong>Full</strong> — knows which handler will run, its parameters, attributes</td></tr>
+      <tr><td>Pipeline level</td><td>Lower — sees raw HTTP request/response</td><td>Higher — tied directly to the endpoint handler execution</td></tr>
+      <tr><td>Best for</td><td>Logging, authentication, CORS, compression — app-wide concerns</td><td>Endpoint-specific validation, transformation, authorization checks</td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Decision rule</div>
+        <div class="callout-text">
+          If the concern applies to <strong>all requests</strong> → use <strong>middleware</strong>.<br>
+          If the concern is specific to <strong>one or a few endpoints</strong> → use <strong>endpoint filters</strong>.<br>
+          Middleware sees only the raw HTTP request/response objects. Filters see the endpoint handler's arguments and return value — making them uniquely powerful for endpoint-level logic.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-fmw1" class="quiz-block">
+      <div class="quiz-question">🧠 You need to log EVERY request that hits your API, regardless of which endpoint is called. You also need to validate a specific header on just one endpoint. Which combination is correct?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-fmw1',false)">Use endpoint filters for both — filters are more powerful</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-fmw1',true)">Use middleware for logging (runs for all requests), use an endpoint filter for the header check (specific to one endpoint)</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-fmw1',false)">Use middleware for both — filters are only for validation</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-fmw1',false)">Put the logging directly in each handler, and use middleware for the header check</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-fmw1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 18 ══ -->
+  <section class="section" id="groups">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <h2 class="section-title">Route Groups — Organizing Your API</h2>
+    </div>
+
+    <p><code>MapGroup()</code> lets you collect endpoints that share a URL prefix and/or filters into a named group. The prefix and any filters are applied to all endpoints in the group automatically.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Without groups — repetitive, error-prone</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8">app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, ...)<span class="fn">.AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{id}"</span>, ...)<span class="fn">.AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+app.<span class="fn">MapPost</span>(<span class="str">"/fruit/{id}"</span>, ...)<span class="fn">.AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+app.<span class="fn">MapPut</span>(<span class="str">"/fruit/{id}"</span>, ...)<span class="fn">.AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+app.<span class="fn">MapDelete</span>(<span class="str">"/fruit/{id}"</span>, ...)<span class="fn">.AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+<span class="cm">// Add a new endpoint? Easy to forget the filter.</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With MapGroup() — define once, apply everywhere</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="kw">var</span> fruit = app.<span class="fn">MapGroup</span>(<span class="str">"/fruit"</span>)
+                   .<span class="fn">AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+
+fruit.<span class="fn">MapGet</span>(<span class="str">""</span>, ...);
+fruit.<span class="fn">MapGet</span>(<span class="str">"/{id}"</span>, ...);
+fruit.<span class="fn">MapPost</span>(<span class="str">"/{id}"</span>, ...);
+fruit.<span class="fn">MapPut</span>(<span class="str">"/{id}"</span>, ...);
+fruit.<span class="fn">MapDelete</span>(<span class="str">"/{id}"</span>, ...);
+<span class="cm">// Filter automatically applies to all five above.</span></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Nested groups</div>
+        <div class="callout-text">
+          Groups can be nested: <code>app.MapGroup("/fruit").MapGroup("/citrus")</code>
+          creates a group with prefix <code>/fruit/citrus</code>.
+          Prefixes are applied in order — the outer group's prefix comes first.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-grp1" class="quiz-block">
+      <div class="quiz-question">🧠 You call <code>app.MapGroup("/api/v1").MapGroup("/products")</code> and define <code>MapGet("/{id}", ...)</code> on the inner group. What is the full URL of that endpoint?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-grp1',false)">/products/{id}</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-grp1',false)">/api/v1/{id}</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-grp1',true)">/api/v1/products/{id}</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-grp1',false)">/v1/api/products/{id} — groups are applied in reverse</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-grp1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 19 ══ -->
+  <section class="section" id="full-example">
+    <div class="section-header">
+      <div class="section-number">19</div>
+      <h2 class="section-title">Complete Example — Everything in One File</h2>
+    </div>
+
+    <p>This is the full Fruit API from the chapter — every concept combined: ConcurrentDictionary, records, route groups, IEndpointFilter, all HTTP verbs, TypedResults/Results, and Problem Details.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — complete chapter 5 Fruit API</span></div>
+      <div class="code-body"><span class="kw">using</span> System.Collections.Concurrent;
+
+<span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+builder.Services.<span class="fn">AddProblemDetails</span>(); <span class="cm">// register IProblemDetailsService</span>
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">UseExceptionHandler</span>();  <span class="cm">// unhandled exceptions → Problem Details 500</span>
+app.<span class="fn">UseStatusCodePages</span>();   <span class="cm">// raw 404/405 → Problem Details automatically</span>
+
+<span class="cm">// In-memory store — thread-safe for concurrent requests</span>
+<span class="kw">var</span> _fruit = <span class="kw">new</span> <span class="tp">ConcurrentDictionary</span>&lt;<span class="tp">string</span>, <span class="tp">Fruit</span>&gt;();
+
+<span class="cm">// Route group: all endpoints share the "/fruit" prefix</span>
+<span class="cm">// and the ValidateIdFilter is applied to all of them automatically</span>
+<span class="kw">var</span> api = app.<span class="fn">MapGroup</span>(<span class="str">"/fruit"</span>).<span class="fn">AddEndpointFilter</span>&lt;<span class="tp">ValidateIdFilter</span>&gt;();
+
+<span class="cm">// GET /fruit — list all fruits</span>
+api.<span class="fn">MapGet</span>(<span class="str">""</span>, () => _fruit);
+
+<span class="cm">// GET /fruit/{id} — get one fruit by id</span>
+api.<span class="fn">MapGet</span>(<span class="str">"/{id}"</span>, (<span class="tp">string</span> id) =>
+    _fruit.<span class="fn">TryGetValue</span>(id, <span class="kw">out var</span> fruit)
+        ? <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(fruit)   <span class="cm">// 200 + JSON body</span>
+        : <span class="tp">Results</span>.<span class="fn">NotFound</span>()         <span class="cm">// 404</span>
+);
+
+<span class="cm">// POST /fruit/{id} — add a new fruit (Fruit deserialized from JSON body)</span>
+api.<span class="fn">MapPost</span>(<span class="str">"/{id}"</span>, (<span class="tp">string</span> id, <span class="tp">Fruit</span> fruit) =>
+{
+    <span class="kw">if</span> (!_fruit.<span class="fn">TryAdd</span>(id, fruit))
+        <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Conflict</span>(<span class="str">$"A fruit with id '{id}' already exists."</span>); <span class="cm">// 409</span>
+
+    <span class="kw">return</span> <span class="tp">TypedResults</span>.<span class="fn">Created</span>(<span class="str">$"/fruit/{id}"</span>, fruit); <span class="cm">// 201 + Location header</span>
+});
+
+<span class="cm">// PUT /fruit/{id} — replace a fruit completely (upsert semantics)</span>
+api.<span class="fn">MapPut</span>(<span class="str">"/{id}"</span>, (<span class="tp">string</span> id, <span class="tp">Fruit</span> fruit) =>
+{
+    _fruit[id] = fruit; <span class="cm">// adds or replaces</span>
+    <span class="kw">return</span> <span class="tp">TypedResults</span>.<span class="fn">Ok</span>(fruit); <span class="cm">// 200 + updated body</span>
+});
+
+<span class="cm">// DELETE /fruit/{id} — remove a fruit</span>
+api.<span class="fn">MapDelete</span>(<span class="str">"/{id}"</span>, (<span class="tp">string</span> id) =>
+{
+    <span class="kw">if</span> (!_fruit.<span class="fn">TryRemove</span>(id, <span class="kw">out</span> _))
+        <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">NotFound</span>();  <span class="cm">// 404</span>
+
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">NoContent</span>();     <span class="cm">// 204 — success, no body</span>
+});
+
+app.<span class="fn">Run</span>();
+
+<span class="cm">// ── Data model ──────────────────────────────────────────────────────</span>
+<span class="kw">record</span> <span class="tp">Fruit</span>(<span class="tp">string</span> Name, <span class="tp">int</span> Stock);
+
+<span class="cm">// ── Reusable filter — validates id starts with 'f' ──────────────────</span>
+<span class="kw">public class</span> <span class="tp">ValidateIdFilter</span> : <span class="tp">IEndpointFilter</span>
+{
+    <span class="kw">public async</span> <span class="tp">ValueTask</span>&lt;<span class="tp">object</span>?&gt; <span class="fn">InvokeAsync</span>(
+        <span class="tp">EndpointFilterInvocationContext</span> context,
+        <span class="tp">EndpointFilterDelegate</span> next)
+    {
+        <span class="cm">// GetArgument&lt;string&gt;(0) = the first string parameter of the handler ('id')</span>
+        <span class="kw">var</span> id = context.<span class="fn">GetArgument</span>&lt;<span class="tp">string</span>&gt;(<span class="nm">0</span>);
+
+        <span class="kw">if</span> (<span class="tp">string</span>.<span class="fn">IsNullOrEmpty</span>(id) || !id.<span class="fn">StartsWith</span>(<span class="str">'f'</span>))
+            <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">ValidationProblem</span>(
+                <span class="kw">new</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>, <span class="tp">string</span>[]&gt;
+                { [<span class="str">"id"</span>] = <span class="kw">new</span>[] { <span class="str">"Id must start with the letter 'f'."</span> } }
+            ); <span class="cm">// short-circuits — handler never runs</span>
+
+        <span class="kw">return await</span> <span class="fn">next</span>(context); <span class="cm">// valid — continue to handler</span>
+    }
+}</div>
+    </div>
+
+    <div id="quiz-full1" class="quiz-block">
+      <div class="quiz-question">🧠 In the complete example above, a client sends <code>DELETE /fruit/banana</code>. Trace through the full execution: what runs, in what order, and what is the response?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-full1',false)">ValidateIdFilter → 400 ValidationProblem (id doesn't start with 'f'). Handler never runs.</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full1',false)">ValidateIdFilter passes → Handler removes "banana" → 204 No Content</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full1',true)">ValidateIdFilter runs first — "banana" doesn't start with 'f' → returns 400 ValidationProblem immediately. The DELETE handler never runs.</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full1',false)">The DELETE handler runs, "banana" is not found → 404 Not Found</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-full1-fb"></div>
+    </div>
+
+    <div id="quiz-full2" class="quiz-block">
+      <div class="quiz-question">🧠 A client sends <code>POST /fruit/f-apple</code> with body <code>{"name":"Apple","stock":10}</code>, but "f-apple" already exists in the dictionary. What is the response?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-full2',false)">200 OK — TryAdd silently overwrites the existing value</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full2',false)">201 Created — the new fruit is added regardless</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full2',true)">409 Conflict — TryAdd returns false when the key exists, and the handler returns Results.Conflict()</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-full2',false)">400 Bad Request — the ValidateIdFilter rejects it</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-full2-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+// ── Quiz data ──
+const feedbackOk = {
+  'quiz-api1':  "Correct! One HTTP API returning JSON is the right approach. Any number of different clients can consume the same endpoints. No duplication, no coupling.",
+  'quiz-spa1':  "Correct! In the SPA model, client-side routing handles navigation without full page reloads. Only data (JSON) is fetched from the server — not new HTML pages.",
+  'quiz-ep1':   "Correct! ASP.NET Core's routing system extracts the URL segment matching {id} and passes it to the handler parameter named 'id'. This is called route parameter binding.",
+  'quiz-bind1': "Correct! Simple types (string, int, bool) are bound from the route or query string. Complex types (classes, records) are deserialized from the JSON request body.",
+  'quiz-verb1': "Correct! ASP.NET Core matches both the URL AND the HTTP verb. Same URL, wrong verb → 405 Method Not Allowed. Your handler code never executes.",
+  'quiz-h1':    "Correct! Static methods in their own class are the recommended approach for production apps — they're fully testable, don't clutter Program.cs, and have complete IDE support.",
+  'quiz-ir1':   "Correct! Returning any C# object (record, POCO) from a handler automatically produces a 200 OK with a JSON body and Content-Type: application/json.",
+  'quiz-res1':  "Correct! When the handler can return two different concrete types (Ok<Fruit> or NotFound), the compiler infers the common base interface IResult as the return type.",
+  'quiz-pd1':   "Correct! Results.Problem() defaults to 500 Internal Server Error when no statusCode is specified. Always pass statusCode explicitly unless you want 500.",
+  'quiz-sc1':   "Correct! 201 Created is the correct status for a successful resource creation. TypedResults.Created() also adds a Location header pointing to the new resource URL.",
+  'quiz-pc1':   "Correct! UseExceptionHandler() + AddProblemDetails() catches the exception and produces a structured 500 Problem Details JSON. Internal details (stack trace, etc.) are never exposed.",
+  'quiz-f1':    "Correct! Not calling next() is how a filter short-circuits the pipeline. The handler never runs, and the filter's return value is sent as the response. This is the same mechanism as middleware short-circuiting.",
+  'quiz-mf1':   "Correct! Each filter controls whether the pipeline continues by calling (or not calling) next(). Filter 2 short-circuiting means the handler never gets called, even though Filter 1 passed through.",
+  'quiz-fmw1':  "Correct! Middleware applies to all requests — perfect for cross-cutting concerns like logging. Filters are endpoint-specific — perfect for one endpoint's validation logic.",
+  'quiz-grp1':  "Correct! Nested group prefixes are concatenated in order: outer group /api/v1 + inner group /products + route /{id} = /api/v1/products/{id}.",
+  'quiz-full1': "Correct! The filter runs first. 'banana' does not start with 'f', so ValidateIdFilter returns a 400 ValidationProblem immediately, short-circuiting the pipeline. The DELETE handler never executes.",
+  'quiz-full2': "Correct! TryAdd returns false if the key already exists — it does NOT overwrite. The handler checks the return value and returns Results.Conflict() → 409."
+};
+const feedbackErr = {
+  'quiz-api1':  "Not quite. Building two separate backends defeats the purpose. One HTTP API serves all clients — that's the whole point of the JSON API model.",
+  'quiz-spa1':  "Not quite. Once the SPA is loaded, the browser never receives full HTML pages from the server again. The SPA handles page transitions internally (client-side routing), only fetching data when needed.",
+  'quiz-ep1':   "Not quite. The {id} in the route template is a placeholder. ASP.NET Core's routing extracts the actual URL segment and passes it as the 'id' parameter to your handler.",
+  'quiz-bind1': "Not quite. ASP.NET Core's binding is automatic and follows a clear rule: simple types from the URL, complex types from the JSON body. You never parse them manually.",
+  'quiz-verb1': "Not quite. The key point: a 405 is returned (not a 404), because the URL DOES match — but the verb doesn't. The route was found; the method was wrong.",
+  'quiz-h1':    "Not quite. While lambdas and local functions are fine for small apps, static methods in separate classes are the right choice for production — they're fully testable and keep your code organized.",
+  'quiz-ir1':   "Not quite. Returning any C# object (not just strings) from a handler gives you 200 OK with application/json — not 201, not text/plain. To get any other status code, you must use IResult.",
+  'quiz-res1':  "Not quite. When a handler has multiple possible return types that don't share a specific concrete type, the compiler falls back to IResult — the common interface. The code compiles fine.",
+  'quiz-pd1':   "Not quite. Results.Problem() defaults to 500, not 400. 400 is the default for Results.ValidationProblem(). Always pass statusCode explicitly to avoid accidentally sending a 500.",
+  'quiz-sc1':   "Not quite. 201 Created is the correct status for a newly created resource, and it should include a Location header. TypedResults.Created() does both automatically.",
+  'quiz-pc1':   "Not quite. UseExceptionHandler() + AddProblemDetails() catches the exception and generates a clean 500 Problem Details JSON response. No internal details (stack trace, etc.) are ever exposed to the client.",
+  'quiz-f1':    "Not quite. NOT calling next() is the key mechanism. The filter returns its own result, which becomes the HTTP response. The handler never gets control. This is called short-circuiting.",
+  'quiz-mf1':   "Not quite. Calling next() in Filter 1 only passes control to Filter 2, not to the handler. Filter 2 then decides independently whether to pass to the handler. If Filter 2 doesn't call next(), the handler doesn't run.",
+  'quiz-fmw1':  "Not quite. These are different tools for different scopes. Middleware for all-requests concerns, filters for specific endpoints. Mixing them up leads to either duplicated code or incorrect behavior.",
+  'quiz-grp1':  "Not quite. Nested groups concatenate their prefixes in definition order: outer (/api/v1) + inner (/products) + route (/{id}) = /api/v1/products/{id}.",
+  'quiz-full1': "Not quite. Trace it carefully: ValidateIdFilter runs FIRST (it's on the group). 'banana' does not start with 'f', so the filter returns 400 immediately. The DELETE handler never sees this request.",
+  'quiz-full2': "Not quite. TryAdd on ConcurrentDictionary returns false when the key already exists without modifying it. The handler checks that return value and returns Results.Conflict() → 409."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal');
+    });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+// ── Tabs ──
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ── Status badges ──
+let openStatus = null;
+function toggleStatus(code) {
+  const el = document.getElementById('detail-' + code);
+  if (openStatus && openStatus !== code) {
+    document.getElementById('detail-' + openStatus).classList.remove('show');
+  }
+  el.classList.toggle('show');
+  openStatus = el.classList.contains('show') ? code : null;
+}
+
+// ── Sidebar nav active state ──
+function scrollPageTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// ── Read progress ──
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+</script>
+</body>
+</html>

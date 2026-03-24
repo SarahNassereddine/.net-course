@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 — Getting Started with ASP.NET Core</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 1</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" onclick="scrollPageTo('what-is')"><span class="dot"></span>What is ASP.NET Core?</button>
+    <button class="nav-link" onclick="scrollPageTo('app-types')"><span class="dot"></span>Application types</button>
+    <button class="nav-link" onclick="scrollPageTo('choosing')"><span class="dot"></span>Choosing ASP.NET Core</button>
+    <button class="nav-link" onclick="scrollPageTo('how-it-works')"><span class="dot"></span>How it works</button>
+    <button class="nav-link" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel & request flow</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link active" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+     <a class="nav-link done" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+  
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 1</div>
+    <h1 class="chapter-title">Getting Started with ASP.NET Core</h1>
+    <p class="chapter-subtitle">An introduction to the ASP.NET Core framework — what it is, what you can build with it, and how HTTP requests flow through it.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="what-is">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">What is ASP.NET Core?</h2>
+    </div>
+
+    <p>ASP.NET Core is a modern, cross-platform, open-source web framework for building internet-connected applications. Rather than writing low-level networking code yourself, ASP.NET Core gives you <strong>structure, helper functions, and a complete framework</strong> so you can focus on business logic.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🏗️ Framework Benefits</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.9;color:var(--text2)">
+• Offers structure, helper functions, and application scaffolding<br>
+• Reduces the need for manual coding, enhancing efficiency<br>
+• Manages the underlying networking structure for you<br>
+• Your handlers are called <em>by</em> the framework
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🧠 Business Logic</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.9;color:var(--text2)">
+• The core of your application<br>
+• <strong>Independent</strong> of ASP.NET Core — no framework dependencies<br>
+• Interacts with databases, remote APIs, and other services<br>
+• You write this; the framework calls it
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-body">
+        <div class="callout-title">Application Flow — Three Layers</div>
+        <div class="callout-text">
+          A typical ASP.NET Core application has three layers:<br>
+          <strong>(1) ASP.NET Core framework code</strong> — handles requests from the client, dealing with complex networking.<br>
+          <strong>(2) Handlers</strong> (Razor Pages, Web API controllers) — you write these using framework primitives.<br>
+          <strong>(3) Domain/business logic</strong> — plain C# classes with no ASP.NET Core dependencies.
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture Diagram -->
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Architecture</span><span class="code-label">ASP.NET Core Application Layers</span></div>
+      <div style="padding:24px 20px;font-family:var(--mono);font-size:13px;">
+        <div style="display:flex;flex-direction:column;gap:0;max-width:480px;margin:0 auto;">
+          <div style="background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.4);border-radius:8px 8px 0 0;padding:14px 20px;text-align:center;">
+            <div style="color:var(--accent);font-weight:700;font-size:14px;">Client (Browser / Mobile)</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px;">Sends HTTP Requests</div>
+          </div>
+          <div style="display:flex;justify-content:center;background:var(--bg3);padding:6px;border-left:1px solid var(--border);border-right:1px solid var(--border);">
+            <span style="color:var(--text3);font-size:18px;">↕</span>
+          </div>
+          <div style="background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.35);padding:14px 20px;text-align:center;">
+            <div style="color:var(--accent2);font-weight:700;font-size:14px;">ASP.NET Core Framework</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px;">Networking, routing, request parsing</div>
+          </div>
+          <div style="display:flex;justify-content:center;background:var(--bg3);padding:6px;border-left:1px solid var(--border);border-right:1px solid var(--border);">
+            <span style="color:var(--text3);font-size:18px;">↕</span>
+          </div>
+          <div style="background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.3);padding:14px 20px;text-align:center;">
+            <div style="color:var(--blue);font-weight:700;font-size:14px;">Your Handlers</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px;">Razor Pages, API controllers, Minimal APIs</div>
+          </div>
+          <div style="display:flex;justify-content:center;background:var(--bg3);padding:6px;border-left:1px solid var(--border);border-right:1px solid var(--border);">
+            <span style="color:var(--text3);font-size:18px;">↕</span>
+          </div>
+          <div style="background:rgba(45,164,78,0.1);border:1px solid rgba(45,164,78,0.3);border-radius:0 0 8px 8px;padding:14px 20px;text-align:center;">
+            <div style="color:var(--green);font-weight:700;font-size:14px;">Business Logic</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px;">Plain C# — no ASP.NET Core dependency</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="app-types">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">What Types of Applications Can You Build?</h2>
+    </div>
+
+    <p>ASP.NET Core supports multiple application paradigms — you can even combine several within a single application. All paradigms share the same foundational building blocks: configuration, logging, and dependency injection.</p>
+
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab(this,'tab-apis')">APIs</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-web')">Web Apps</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-blazor')">Blazor</button>
+        <button class="tab-btn" onclick="switchTab(this,'tab-choice')">Choosing</button>
+      </div>
+
+      <div id="tab-apis" class="tab-panel active" style="padding:20px 0">
+        <table class="data-table">
+          <tr><th>API Type</th><th>Description</th><th>Use When</th></tr>
+          <tr>
+            <td><strong>Minimal APIs</strong></td>
+            <td>Simple HTTP APIs — low ceremony, no controllers</td>
+            <td>Mobile backends, SPAs, microservices</td>
+          </tr>
+          <tr>
+            <td><strong>Web APIs</strong></td>
+            <td>More structured, feature-rich, controller-based</td>
+            <td>Complex enterprise APIs needing full conventions</td>
+          </tr>
+          <tr>
+            <td><strong>gRPC APIs</strong></td>
+            <td>Efficient binary protocol for server-to-server</td>
+            <td>High-performance internal microservice communication</td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="tab-web" class="tab-panel" style="padding:20px 0">
+        <table class="data-table">
+          <tr><th>Type</th><th>Description</th></tr>
+          <tr>
+            <td><strong>Razor Pages</strong></td>
+            <td>Page-based server-rendered applications. Each page has its own handler. Simplest model for form-driven apps.</td>
+          </tr>
+          <tr>
+            <td><strong>MVC Controllers</strong></td>
+            <td>Similar to Razor Pages but uses the Model-View-Controller pattern. More flexible routing, separates concerns more explicitly.</td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="tab-blazor" class="tab-panel" style="padding:20px 0">
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="compare-card-header neutral">Blazor WebAssembly</div>
+            <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2)">
+              Runs <strong>in the browser</strong> using the WebAssembly standard. You write C# instead of JavaScript. Comparable to Angular, React, and Vue — a true SPA framework.
+            </div>
+          </div>
+          <div class="compare-card">
+            <div class="compare-card-header neutral">Blazor Server</div>
+            <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2)">
+              Runs on the <strong>server</strong>, maintains a stateful connection (SignalR) to the browser. Combines ease of server rendering with client-side interactivity.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="tab-choice" class="tab-panel" style="padding:20px 0">
+        <div class="callout tip">
+          <div class="callout-icon">🧭</div>
+          <div class="callout-body">
+            <div class="callout-title">Factors for Choosing a Paradigm</div>
+            <div class="callout-text">
+              <strong>API Requirements</strong> — What kind of data contract do clients expect?<br>
+              <strong>Integration</strong> — How does this fit with existing applications?<br>
+              <strong>Customer Environment</strong> — Browser support and OS constraints?<br>
+              <strong>Scalability</strong> — What are the uptime and performance requirements?
+            </div>
+          </div>
+        </div>
+        <div class="callout info">
+          <div class="callout-icon">🔗</div>
+          <div class="callout-body">
+            <div class="callout-title">Shared Building Blocks</div>
+            <div class="callout-text">All ASP.NET Core paradigms leverage the same foundational elements — configuration, logging, dependency injection, and the middleware pipeline. You learn once, apply everywhere.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-types1" class="quiz-block">
+      <div class="quiz-question">🧠 A team wants to build a browser-based SPA using C# instead of JavaScript. Which technology is the best fit?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-types1',false)">Razor Pages</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-types1',false)">gRPC API</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-types1',true)">Blazor WebAssembly</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-types1',false)">MVC Controllers</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-types1-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="choosing">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Choosing ASP.NET Core</h2>
+    </div>
+
+    <p>Compared with other cross-platform web frameworks, ASP.NET Core has several compelling selling points:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+      <div style="background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.25);border-radius:var(--radius);padding:18px 20px;">
+        <div style="color:var(--accent);font-size:20px;margin-bottom:8px;">⚡</div>
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;">High Performance</div>
+        <div style="font-size:13px;color:var(--text2);">One of the fastest web frameworks available. Benchmarks consistently rank it among the top performers across all platforms.</div>
+      </div>
+      <div style="background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.25);border-radius:var(--radius);padding:18px 20px;">
+        <div style="color:var(--accent2);font-size:20px;margin-bottom:8px;">🌐</div>
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;">Cross-Platform</div>
+        <div style="font-size:13px;color:var(--text2);">Build and run on Windows, macOS, or Linux. Deploy to any cloud provider or on-premise server.</div>
+      </div>
+      <div style="background:rgba(9,105,218,0.07);border:1px solid rgba(9,105,218,0.25);border-radius:var(--radius);padding:18px 20px;">
+        <div style="color:var(--blue);font-size:20px;margin-bottom:8px;">🔓</div>
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;">Open Source</div>
+        <div style="font-size:13px;color:var(--text2);">Fully open-source on GitHub. Community contributions, transparent development, and no licensing fees.</div>
+      </div>
+      <div style="background:rgba(45,164,78,0.07);border:1px solid rgba(45,164,78,0.25);border-radius:var(--radius);padding:18px 20px;">
+        <div style="color:var(--green);font-size:20px;margin-bottom:8px;">📐</div>
+        <div style="font-weight:700;color:var(--text);margin-bottom:6px;">Familiar Patterns</div>
+        <div style="font-size:13px;color:var(--text2);">Uses well-known design patterns like MVC, dependency injection, and middleware. C# is expressive, type-safe, and modern (VB.NET and F# also supported).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="how-it-works">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">How Does ASP.NET Core Work?</h2>
+    </div>
+
+    <p>Before understanding how ASP.NET Core processes requests, it helps to understand the underlying HTTP request/response cycle that powers all web communication.</p>
+
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">HTTP Cycle</span><span class="code-label">How an HTTP web request works</span></div>
+      <div style="padding:24px;font-family:var(--mono);font-size:13px;">
+        <div style="display:flex;align-items:stretch;gap:0;max-width:560px;margin:0 auto;">
+          <div style="flex:1;text-align:center;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px 0 0 8px;padding:16px;">
+            <div style="font-size:28px;">🌐</div>
+            <div style="font-weight:700;color:var(--accent);margin-top:6px;">Browser</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Sends HTTP Request</div>
+          </div>
+          <div style="display:flex;flex-direction:column;justify-content:center;background:var(--bg3);padding:8px 14px;font-size:11px;color:var(--text3);gap:12px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+            <div>→ GET /home HTTP/1.1</div>
+            <div>← 200 OK + HTML</div>
+          </div>
+          <div style="flex:1;text-align:center;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.3);border-radius:0 8px 8px 0;padding:16px;">
+            <div style="font-size:28px;">🖥️</div>
+            <div style="font-weight:700;color:var(--accent2);margin-top:6px;">Server</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Processes & Responds</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="kestrel">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Kestrel and the Request Pipeline</h2>
+    </div>
+
+    <p>ASP.NET Core uses a <strong>self-hosted web server called Kestrel</strong> to receive and process HTTP requests. Kestrel is built into your application — you don't need a separate server process.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — How a request is processed</div>
+        <div class="callout-text">
+          An ASP.NET Core application runs a self-hosted web server. The web server processes the request and passes it to the body of the application, which generates a response and returns it to the web server. The web server sends this response to the browser.
+          <br><br>
+          <strong>Kestrel</strong> is responsible for receiving raw requests and constructing an internal representation of the data — an <strong>HttpContext object</strong> — which can be used by the rest of the application.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Request Flow</span><span class="code-label">How ASP.NET Core processes a request</span></div>
+      <div style="padding:24px;font-family:var(--sans);font-size:13px;">
+        <div style="display:flex;flex-direction:column;gap:0;max-width:520px;margin:0 auto;">
+          <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
+            <strong style="color:var(--accent);">Browser / Client</strong>
+          </div>
+          <div style="text-align:center;padding:4px;color:var(--text3);font-size:16px;">↕ HTTP</div>
+          <div style="background:rgba(247,140,108,0.1);border:1px solid rgba(247,140,108,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
+            <strong style="color:var(--accent3);">Reverse Proxy (IIS / Nginx)</strong>
+            <div style="font-size:11px;color:var(--text3);margin-top:3px;">Handles TLS, load balancing, security filtering</div>
+          </div>
+          <div style="text-align:center;padding:4px;color:var(--text3);font-size:16px;">↕</div>
+          <div style="background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.3);border-radius:8px;padding:12px 20px;">
+            <div style="text-align:center;font-weight:700;color:var(--accent2);margin-bottom:12px;">ASP.NET Core Application</div>
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.2);border-radius:6px;padding:10px;text-align:center;font-size:12px;">
+                <div style="font-weight:700;">Kestrel</div>
+                <div style="color:var(--text3);font-size:11px;margin-top:3px;">Builds HttpContext</div>
+              </div>
+              <div style="display:flex;align-items:center;color:var(--text3);">→</div>
+              <div style="flex:1;background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.2);border-radius:6px;padding:10px;text-align:center;font-size:12px;">
+                <div style="font-weight:700;">Middleware</div>
+                <div style="color:var(--text3);font-size:11px;margin-top:3px;">Processes request</div>
+              </div>
+              <div style="display:flex;align-items:center;color:var(--text3);">→</div>
+              <div style="flex:1;background:rgba(45,164,78,0.1);border:1px solid rgba(45,164,78,0.2);border-radius:6px;padding:10px;text-align:center;font-size:12px;">
+                <div style="font-weight:700;">Endpoint</div>
+                <div style="color:var(--text3);font-size:11px;margin-top:3px;">Your handler</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Kestrel vs Reverse Proxy — Separation of Concerns</div>
+        <div class="callout-text">
+          <strong>Kestrel</strong> is concerned with generating HTTP responses — it is tightly integrated with your application code.<br>
+          The <strong>reverse proxy</strong> (IIS, Nginx, Apache) is concerned with handling the raw connection to the internet — TLS termination, load balancing, and security.<br><br>
+          This separation means your ASP.NET Core code is the same whether deployed behind IIS on Windows, Nginx on Linux, or directly in a container.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-kestrel" class="quiz-block">
+      <div class="quiz-question">🧠 What is the primary role of Kestrel in an ASP.NET Core application?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel',false)">It serves as the reverse proxy that protects the application from the internet</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel',true)">It is the self-hosted web server that receives raw HTTP requests and builds the HttpContext object</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel',false)">It compiles C# code into machine code at runtime</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel',false)">It manages the database connection pool for the application</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-kestrel-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+function switchTab(btn, panelId) {
+  btn.closest('.tab-group').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.closest('.tab-group').querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+function answer(btn, quizId, correct) {
+  const block = document.getElementById(quizId);
+  block.querySelectorAll('.quiz-option').forEach(b => { b.disabled = true; });
+  if (correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '✅ Correct!';
+    fb.className = 'quiz-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    block.querySelectorAll('.quiz-option').forEach(b => { if (b._correct) b.classList.add('reveal'); });
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '❌ Not quite — review the section above and try to identify the correct answer.';
+    fb.className = 'quiz-feedback show err';
+  }
+}
+// mark correct answers
+document.querySelectorAll('.quiz-option').forEach(btn => {
+  btn._correct = btn.getAttribute('onclick')?.includes(',true)');
+});
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('mainContent');
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -70% 0px',
+  threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-section .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 — Understanding ASP.NET Core</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 2</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" onclick="scrollPageTo('web-framework')"><span class="dot"></span>Using a web framework</button>
+    <button class="nav-link" onclick="scrollPageTo('why-created')"><span class="dot"></span>Why ASP.NET Core was created</button>
+    <button class="nav-link" onclick="scrollPageTo('dotnet')"><span class="dot"></span>.NET 7 / .NET 8 platform</button>
+    <button class="nav-link" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel hosting model</button>
+    <button class="nav-link" onclick="scrollPageTo('nuget')"><span class="dot"></span>NuGet package manager</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link active" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+       <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+</div>
+</nav>
+
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 2</div>
+    <h1 class="chapter-title">Understanding ASP.NET Core</h1>
+    <p class="chapter-subtitle">A deeper look at why ASP.NET Core was created, how .NET 8 is structured, the Kestrel hosting model, and how NuGet manages dependencies.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="web-framework">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Using a Web Framework</h2>
+    </div>
+
+    <p>ASP.NET Core makes writing web applications <strong>faster, easier, and more secure</strong> than building everything from scratch. It provides ready-made solutions for the most common web development tasks, so you focus on what makes your application unique.</p>
+
+    <p>The framework contains libraries for:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">📄</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Dynamic Web Pages</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Creating dynamically changing pages with Razor or Blazor</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🔐</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Authentication</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Built-in identity, or social logins (Facebook, Google, etc.)</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🏗️</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Application Structure</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Common structure for building maintainable, testable applications</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">⚙️</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Configuration</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Reading configuration files (appsettings.json, env vars)</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🖼️</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Static Files</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Serving images, CSS, JavaScript efficiently</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">📋</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Logging</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Logging requests, errors, and custom events</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="why-created">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Why ASP.NET Core Was Created</h2>
+    </div>
+
+    <p>The original ASP.NET was tightly coupled to Windows and IIS. ASP.NET Core was a ground-up rewrite to address modern development requirements.</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin:24px 0;max-width:600px;">
+      <div style="display:flex;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:8px 8px 0 0;border-bottom:none;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🌍</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Cross-Platform</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Run and develop on Windows, macOS, and Linux. Deploy anywhere — including Docker and cloud-native environments.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-bottom:none;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🧩</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Modular Architecture</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Only include the packages your application actually needs. Smaller footprint, easier maintenance, independent evolution of features.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-bottom:none;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(9,105,218,0.15);border:1px solid rgba(9,105,218,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">🔓</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Open Source</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Developed completely in the open on GitHub. Community involvement in design decisions, transparent bug tracking, and free forever.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-bottom:none;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(191,135,0,0.15);border:1px solid rgba(191,135,0,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">📏</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Web Standards</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Adheres to modern HTTP standards and specifications. Works correctly with all compliant HTTP clients and proxies.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:0 0 8px 8px;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(45,164,78,0.15);border:1px solid rgba(45,164,78,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;">☁️</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Modern Web Trends</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Built for client-side SPA architectures, cloud deployment, containerization, and microservices — trends that were emerging when the original ASP.NET was designed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📚</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — .NET Core vs .NET Framework</div>
+        <div class="callout-text">
+          .NET Core (and its successor, .NET 5+) employs many of the same APIs as .NET Framework but is more modular. It implements a different set of features, with the goal of providing a simpler programming model and modern APIs. It's a <strong>separate platform</strong> rather than a fork of .NET Framework, though it uses similar code for many of its APIs.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-why1" class="quiz-block">
+      <div class="quiz-question">🧠 Which of the following was NOT a goal when creating ASP.NET Core?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-why1',false)">Cross-platform support (Windows, macOS, Linux)</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-why1',false)">Modular architecture for easier maintenance</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-why1',true)">Backward compatibility with all existing ASP.NET Framework APIs</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-why1',false)">Open-source development</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-why1-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="dotnet">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">.NET 7 / .NET 8 Platform</h2>
+    </div>
+
+    <p>ASP.NET Core 8 runs on the <strong>.NET 8 platform</strong>. Understanding how the platform layers are organized helps you understand what each piece adds.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Application Model</div>
+        <div class="callout-text">
+          The .NET 7/8 platform provides a base <strong>console application model</strong> for running command-line apps. Adding the web server library converts this model to an <strong>ASP.NET Core web app</strong>. You can add other features — such as configuration and logging — using various libraries.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Platform Stack</span><span class="code-label">.NET 8 Layer Architecture</span></div>
+      <div style="padding:24px;">
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:500px;margin:0 auto;">
+          <div style="background:rgba(247,140,108,0.12);border:1px solid rgba(247,140,108,0.35);border-radius:8px;padding:12px 20px;text-align:center;">
+            <div style="font-weight:700;color:var(--accent3);font-size:14px;">Your Application</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Business logic, Razor Pages, Minimal APIs, etc.</div>
+          </div>
+          <div style="background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
+            <div style="font-weight:700;color:var(--accent2);font-size:14px;">ASP.NET Core Web App Layer</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Kestrel, Middleware Pipeline, Routing, DI Container</div>
+          </div>
+          <div style="background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
+            <div style="font-weight:700;color:var(--blue);font-size:14px;">Optional Libraries</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Configuration, Logging, EF Core, Identity, NuGet packages…</div>
+          </div>
+          <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
+            <div style="font-weight:700;color:var(--accent);font-size:14px;">.NET Base Console Model</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:3px;">The foundation — every ASP.NET Core app starts as a console app</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="kestrel">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Kestrel — The Hosting Model</h2>
+    </div>
+
+    <p>The hosting model in ASP.NET Core is fundamentally different from the old ASP.NET. Understanding this difference is key to understanding deployment.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">Old ASP.NET — Tightly Coupled</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          IIS was tightly coupled with the application. IIS processed requests and had deep knowledge of the application internals.
+          <br><br>
+          ❌ Windows / IIS only<br>
+          ❌ Tightly coupled deployment<br>
+          ❌ Hard to run without IIS
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">ASP.NET Core — Decoupled</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          IIS hands off the request to Kestrel (self-hosted web server inside your app) and receives the response, but has <strong>no deeper knowledge</strong> of the application.
+          <br><br>
+          ✅ Cross-platform<br>
+          ✅ Loose coupling<br>
+          ✅ Run standalone or behind a proxy
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Windows In-Process Hosting</div>
+        <div class="callout-text">
+          By default, when running on Windows, ASP.NET Core can run <strong>inside IIS</strong> (in-process hosting), which can provide better performance than the reverse-proxy version. This is primarily a deployment detail and doesn't change how you build ASP.NET Core applications — your code is identical either way.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-kestrel2" class="quiz-block">
+      <div class="quiz-question">🧠 What changed in the ASP.NET Core hosting model compared to the old ASP.NET?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel2',false)">ASP.NET Core no longer uses IIS at all</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel2',true)">IIS is now a reverse proxy that forwards to Kestrel rather than being tightly coupled to the application</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel2',false)">Kestrel replaced IIS and runs outside the application process</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-kestrel2',false)">The hosting model is identical — only the framework internals changed</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-kestrel2-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="nuget">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">NuGet — The .NET Package Manager</h2>
+    </div>
+
+    <p><strong>NuGet</strong> is the package manager for .NET. It enables you to import libraries (packages) into your projects with a single command or click. Most ASP.NET Core applications have many NuGet dependencies.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — How Dependencies Work</div>
+        <div class="callout-text">
+          Most ASP.NET Core applications have dependencies on various external libraries, which are managed through NuGet. These dependencies are <strong>listed in the project</strong>, but the files of the libraries themselves aren't included in source control. Before you can build and run your application, you need to ensure that there are local copies of each dependency on your machine — typically done via <code>dotnet restore</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">Project.csproj — NuGet dependencies</span></div>
+      <div class="code-body"><span class="op">&lt;</span><span class="fn">Project</span> <span class="tp">Sdk</span><span class="op">="</span><span class="str">Microsoft.NET.Sdk.Web</span><span class="op">"&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">TargetFramework</span><span class="op">&gt;</span><span class="str">net8.0</span><span class="op">&lt;/</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+    <span class="cm">&lt;!-- Each dependency listed as a PackageReference node --&gt;</span>
+    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="</span><span class="str">Microsoft.EntityFrameworkCore</span><span class="op">"</span>
+                       <span class="tp">Version</span><span class="op">="</span><span class="str">8.0.0</span><span class="op">" /&gt;</span>
+    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="</span><span class="str">Serilog.AspNetCore</span><span class="op">"</span>
+                       <span class="tp">Version</span><span class="op">="</span><span class="str">8.0.0</span><span class="op">" /&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+
+<span class="op">&lt;/</span><span class="fn">Project</span><span class="op">&gt;</span>
+
+<span class="cm">// Restore all packages listed above:</span>
+<span class="nm">dotnet restore</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Random Port Assignment</div>
+        <div class="callout-text">The template chooses a random port for your application's URL, which will be opened in the browser automatically when you run from Visual Studio. You can change this in <strong>launchSettings.json</strong>.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+function answer(btn, quizId, correct) {
+  const block = document.getElementById(quizId);
+  block.querySelectorAll('.quiz-option').forEach(b => { b.disabled = true; });
+  if (correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '✅ Correct!';
+    fb.className = 'quiz-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '❌ Not quite — review the section above.';
+    fb.className = 'quiz-feedback show err';
+  }
+}
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -70% 0px',
+  threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-section .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+</script>
+</body>
+</html>

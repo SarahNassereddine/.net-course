@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 — Middleware Pipeline</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 4</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" onclick="scrollPageTo('defining-mw')"><span class="dot"></span>Defining middleware</button>
+    <button class="nav-link" onclick="scrollPageTo('httpcontext')"><span class="dot"></span>HttpContext object</button>
+    <button class="nav-link" onclick="scrollPageTo('holding-page')"><span class="dot"></span>Holding page</button>
+    <button class="nav-link" onclick="scrollPageTo('static-files')"><span class="dot"></span>Static files</button>
+    <button class="nav-link" onclick="scrollPageTo('status-codes')"><span class="dot"></span>HTTP status codes</button>
+    <button class="nav-link" onclick="scrollPageTo('minimal-api')"><span class="dot"></span>Minimal API in pipeline</button>
+    <button class="nav-link" onclick="scrollPageTo('error-handling')"><span class="dot"></span>Error handling</button>
+    <button class="nav-link" onclick="scrollPageTo('dev-exception')"><span class="dot"></span>Dev exception page</button>
+    <button class="nav-link" onclick="scrollPageTo('prod-exception')"><span class="dot"></span>Production exceptions</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link active" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+       <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+  </div>
+</nav>
+
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 4</div>
+    <h1 class="chapter-title">Handling Requests with the Middleware Pipeline</h1>
+    <p class="chapter-subtitle">A deep dive into how ASP.NET Core middleware works — defining it, combining it, handling errors, and serving static files.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="defining-mw">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Defining Middleware</h2>
+    </div>
+
+    <p>ASP.NET Core <strong>middleware</strong> comprises C# classes or functions that manage HTTP requests or responses. They are chained together, creating a <strong>pipeline</strong>. The output of one middleware serves as the input for the next.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Cross-Cutting Concerns</div>
+        <div class="callout-text">Logging, error handling, and security are classic <strong>cross-cutting concerns</strong> — required by many parts of your application. Middleware is the mechanism ASP.NET Core uses to handle these concerns in a composable, reusable way.</div>
+      </div>
+    </div>
+
+    <p>A piece of middleware can do one of three things:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(45,164,78,0.05);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(45,164,78,0.15);border:1px solid rgba(45,164,78,0.3);color:var(--green);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">A</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Handle the request completely</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Generate an HTTP response and <strong>short-circuit</strong> the pipeline — don't pass to next middleware. Example: <code>UseWelcomePage()</code>.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(9,105,218,0.04);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(9,105,218,0.15);border:1px solid rgba(9,105,218,0.3);color:var(--blue);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">B</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Process the request and pass it on</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Inspect or modify the incoming request, then call <code>next()</code> to pass to the next middleware. Example: Authentication middleware.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(124,106,247,0.04);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(124,106,247,0.15);border:1px solid rgba(124,106,247,0.3);color:var(--accent2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">C</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Process the outgoing response</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Inspect or modify the response on the way back out. Example: Error handling middleware, CORS headers.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Middleware with authentication + authorization</span></div>
+      <div class="code-body"><span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Authentication middleware runs first:</span>
+<span class="cm">// → Inspects the request, associates it with a user (or anonymous)</span>
+app.<span class="fn">UseAuthentication</span>();
+
+<span class="cm">// Authorization middleware runs second:</span>
+<span class="cm">// → Uses the user identity set by authentication above</span>
+<span class="cm">// → Verifies the user has permission to make this specific request</span>
+app.<span class="fn">UseAuthorization</span>();
+
+<span class="cm">// Both are Type B: they inspect the request and call next()</span>
+<span class="cm">// Order is CRITICAL — authorization needs authentication to run first</span>
+
+app.<span class="fn">MapGet</span>(<span class="str">"/secure"</span>, [Authorize] () => <span class="str">"Secret data"</span>);
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div id="quiz-mw-def1" class="quiz-block">
+      <div class="quiz-question">🧠 Authentication middleware runs before Authorization middleware. Why does this order matter?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mw-def1',false)">It's just a convention — the order doesn't actually affect behavior</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw-def1',true)">Authorization middleware uses the user identity set by authentication — if authentication hasn't run yet, there is no user to authorize</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw-def1',false)">Authentication has higher performance cost, so it runs first to short-circuit early</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw-def1',false)">Authorization registers routes, and authentication must know the routes before it can run</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mw-def1-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="httpcontext">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">The HttpContext Object</h2>
+    </div>
+
+    <p>Every piece of middleware receives the <strong>HttpContext</strong> for the current request. It is the central object containing everything about an individual HTTP request and its response.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Arabic Summary (from s)</div>
+        <div class="callout-text">
+          <strong>Flow summary:</strong><br>
+          1. Browser sends a Request.<br>
+          2. IIS (Reverse Proxy) receives it, checks for security threats.<br>
+          3. IIS forwards the request to Kestrel.<br>
+          4. Kestrel receives the request, builds an <strong>HttpContext</strong>, and runs your C# code.<br>
+          5. C# finishes processing, gives the Result back to Kestrel.<br>
+          6. Kestrel returns it to IIS, and IIS sends it back to the Browser.
+        </div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <tr><th>HttpContext Property</th><th>What it Contains</th></tr>
+      <tr><td><strong>Request</strong></td><td>URL, method (GET/POST), headers, body, query string, form data</td></tr>
+      <tr><td><strong>Response</strong></td><td>Status code, headers, body being written</td></tr>
+      <tr><td><strong>User</strong></td><td>The ClaimsPrincipal representing the current user (set by Auth middleware)</td></tr>
+      <tr><td><strong>RequestServices</strong></td><td>The DI service provider scoped to this request</td></tr>
+      <tr><td><strong>Items</strong></td><td>Dictionary for middleware to share data within a single request</td></tr>
+      <tr><td><strong>Connection</strong></td><td>Client IP, port, TLS certificate information</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Accessing HttpContext in a Minimal API endpoint</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/info"</span>, (<span class="tp">HttpContext</span> ctx) =>
+{
+    <span class="kw">var</span> path    = ctx.Request.Path;           <span class="cm">// e.g. "/info"</span>
+    <span class="kw">var</span> method  = ctx.Request.Method;         <span class="cm">// "GET"</span>
+    <span class="kw">var</span> clientIp= ctx.Connection.RemoteIpAddress;
+    <span class="kw">var</span> user    = ctx.User.Identity?.Name;    <span class="cm">// null if not authenticated</span>
+
+    ctx.Response.StatusCode = <span class="nm">200</span>;
+    <span class="kw">return</span> <span class="str">$"Path: {path}, Method: {method}"</span>;
+});</div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="holding-page">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Combining Middleware — A Holding Page</h2>
+    </div>
+
+    <p><code>WelcomePageMiddleware</code> is a simple middleware designed for early development. It returns a sample HTML page for <strong>every request at any path</strong>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note</div>
+        <div class="callout-text">
+          <code>WelcomePageMiddleware</code> is designed to provide a sample HTML page quickly when you're first developing an application. The Welcome-page middleware response: every request to the application, at any path, will return the same Welcome-page response.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Using the Welcome Page middleware</span></div>
+      <div class="code-body"><span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// This middleware intercepts ALL requests and returns a welcome page.</span>
+<span class="cm">// Nothing after it in the pipeline will ever run.</span>
+<span class="cm">// Useful as a holding page while the app is being built.</span>
+app.<span class="fn">UseWelcomePage</span>();
+
+app.<span class="fn">Run</span>();
+
+<span class="cm">// GET /         → Welcome page ✓</span>
+<span class="cm">// GET /about    → Welcome page ✓  (same for all paths)</span>
+<span class="cm">// GET /api/data → Welcome page ✓  (pipeline is short-circuited)</span></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="static-files">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Handling Static Files</h2>
+    </div>
+
+    <p>The <code>UseStaticFiles()</code> middleware serves files from the <code>wwwroot</code> folder directly, without invoking your application logic.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Security — wwwroot Only</div>
+        <div class="callout-text">
+          By default, the <strong>wwwroot folder is the only folder</strong> ASP.NET Core will serve files from. It doesn't serve files from other folders for security reasons. The wwwroot folder in an ASP.NET Core project is typically <strong>deployed as-is to production</strong>, including all the files and folders it contains.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Serving static files from wwwroot</span></div>
+      <div class="code-body"><span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// UseStaticFiles checks if the request matches a file in wwwroot.</span>
+<span class="cm">// If yes → serves the file directly and short-circuits the pipeline.</span>
+<span class="cm">// If no  → passes the request to the next middleware.</span>
+app.<span class="fn">UseStaticFiles</span>();
+
+app.<span class="fn">MapGet</span>(<span class="str">"/hello"</span>, () => <span class="str">"Hello from API"</span>);
+app.<span class="fn">Run</span>();
+
+<span class="cm">// GET /css/site.css      → served from wwwroot/css/site.css ✓</span>
+<span class="cm">// GET /images/logo.png   → served from wwwroot/images/logo.png ✓</span>
+<span class="cm">// GET /hello             → passes to MapGet handler ✓</span>
+<span class="cm">// GET /secret/data.txt   → 404 (not in wwwroot)</span></div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="status-codes">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">HTTP Response Status Codes</h2>
+    </div>
+
+    <p>Every HTTP response contains a <strong>status code</strong> and, optionally, a reason phrase describing the status. Knowing these is essential for building correct APIs and middleware.</p>
+
+    <div class="status-row">
+      <div class="status-badge s200" onclick="toggleDetail('d200')">200 OK</div>
+      <div class="status-badge s201" onclick="toggleDetail('d201')">201 Created</div>
+      <div class="status-badge s204" onclick="toggleDetail('d204')">204 No Content</div>
+      <div class="status-badge s400" onclick="toggleDetail('d400')">400 Bad Request</div>
+      <div class="status-badge s404" onclick="toggleDetail('d404')">404 Not Found</div>
+      <div class="status-badge s409" onclick="toggleDetail('d409')">409 Conflict</div>
+      <div class="status-badge s500" onclick="toggleDetail('d500')">500 Server Error</div>
+    </div>
+
+    <div id="d200" class="status-detail"><strong>200 OK</strong> — The request was handled and processed successfully. The response body contains the requested data.</div>
+    <div id="d201" class="status-detail"><strong>201 Created</strong> — A new resource was successfully created (typically after a POST). The <code>Location</code> header points to the new resource.</div>
+    <div id="d204" class="status-detail"><strong>204 No Content</strong> — Success, but there is nothing to return (e.g., after a DELETE). Response body is empty.</div>
+    <div id="d400" class="status-detail"><strong>400 Bad Request</strong> — The client sent invalid data. The request failed validation — body was malformed, required fields missing, etc.</div>
+    <div id="d404" class="status-detail"><strong>404 Not Found</strong> — The requested resource does not exist at this URL. The server understood the request but found nothing to return.</div>
+    <div id="d409" class="status-detail"><strong>409 Conflict</strong> — The request could not be completed due to a conflict with the current state of the resource — e.g., creating a resource that already exists.</div>
+    <div id="d500" class="status-detail"><strong>500 Internal Server Error</strong> — An unexpected error occurred on the server. The client did nothing wrong — this is a server-side bug.</div>
+
+    <table class="data-table" style="margin-top:20px;">
+      <tr><th>Range</th><th>Category</th><th>Description</th></tr>
+      <tr><td><span class="pill blue">1xx</span></td><td>Information</td><td>Not often used; provides a general acknowledgment</td></tr>
+      <tr><td><span class="pill green">2xx</span></td><td>Success</td><td>The request was successfully handled and processed</td></tr>
+      <tr><td><span class="pill purple">3xx</span></td><td>Redirection</td><td>Browser must follow the provided link (e.g., login redirect)</td></tr>
+      <tr><td><span class="pill yellow">4xx</span></td><td>Client Error</td><td>Problem with the request — invalid data or unauthorized</td></tr>
+      <tr><td><span class="pill red">5xx</span></td><td>Server Error</td><td>A problem on the server caused the request to fail</td></tr>
+    </table>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="section" id="minimal-api">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">A Minimal API Application in the Pipeline</h2>
+    </div>
+
+    <p>When you use <code>MapGet()</code> and friends, you are not adding middleware. You are <strong>defining endpoints</strong>. The endpoint middleware (added automatically by WebApplication) is what executes your handlers.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — MapGet vs Middleware</div>
+        <div class="callout-text">
+          It's important to understand that the <code>MapGet</code> method does <strong>not</strong> add middleware to the pipeline; it <strong>defines an endpoint</strong> in your application. You can define endpoints anywhere in Program.cs before the call to <code>app.Run()</code>, but they are typically placed after the middleware pipeline definition.
+          <br><br>
+          <code>WebApplication</code> automatically adds the <strong>EndpointMiddleware</strong> to the end of the pipeline. It also automatically adds the <strong>developer exception page middleware</strong> to the start when running in development.
+          <br><br>
+          The <strong>routing middleware</strong> selects a minimal API endpoint based on the request URL. The <strong>endpoint middleware</strong> executes the selected endpoint.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">The Pipeline is Bidirectional</div>
+        <div class="callout-text">
+          All examples so far try to handle an incoming request and generate a response, but it's important to remember that the <strong>middleware pipeline is bidirectional</strong>. Each middleware component gets an opportunity to handle both the incoming request <em>and</em> the outgoing response. The order of middleware is most important for those components that create or modify the outgoing response.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Complete minimal API pipeline example</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Middleware added automatically by WebApplication:</span>
+<span class="cm">//   [DeveloperExceptionPage] — auto-added in Development</span>
+<span class="cm">//   [RoutingMiddleware]       — auto-added</span>
+
+<span class="cm">// Your middleware</span>
+app.<span class="fn">UseHttpsRedirection</span>();
+app.<span class="fn">UseAuthorization</span>();
+
+<span class="cm">// Define endpoints (NOT middleware)</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit"</span>, () =>
+{
+    <span class="kw">return new</span>[] { <span class="str">"Apple"</span>, <span class="str">"Banana"</span>, <span class="str">"Cherry"</span> };
+});
+
+app.<span class="fn">MapGet</span>(<span class="str">"/fruit/{name}"</span>, (<span class="tp">string</span> name) =>
+{
+    <span class="kw">return new</span> <span class="tp">Fruit</span>(name, <span class="nm">10</span>);
+});
+
+<span class="cm">// Middleware added automatically by WebApplication:</span>
+<span class="cm">//   [EndpointMiddleware] — auto-added at the end, executes handler</span>
+
+app.<span class="fn">Run</span>();
+
+<span class="kw">record</span> <span class="tp">Fruit</span>(<span class="tp">string</span> Name, <span class="tp">int</span> Stock);</div>
+    </div>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="section" id="error-handling">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Handling Errors Using Middleware</h2>
+    </div>
+
+    <p>When an unhandled exception occurs in your application, you don't want to show the raw stack trace to users. <strong>Error-handling middleware</strong> intercepts these exceptions and returns a clean response.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — How Error Middleware Works</div>
+        <div class="callout-text">
+          Error-handling middleware attempts to address these problems by modifying the response before the app returns it to the user. Typically, error-handling middleware returns either <strong>details on the error that occurred</strong> (Development) or a <strong>generic but friendly HTML page</strong> to the user (Production).
+          <br><br>
+          <strong>Key pattern</strong>: Error-handling middleware <em>ignores the incoming request</em> as it arrives in the pipeline. Instead, it inspects the <strong>outgoing response</strong>, modifying it only when an error has occurred.
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🔬 Development</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>DeveloperExceptionPage</strong><br>
+          Shows the full stack trace, exception message, source code line, and request details.<br><br>
+          Added automatically by WebApplication in Development. Never show in Production!
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🏭 Production</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>ExceptionHandlerMiddleware</strong><br>
+          Shows a friendly, custom error page that matches your app's look and feel.<br><br>
+          Hides stack traces and internal details from end users.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section class="section" id="dev-exception">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Viewing Exceptions in Development: DeveloperExceptionPage</h2>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note</div>
+        <div class="callout-text">
+          As shown previously, <code>WebApplication</code> automatically adds this middleware to your middleware pipeline when you're running in the <strong>Development</strong> environment, so you don't need to add it explicitly.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">DeveloperExceptionPage — auto-added in Development</span></div>
+      <div class="code-body"><span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// WebApplication automatically adds this when ASPNETCORE_ENVIRONMENT=Development:</span>
+<span class="cm">// app.UseDeveloperExceptionPage();</span>
+<span class="cm">//</span>
+<span class="cm">// You can also add it explicitly if needed:</span>
+<span class="kw">if</span> (app.Environment.<span class="fn">IsDevelopment</span>())
+{
+    app.<span class="fn">UseDeveloperExceptionPage</span>(); <span class="cm">// shows stack trace in browser</span>
+}
+<span class="kw">else</span>
+{
+    app.<span class="fn">UseExceptionHandler</span>(<span class="str">"/Error"</span>); <span class="cm">// friendly page in production</span>
+}
+
+<span class="cm">// DeveloperExceptionPage catches exceptions ANYWHERE downstream</span>
+<span class="cm">// and shows detailed information — stack trace, source line, request data</span>
+
+app.<span class="fn">MapGet</span>(<span class="str">"/boom"</span>, () =>
+{
+    <span class="kw">throw new</span> <span class="tp">InvalidOperationException</span>(<span class="str">"Something went wrong!"</span>);
+    <span class="cm">// In Development: browser shows full stack trace</span>
+    <span class="cm">// In Production: browser shows /Error page</span>
+});</div>
+    </div>
+  </section>
+
+  <!-- SECTION 9 -->
+  <section class="section" id="prod-exception">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Handling Exceptions in Production: ExceptionHandlerMiddleware</h2>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note</div>
+        <div class="callout-text">
+          The custom error page created by <code>ExceptionHandlerMiddleware</code> can have the same look and feel as the rest of the application by reusing elements such as the header and footer. More importantly, you can easily control the error details displayed to users.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">ExceptionHandlerMiddleware — production error handling</span></div>
+      <div class="code-body"><span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// For production: redirect to a friendly /error page</span>
+app.<span class="fn">UseExceptionHandler</span>(<span class="str">"/error"</span>);
+
+app.<span class="fn">MapGet</span>(<span class="str">"/error"</span>, () =>
+    <span class="tp">Results</span>.<span class="fn">Problem</span>(<span class="str">"An error occurred."</span>, statusCode: <span class="nm">500</span>));
+
+<span class="cm">// Alternative: use a lambda directly</span>
+app.<span class="fn">UseExceptionHandler</span>(errApp =>
+{
+    errApp.<span class="fn">Run</span>(<span class="kw">async</span> ctx =>
+    {
+        ctx.Response.StatusCode = <span class="nm">500</span>;
+        ctx.Response.ContentType = <span class="str">"text/html"</span>;
+        <span class="kw">await</span> ctx.Response.<span class="fn">WriteAsync</span>(<span class="str">"&lt;h1&gt;Oops! Something went wrong.&lt;/h1&gt;"</span>);
+    });
+});</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Never expose stack traces in production</div>
+        <div class="callout-text">The DeveloperExceptionPage shows sensitive information including file paths, connection strings, and internal logic. Always use ExceptionHandlerMiddleware in production to show a safe, friendly error message.</div>
+      </div>
+    </div>
+
+    <div id="quiz-err1" class="quiz-block">
+      <div class="quiz-question">🧠 Where in the pipeline should error-handling middleware be placed, and why?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-err1',false)">At the end of the pipeline, so it runs after all other middleware</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-err1',false)">Right before the endpoint middleware, so it's closest to the exception source</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-err1',true)">At the very beginning of the pipeline, so it can catch exceptions thrown by any downstream middleware</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-err1',false)">It can be placed anywhere — middleware position doesn't affect error catching</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-err1-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+<script>
+function scrollPageTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('show');
+}
+function answer(btn, quizId, correct) {
+  const block = document.getElementById(quizId);
+  block.querySelectorAll('.quiz-option').forEach(b => { b.disabled = true; });
+  if (correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '✅ Correct!';
+    fb.className = 'quiz-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '❌ Not quite — review the section above.';
+    fb.className = 'quiz-feedback show err';
+  }
+}
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -70% 0px',
+  threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-section .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+</script>
+</body>
+</html>

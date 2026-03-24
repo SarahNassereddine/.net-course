@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 3 — Your First Application</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 3</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" onclick="scrollPageTo('overview')"><span class="dot"></span>Application overview</button>
+    <button class="nav-link" onclick="scrollPageTo('project-layout')"><span class="dot"></span>Project layout</button>
+    <button class="nav-link" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
+    <button class="nav-link" onclick="scrollPageTo('program-cs')"><span class="dot"></span>Program.cs</button>
+    <button class="nav-link" onclick="scrollPageTo('adding-features')"><span class="dot"></span>Adding functionality</button>
+    <button class="nav-link" onclick="scrollPageTo('services')"><span class="dot"></span>Services</button>
+    <button class="nav-link" onclick="scrollPageTo('middleware')"><span class="dot"></span>Middleware &amp; endpoints</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="chapter1.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link active" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+       <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+</div>
+</nav>
+
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 3</div>
+    <h1 class="chapter-title">Your First Application</h1>
+    <p class="chapter-subtitle">Walk through an ASP.NET Core application from scratch — project structure, Program.cs, adding services, middleware, and your first endpoint.</p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="section" id="overview">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">A Brief Overview of an ASP.NET Core Application</h2>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — The HttpContext Object</div>
+        <div class="callout-text">
+          The <strong>HttpContext</strong> constructed by the ASP.NET Core web server is used by the application as a sort of <em>storage box</em> for a single request. Anything that's specific to this particular request and the subsequent response can be associated with it and stored in it, such as: properties of the request, request-specific services, data that's been loaded, or errors that have occurred.
+          <br><br>
+          The web server fills the initial HttpContext with details of the original HTTP request and other configuration details and then passes it on to the rest of the application.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Concept</span><span class="code-label">HttpContext — the request's storage box</span></div>
+      <div style="padding:20px;font-family:var(--sans);font-size:13px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.25);border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:20px;margin-bottom:6px;">📥</div>
+            <div style="font-weight:700;color:var(--accent);font-size:13px;">Request Data</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">URL, headers, body, method, query string</div>
+          </div>
+          <div style="background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.25);border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:20px;margin-bottom:6px;">⚙️</div>
+            <div style="font-weight:700;color:var(--accent2);font-size:13px;">Services</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Request-scoped DI services resolved for this request</div>
+          </div>
+          <div style="background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.25);border-radius:8px;padding:14px;text-align:center;">
+            <div style="font-size:20px;margin-bottom:6px;">📤</div>
+            <div style="font-weight:700;color:var(--blue);font-size:13px;">Response</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">Status code, headers, body being built</div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text3);">All middleware in the pipeline can read from and write to HttpContext</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="section" id="project-layout">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Understanding the Project Layout</h2>
+    </div>
+
+    <p>When you create a new ASP.NET Core web application in Visual Studio (or with <code>dotnet new</code>), you get a specific folder and file structure. Here's what each part means:</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Solution Explorer vs Disk</div>
+        <div class="callout-text">
+          Solution Explorer also displays the <strong>Connected Services</strong> and <strong>Dependencies</strong> nodes, which list NuGet and other dependencies, though the folders themselves don't exist on disk.
+          <br><br>
+          Visual Studio doesn't show the <code>.csproj</code> file explicitly, but you can edit it if you double-click the project name in Solution Explorer or right-click and choose <strong>Properties</strong>.
+          <br><br>
+          Your project folder contains a subfolder called <strong>Properties</strong>, which contains a single file: <code>launchSettings.json</code>. This file controls how Visual Studio will run and debug the application.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Folder</span><span class="code-label">New ASP.NET Core project structure</span></div>
+      <div class="code-body"><span class="fn">MyWebApp/</span>
+├── <span class="str">MyWebApp.csproj</span>        <span class="cm">← Project file (NuGet deps, target framework)</span>
+├── <span class="str">Program.cs</span>             <span class="cm">← App entry point — all startup code goes here</span>
+├── <span class="str">appsettings.json</span>       <span class="cm">← Configuration (connection strings, etc.)</span>
+├── <span class="str">appsettings.Development.json</span>  <span class="cm">← Dev-only config overrides</span>
+│
+├── <span class="fn">Properties/</span>
+│   └── <span class="str">launchSettings.json</span>  <span class="cm">← VS run/debug settings, port numbers</span>
+│
+├── <span class="fn">wwwroot/</span>               <span class="cm">← Static files served directly (CSS, JS, images)</span>
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+├── <span class="fn">Pages/</span>                 <span class="cm">← Razor Pages (if Razor Pages template)</span>
+└── <span class="fn">Controllers/</span>           <span class="cm">← MVC Controllers (if MVC template)</span></div>
+    </div>
+
+    <table class="data-table">
+      <tr><th>File / Folder</th><th>Purpose</th></tr>
+      <tr><td><strong>MyWebApp.csproj</strong></td><td>Defines project type, target framework (.NET 8), and NuGet package dependencies</td></tr>
+      <tr><td><strong>Program.cs</strong></td><td>Application entry point. Creates and configures WebApplication, then runs it</td></tr>
+      <tr><td><strong>appsettings.json</strong></td><td>Runtime configuration. Connection strings, feature flags, logging levels</td></tr>
+      <tr><td><strong>launchSettings.json</strong></td><td>Visual Studio debug settings — ports, environment variables, browser launch</td></tr>
+      <tr><td><strong>wwwroot/</strong></td><td>Only folder served as static files. Deployed as-is to production</td></tr>
+    </table>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section class="section" id="csproj">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">.csproj — Declaring Your Dependencies</h2>
+    </div>
+
+    <p>The <strong>.csproj file</strong> is the project file for .NET applications. It contains all the information the .NET tooling needs to build the project.</p>
+
+    <table class="data-table">
+      <tr><th>Section</th><th>What It Declares</th></tr>
+      <tr><td><strong>Project Type</strong></td><td>Is this a web app (<code>Sdk.Web</code>), console app (<code>Sdk</code>), or library (<code>Sdk</code>)?</td></tr>
+      <tr><td><strong>Target Framework</strong></td><td>Which .NET version to compile for: <code>net8.0</code>, <code>net7.0</code>, etc.</td></tr>
+      <tr><td><strong>PackageReference</strong></td><td>NuGet packages this project depends on — name and version pinned</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">Typical .csproj for an ASP.NET Core 8 app</span></div>
+      <div class="code-body"><span class="op">&lt;</span><span class="fn">Project</span> <span class="tp">Sdk</span><span class="op">="</span><span class="str">Microsoft.NET.Sdk.Web</span><span class="op">"&gt;</span>  <span class="cm">&lt;!-- Web SDK: adds ASP.NET Core --&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">TargetFramework</span><span class="op">&gt;</span><span class="str">net8.0</span><span class="op">&lt;/</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">Nullable</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">Nullable</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+    <span class="cm">&lt;!-- NuGet package dependencies --&gt;</span>
+    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="</span><span class="str">Microsoft.EntityFrameworkCore.SqlServer</span><span class="op">"</span>
+                       <span class="tp">Version</span><span class="op">="</span><span class="str">8.0.0</span><span class="op">" /&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+
+<span class="op">&lt;/</span><span class="fn">Project</span><span class="op">&gt;</span></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section class="section" id="program-cs">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Program.cs — Defining Your Application</h2>
+    </div>
+
+    <p>Every ASP.NET Core application begins as a <strong>.NET Console application</strong>. In .NET 6+, the startup code is written directly in <code>Program.cs</code> using <strong>top-level statements</strong> — no class, no <code>static void Main()</code>.</p>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Top-Level Statements</div>
+        <div class="callout-text">In .NET 6+, you can write the body of the Main method directly in a file. The compiler generates the <code>Main</code> method for you. This reduces boilerplate and makes Program.cs clean and readable.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — minimal ASP.NET Core app</span></div>
+      <div class="code-body"><span class="cm">// ❶ Create the builder — configure app before building</span>
+<span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// WebApplicationBuilder configures these by default:</span>
+<span class="cm">//   Configuration — loads appsettings.json + environment variables</span>
+<span class="cm">//   Logging       — extensible logging system for debugging</span>
+<span class="cm">//   Services      — DI container (add your services here)</span>
+<span class="cm">//   Hosting       — Kestrel web server configured here</span>
+
+<span class="cm">// ❷ Register services with the DI container</span>
+builder.Services.<span class="fn">AddRazorPages</span>();      <span class="cm">// example service</span>
+
+<span class="cm">// ❸ Build — finalize configuration and create the WebApplication</span>
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// ❹ Configure the middleware pipeline</span>
+app.<span class="fn">UseHttpsRedirection</span>();
+app.<span class="fn">UseStaticFiles</span>();
+app.<span class="fn">UseRouting</span>();
+app.<span class="fn">UseAuthorization</span>();
+
+<span class="cm">// ❺ Map endpoints (define responses to specific URLs)</span>
+app.<span class="fn">MapRazorPages</span>();
+app.<span class="fn">MapGet</span>(<span class="str">"/hello"</span>, () => <span class="str">"Hello, World!"</span>);
+
+<span class="cm">// ❻ Run the app — starts Kestrel and begins listening</span>
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — The Builder Pattern</div>
+        <div class="callout-text">
+          You'll find this pattern of using a <strong>builder object</strong> to configure a complex object repeated throughout the ASP.NET Core framework. This technique is useful for allowing users to configure an object, <em>delaying its creation</em> until all configuration has finished.
+          <br><br>
+          In this simple application we don't make any changes to <code>WebApplicationBuilder</code> before calling <code>Build()</code>, but it configures a lot of things by default.
+          <br><br>
+          After configuring the builder you call <code>Build()</code> to create a <code>WebApplication</code> instance. The <code>WebApplication</code> instance is where you define how your application handles and responds to requests, using two building blocks: <strong>Middleware</strong> and <strong>Endpoints</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-program1" class="quiz-block">
+      <div class="quiz-question">🧠 In Program.cs, what is the purpose of calling <code>builder.Build()</code>?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-program1',false)">It starts the Kestrel web server and begins accepting requests</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-program1',false)">It compiles the C# code into machine code</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-program1',true)">It finalizes all configuration and creates the WebApplication instance used to define middleware and endpoints</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-program1',false)">It registers all services with the dependency injection container</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-program1-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="section" id="adding-features">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Adding Functionality to Your Application</h2>
+    </div>
+
+    <p>The example below shows two added features: HTTP request logging (only in Development), and a <code>/person</code> endpoint that returns JSON.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — adding logging + a JSON endpoint</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// ❶ Customize features by registering services</span>
+builder.Services.<span class="fn">AddHttpLogging</span>(o => { });
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// ❷ Ensures logs added by HTTP logging middleware are visible</span>
+app.<span class="fn">UseHttpLogging</span>();
+
+<span class="cm">// ❸ Add middleware conditionally based on the runtime environment</span>
+<span class="kw">if</span> (app.Environment.<span class="fn">IsDevelopment</span>())
+{
+    <span class="cm">// ❹ HTTP logging middleware — logs each request in development</span>
+    app.<span class="fn">UseHttpLogging</span>();
+}
+
+<span class="cm">// ❺ New endpoint at /person — returns C# object as JSON</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/person"</span>, () =>
+{
+    <span class="kw">return new</span> <span class="tp">Person</span>(<span class="str">"Al"</span>, <span class="str">"Pacino"</span>);
+    <span class="cm">// Output: {"firstName":"Al","lastName":"Pacino"}</span>
+});
+
+app.<span class="fn">Run</span>();
+
+<span class="cm">// ❻ Record type — immutable data carrier, one line</span>
+<span class="kw">record</span> <span class="tp">Person</span>(<span class="tp">string</span> FirstName, <span class="tp">string</span> LastName);</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — What the application does</div>
+        <div class="callout-text">
+          The application configures two features: <br>
+          (1) When running in the <strong>Development</strong> environment, details about each request are logged using <code>HttpLoggingMiddleware</code>.<br>
+          (2) A new endpoint at <code>/person</code> creates an instance of the C# record <code>Person</code> and serializes it in the response as JSON.
+          <br><br>
+          When you run the application and send requests via a web browser, you see details about the request displayed in the console.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="section" id="services">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Adding and Configuring Services</h2>
+    </div>
+
+    <p>ASP.NET Core uses <strong>small, modular components</strong> for distinct features. Each component can evolve independently with loose coupling. These components are exposed as <strong>services</strong> within the application.</p>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">What is a Service?</div>
+        <div class="callout-text">
+          Within the context of ASP.NET Core, a <strong>service</strong> refers to any class that provides functionality to an application. Services could be classes exposed by a library <em>or</em> code you've written for your application. Services are registered in the DI container and injected wherever they are needed.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Registering services with the DI container</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// Framework services — add capabilities to your app</span>
+builder.Services.<span class="fn">AddRazorPages</span>();          <span class="cm">// Razor Pages engine</span>
+builder.Services.<span class="fn">AddControllers</span>();          <span class="cm">// MVC controllers</span>
+builder.Services.<span class="fn">AddDbContext</span>&lt;<span class="tp">AppDbContext</span>&gt;(o =>
+    o.<span class="fn">UseSqlServer</span>(builder.Configuration.<span class="fn">GetConnectionString</span>(<span class="str">"Db"</span>)));
+
+<span class="cm">// Your own services</span>
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="tp">IEmailService</span>, <span class="tp">SmtpEmailService</span>&gt;();
+builder.Services.<span class="fn">AddSingleton</span>&lt;<span class="tp">ICacheService</span>, <span class="tp">MemoryCacheService</span>&gt;();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();</div>
+    </div>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section class="section" id="middleware">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Middleware and Endpoints</h2>
+    </div>
+
+    <p>A <code>WebApplication</code> instance lets you do three things: add middleware to the pipeline, map endpoints, and run the application.</p>
+
+    <table class="data-table">
+      <tr><th>Concept</th><th>What it is</th><th>How to add</th></tr>
+      <tr>
+        <td><strong>Middleware</strong></td>
+        <td>Small components that execute sequentially on each HTTP request. Handles logging, auth, static files, error handling.</td>
+        <td><code>app.Use*()</code> extension methods</td>
+      </tr>
+      <tr>
+        <td><strong>Endpoints</strong></td>
+        <td>Define the response for a specific URL pattern. Executed after routing selects the right one.</td>
+        <td><code>app.MapGet()</code>, <code>app.MapPost()</code>, etc.</td>
+      </tr>
+      <tr>
+        <td><strong>Routing Middleware</strong></td>
+        <td>Inspects the request URL and selects which endpoint to invoke.</td>
+        <td>Added automatically by <code>WebApplication</code></td>
+      </tr>
+      <tr>
+        <td><strong>Endpoint Middleware</strong></td>
+        <td>Executes the selected endpoint and generates the final response.</td>
+        <td>Added automatically by <code>WebApplication</code></td>
+      </tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Routing + Endpoint Middleware</div>
+        <div class="callout-text">
+          <code>WebApplication</code> automatically adds more middleware, including two of the most important: the <strong>routing middleware</strong> and the <strong>endpoint middleware</strong>.
+          <br><br>
+          Together, this pair is responsible for interpreting the request to determine which endpoint to invoke, reading parameters from the request, and generating the final response. For each request, the routing middleware uses the request's URL to determine which endpoint to invoke. Then the rest of the middleware pipeline executes until the request reaches the endpoint middleware, which executes the endpoint to generate the final response.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Pipeline</span><span class="code-label">Middleware execution order</span></div>
+      <div style="padding:20px;font-family:var(--mono);font-size:12px;">
+        <div style="display:flex;flex-direction:column;gap:6px;max-width:480px;margin:0 auto;">
+          <div style="background:rgba(207,34,46,0.1);border:1px solid rgba(207,34,46,0.3);border-radius:6px;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:var(--red);font-weight:700;">DeveloperExceptionPage</span>
+            <span style="font-size:11px;color:var(--text3);">catches errors on the way back ↩</span>
+          </div>
+          <div style="text-align:center;color:var(--text3);font-size:16px;">↓</div>
+          <div style="background:rgba(191,135,0,0.1);border:1px solid rgba(191,135,0,0.3);border-radius:6px;padding:10px 16px;color:var(--yellow);font-weight:700;">UseHttpsRedirection</div>
+          <div style="text-align:center;color:var(--text3);font-size:16px;">↓</div>
+          <div style="background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.3);border-radius:6px;padding:10px 16px;color:var(--blue);font-weight:700;">UseStaticFiles</div>
+          <div style="text-align:center;color:var(--text3);font-size:16px;">↓</div>
+          <div style="background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.3);border-radius:6px;padding:10px 16px;color:var(--accent2);font-weight:700;">UseRouting (selects endpoint)</div>
+          <div style="text-align:center;color:var(--text3);font-size:16px;">↓</div>
+          <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:6px;padding:10px 16px;color:var(--accent);font-weight:700;">UseAuthorization</div>
+          <div style="text-align:center;color:var(--text3);font-size:16px;">↓</div>
+          <div style="background:rgba(45,164,78,0.1);border:1px solid rgba(45,164,78,0.3);border-radius:6px;padding:10px 16px;color:var(--green);font-weight:700;">Endpoint Middleware (executes handler)</div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--text3);">Order matters — middleware executes in the order it is registered</div>
+      </div>
+    </div>
+
+    <div id="quiz-mw1" class="quiz-block">
+      <div class="quiz-question">🧠 In the middleware pipeline, what determines the order in which middleware components execute?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-mw1',false)">The priority property on each middleware class</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw1',true)">The order of <code>Use*()</code> calls in Program.cs — earlier calls execute first</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw1',false)">Alphabetical order by middleware name</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-mw1',false)">ASP.NET Core automatically reorders middleware for optimal performance</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-mw1-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+<script>
+function scrollPageTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
+function answer(btn, quizId, correct) {
+  const block = document.getElementById(quizId);
+  block.querySelectorAll('.quiz-option').forEach(b => { b.disabled = true; });
+  if (correct) {
+    btn.classList.add('correct');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '✅ Correct!';
+    fb.className = 'quiz-feedback show ok';
+  } else {
+    btn.classList.add('wrong');
+    const fb = document.getElementById(quizId + '-fb');
+    fb.textContent = '❌ Not quite — review the section above.';
+    fb.className = 'quiz-feedback show err';
+  }
+}
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -70% 0px',
+  threshold: 0
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-section .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+
+
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+</script>
+</body>
+</html>
