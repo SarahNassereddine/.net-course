@@ -7,15 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
 <div class="mobile-topbar">
-  <button class="menu-toggle" onclick="openDrawer()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div style="flex:1">
     <div class="mobile-topbar-sub">ASP.NET Core 8</div>
     <div class="mobile-topbar-title">Chapter 1 — Getting Started</div>
   </div>
 </div>
 <div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
-<div class="sidebar-overlay"></div>
 <div class="course-wrap">
 
 <!-- Sidebar -->
@@ -32,6 +32,7 @@
     <button class="nav-link" data-target="choosing" onclick="scrollPageTo('choosing')"><span class="dot"></span>Choosing ASP.NET Core</button>
     <button class="nav-link" data-target="how-it-works" onclick="scrollPageTo('how-it-works')"><span class="dot"></span>How it works</button>
     <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel & request flow</button>
+       <button class="nav-link" data-target="summary" onclick="scrollPageTo('summary')"><span class="dot"></span>What You'll Learn</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
@@ -435,6 +436,56 @@
     </div>
   </section>
 
+
+  <!-- ── Book Summary Section ── -->
+  <section class="section" id="summary">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">What You'll Learn &amp; Chapter Summary</h2>
+    </div>
+    <p>This course takes you on an in-depth tour of the ASP.NET Core framework, closely following Andrew Lock's <em>ASP.NET Core in Action, 3rd Edition</em>. By the end, you will know how to:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🔌</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Build HTTP APIs</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Minimal APIs &amp; Web APIs returning JSON, with routing, model binding, and validation</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🧩</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Dependency Injection</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Use the built-in DI container, register services, and understand lifetimes</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">⚙️</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Middleware Pipeline</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Compose middleware, handle errors, serve static files, and understand request flow</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">🛡️</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Security Best Practices</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Protect your application with authentication, authorization, HTTPS, and input validation</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">📄</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Razor Pages &amp; MVC</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Build server-rendered HTML applications with Razor syntax and Tag Helpers</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+        <span style="font-size:18px;flex-shrink:0;">📦</span>
+        <div><div style="font-weight:600;font-size:13px;color:var(--text)">Configuration &amp; Logging</div><div style="font-size:12px;color:var(--text3);margin-top:2px">Read settings, manage secrets, and write structured logs for production apps</div></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">📖</div>
+      <div class="callout-body">
+        <div class="callout-title">Chapter Summary from the Book</div>
+        <div class="callout-text">
+          <strong>ASP.NET Core</strong> is a cross-platform, open-source, high-performance web framework running on .NET 7+.<br>
+          You can use <strong>Razor Pages or MVC</strong> for server-rendered page-based apps, and <strong>Minimal APIs or Web APIs</strong> for RESTful JSON APIs.<br>
+          <strong>gRPC</strong> is available for highly efficient server-to-server RPC. <strong>Blazor WebAssembly</strong> runs C# in the browser; <strong>Blazor Server</strong> runs server-side with real-time UI via WebSockets.<br>
+          Microsoft recommends ASP.NET Core and .NET 7+ for <strong>all new web development</strong> over legacy ASP.NET and .NET Framework.<br>
+          Every ASP.NET Core app contains a <strong>web server (Kestrel)</strong> that builds an <code>HttpContext</code> and passes it through the middleware pipeline to an endpoint handler.
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 </div>
 
@@ -506,70 +557,77 @@ document.querySelectorAll('.nav-link').forEach(link => {
 });
 
 // ── Mobile drawer ──
-function openDrawer() {
-  document.querySelector('.sidebar').classList.add('open');
-  document.querySelector('.sidebar-overlay').classList.add('show');
-}
-function closeDrawer() {
-  document.querySelector('.sidebar').classList.remove('open');
-  document.querySelector('.sidebar-overlay').classList.remove('show');
-}
-document.querySelector('.sidebar-overlay').addEventListener('click', closeDrawer);
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    if (window.innerWidth <= 900) closeDrawer();
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
   });
-});
+})();
 
-// ── FAB section panel ──
-const fabBtn   = document.getElementById('fabSections');
-const fabPanel = document.getElementById('fabPanel');
-if (fabBtn && fabPanel) {
-  fabBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    fabPanel.classList.toggle('open');
-  });
-  document.addEventListener('click', () => fabPanel.classList.remove('open'));
-  fabPanel.addEventListener('click', e => e.stopPropagation());
-  // sync active section to fab panel
-  const fabLinks = fabPanel.querySelectorAll('a[data-target]');
-  const fabObserver = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        fabLinks.forEach(l => l.classList.remove('active'));
-        const l = fabPanel.querySelector(`a[data-target="${e.target.id}"]`);
-        if (l) l.classList.add('active');
-      }
-    });
-  }, { rootMargin: '-20% 0px -70% 0px' });
-  document.querySelectorAll('.section').forEach(s => fabObserver.observe(s));
-  fabLinks.forEach(l => {
-    l.addEventListener('click', () => {
-      const id = l.getAttribute('data-target');
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      fabPanel.classList.remove('open');
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
     });
   });
-}
+})();
 
-// ── Mobile progress bar ──
-const mobileProgress = document.querySelector('.mobile-progress-fill');
-if (mobileProgress) {
-  window.addEventListener('scroll', () => {
-    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-    mobileProgress.style.width = Math.min(pct, 100) + '%';
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
   });
+})();
+ 
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
 }
-
 </script>
 <button class="fab-sections" id="fabSections" aria-label="Sections"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></button>
 <div class="fab-panel" id="fabPanel">
   <div class="fab-panel-header">Sections</div>
-  <a data-target="what-is"><span class="fab-num">1</span><span class="fab-dot"></span>What is ASP.NET Core?</a>
-  <a data-target="app-types"><span class="fab-num">2</span><span class="fab-dot"></span>Application types</a>
-  <a data-target="choosing"><span class="fab-num">3</span><span class="fab-dot"></span>Choosing ASP.NET Core</a>
-  <a data-target="how-it-works"><span class="fab-num">4</span><span class="fab-dot"></span>How it works</a>
-  <a data-target="kestrel"><span class="fab-num">5</span><span class="fab-dot"></span>Kestrel & request flow</a>
+  <button data-target="what-is"><span class="fab-num">1</span><span class="fab-dot"></span>What is ASP.NET Core?</button>
+  <button data-target="app-types"><span class="fab-num">2</span><span class="fab-dot"></span>Application types</button>
+  <button data-target="choosing"><span class="fab-num">3</span><span class="fab-dot"></span>Choosing ASP.NET Core</button>
+  <button data-target="how-it-works"><span class="fab-num">4</span><span class="fab-dot"></span>How it works</button>
+  <button data-target="kestrel"><span class="fab-num">5</span><span class="fab-dot"></span>Kestrel & request flow</button>
+  <button data-target="summary"><span class="fab-num">6</span><span class="fab-dot"></span>What You'll Learn</button>
 </div>
 </body>
 </html>

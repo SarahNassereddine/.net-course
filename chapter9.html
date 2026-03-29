@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 9 — Registering Services</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
  <div class="course-wrap">
 
 <!-- ── Sidebar ── -->
@@ -23,6 +32,7 @@
     <button class="nav-link" data-target="objects-lambdas" onclick="scrollPageTo('objects-lambdas')"><span class="dot"></span>Objects &amp; Lambdas</button>
     <button class="nav-link" data-target="extension-method" onclick="scrollPageTo('extension-method')"><span class="dot"></span>Extension Method Pattern</button>
     <button class="nav-link" data-target="multiple-impls" onclick="scrollPageTo('multiple-impls')"><span class="dot"></span>Multiple Implementations</button>
+    <button class="nav-link" data-target="open-generics" onclick="scrollPageTo('open-generics')"><span class="dot"></span>Open generics registration</button>
     <button class="nav-link" data-target="tryadd" onclick="scrollPageTo('tryadd')"><span class="dot"></span>TryAdd — Conditional Registration</button>
     <button class="nav-link" data-target="lifetimes" onclick="scrollPageTo('lifetimes')"><span class="dot"></span>Understanding Lifetimes</button>
     <button class="nav-link" data-target="transient" onclick="scrollPageTo('transient')"><span class="dot"></span>Transient</button>
@@ -315,6 +325,49 @@ app.<span class="fn">MapPost</span>(<span class="str">"/notify"</span>, (<span c
 
 
   <!-- ══ SECTION 6 ══ -->
+
+  <!-- Open Generics — from book 9.2 -->
+  <section class="section" id="open-generics">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Open Generics Registration</h2>
+    </div>
+    <p>You cannot use the generic <code>Add&lt;T&gt;()</code> methods to register <strong>open generic types</strong> — types that contain an unresolved generic type parameter, such as <code>IRepository&lt;T&gt;</code>. For those, you must use a special overload that takes <code>Type</code> objects:</p>
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Registering open generic types</span></div>
+      <div class="code-body"><span class="cm">// ❌ This won't compile — you can't use open generics with the generic overload</span>
+<span class="cm">// builder.Services.AddScoped&lt;IRepository&lt;&gt;, DbRepository&lt;&gt;&gt;();</span>
+
+<span class="cm">// ✅ Use the Type-based overload for open generics</span>
+builder.Services.AddScoped(
+    typeof(<span class="tp">IRepository</span>&lt;&gt;),
+    typeof(<span class="tp">DbRepository</span>&lt;&gt;)
+);
+
+<span class="cm">// Now these all work automatically:</span>
+<span class="cm">// IRepository&lt;Customer&gt; → DbRepository&lt;Customer&gt;</span>
+<span class="cm">// IRepository&lt;Order&gt;    → DbRepository&lt;Order&gt;</span>
+<span class="cm">// IRepository&lt;Product&gt;  → DbRepository&lt;Product&gt;</span></div>
+    </div>
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">When to use open generics</div>
+        <div class="callout-text">This pattern is common for <strong>generic repository patterns</strong> and <strong>generic pipeline handlers</strong> (like MediatR). One registration covers <em>all</em> concrete versions of the generic type — you don't need a separate <code>AddScoped</code> call for each <code>T</code>.</div>
+      </div>
+    </div>
+    <div class="quiz-block">
+      <div class="quiz-question">🧠 You have <code>IRepository&lt;T&gt;</code> and <code>DbRepository&lt;T&gt;</code>. Which registration correctly wires them as open generics?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'qog1',false)"><code>builder.Services.AddScoped&lt;IRepository&lt;T&gt;, DbRepository&lt;T&gt;&gt;()</code></button>
+        <button class="quiz-option" onclick="answer(this,'qog1',true)"><code>builder.Services.AddScoped(typeof(IRepository&lt;&gt;), typeof(DbRepository&lt;&gt;))</code></button>
+        <button class="quiz-option" onclick="answer(this,'qog1',false)"><code>builder.Services.AddScoped&lt;IRepository, DbRepository&gt;()</code></button>
+        <button class="quiz-option" onclick="answer(this,'qog1',false)">Open generics cannot be registered with the built-in container</button>
+      </div>
+      <div class="quiz-feedback" id="qog1-fb"></div>
+    </div>
+  </section>
+
   <section class="section" id="tryadd">
     <div class="section-header">
       <div class="section-number">6</div>
@@ -685,12 +738,14 @@ builder.Host.<span class="fn">UseDefaultServiceProvider</span>(options =>
 
 <script>
 const feedbackOk = {
+  'qog1': "Correct! The typeof() overload is the only way to register open generics. One registration covers IRepository<Customer>, IRepository<Order>, and any other T automatically.",
   'quiz-r1': "Correct! The container's registry key is IEmailSender — that's what you registered it under. When a handler requests the concrete type EmailSender directly, the container finds nothing registered under that key, the framework treats the parameter as a model-binding target, and the request fails.",
   'quiz-r2': "Correct! Scoped means one instance per scope. In ASP.NET Core, one scope = one HTTP request. So both classes in the same request get the exact same instance. The next request gets a fresh one.",
   'quiz-r3': "Correct! An in-memory cache is a great singleton candidate — it's expensive to set up, naturally shared across requests, and designed to be thread-safe. DbContext is the classic example of what NOT to make singleton (not thread-safe, tracks per-request state).",
   'quiz-r4': "Correct! A captive dependency only happens when a LONGER-lived service holds a SHORTER-lived one. Scoped (per-request) using Singleton (forever) is fine — the Singleton outlives the Scoped service, so the Scoped service always has a valid reference. The dangerous direction is Singleton → Scoped, where the Singleton captures and freezes a Scoped instance."
 };
 const feedbackErr = {
+  'qog1': "Not quite. Open generics like IRepository<T> require the typeof() overload. The generic Add<T>() methods only work with closed (fully specified) generic types.",
   'quiz-r1': "Not quite. The container's internal map uses the service type as the key. You registered IEmailSender → EmailSender, so the key is IEmailSender. Requesting EmailSender directly is a different key — one with no registration — so the container can't provide it.",
   'quiz-r2': "Not quite. Scoped means exactly one instance per scope. A scope in ASP.NET Core corresponds to one HTTP request. Two services asking for the same scoped dependency within one request share the same instance — that's the whole point of Scoped vs Transient.",
   'quiz-r3': "Not quite. DbContext is the classic Scoped service — it holds a database connection and change tracker that are per-request concerns. A service that reads the logged-in user per-request is also Scoped. Per-user error state is also Scoped. Only thread-safe, shared, app-wide resources like caches belong as Singletons.",
@@ -743,18 +798,78 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
   });
 });
-</script>
 
-<nav class="mobile-chapter-nav">
-  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
-  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding</a>
-  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
-  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
-  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
-  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
-  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
-  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
-  <a href="chapter9.html" class="active"><span class="ch-num">9</span>Services</a>
-</nav>
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+</script>
+<button class="fab-sections" id="fabSections" aria-label="Sections"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+<div class="fab-panel" id="fabPanel">
+  <div class="fab-panel-header">Sections</div>
+  <button data-target="register-custom"><span class="fab-num">1</span><span class="fab-dot"></span>Registering Custom Services</button>
+  <button data-target="add-methods"><span class="fab-num">2</span><span class="fab-dot"></span>The Add* Methods</button>
+  <button data-target="objects-lambdas"><span class="fab-num">3</span><span class="fab-dot"></span>Objects &amp; Lambdas</button>
+  <button data-target="extension-method"><span class="fab-num">4</span><span class="fab-dot"></span>Extension Method Pattern</button>
+  <button data-target="multiple-impls"><span class="fab-num">5</span><span class="fab-dot"></span>Multiple Implementations</button>
+  <button data-target="open-generics"><span class="fab-num">6</span><span class="fab-dot"></span>Open generics registration</button>
+  <button data-target="tryadd"><span class="fab-num">7</span><span class="fab-dot"></span>TryAdd — Conditional Registration</button>
+  <button data-target="lifetimes"><span class="fab-num">8</span><span class="fab-dot"></span>Understanding Lifetimes</button>
+  <button data-target="transient"><span class="fab-num">9</span><span class="fab-dot"></span>Transient</button>
+  <button data-target="scoped"><span class="fab-num">10</span><span class="fab-dot"></span>Scoped</button>
+  <button data-target="singleton"><span class="fab-num">11</span><span class="fab-dot"></span>Singleton</button>
+  <button data-target="captive"><span class="fab-num">12</span><span class="fab-dot"></span>Captive Dependencies</button>
+</div>
 </body>
 </html>

@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 6 — Routing</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
 <div class="course-wrap">
 
 <!-- ── Sidebar ── -->
@@ -821,18 +830,77 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
   });
 });
-</script>
 
-<nav class="mobile-chapter-nav">
-  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
-  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding</a>
-  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
-  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
-  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
-  <a href="chapter6.html" class="active"><span class="ch-num">6</span>Routing</a>
-  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
-  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
-  <a href="chapter9.html" class=""><span class="ch-num">9</span>Services</a>
-</nav>
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+</script>
+<button class="fab-sections" id="fabSections" aria-label="Sections"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+<div class="fab-panel" id="fabPanel">
+  <div class="fab-panel-header">Sections</div>
+  <button data-target="what-is-routing"><span class="fab-num">1</span><span class="fab-dot"></span>What is routing?</button>
+  <button data-target="endpoint-routing"><span class="fab-num">2</span><span class="fab-dot"></span>Endpoint routing middleware</button>
+  <button data-target="route-templates"><span class="fab-num">3</span><span class="fab-dot"></span>Route templates</button>
+  <button data-target="params-literals"><span class="fab-num">4</span><span class="fab-dot"></span>Parameters &amp; literals</button>
+  <button data-target="optional-defaults"><span class="fab-num">5</span><span class="fab-dot"></span>Optional &amp; default values</button>
+  <button data-target="constraints"><span class="fab-num">6</span><span class="fab-dot"></span>Route constraints</button>
+  <button data-target="catch-all"><span class="fab-num">7</span><span class="fab-dot"></span>Catch-all parameters</button>
+  <button data-target="link-generation"><span class="fab-num">8</span><span class="fab-dot"></span>Generating URLs</button>
+  <button data-target="link-generator"><span class="fab-num">9</span><span class="fab-dot"></span>LinkGenerator service</button>
+  <button data-target="iresults-redirect"><span class="fab-num">10</span><span class="fab-dot"></span>Redirects with IResults</button>
+  <button data-target="route-options"><span class="fab-num">11</span><span class="fab-dot"></span>RouteOptions</button>
+</div>
 </body>
 </html>

@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 4 — Middleware Pipeline</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
  <div class="course-wrap">
 
 <nav class="sidebar">
@@ -50,6 +59,63 @@
   </div>
 
   <!-- SECTION 1 -->
+
+  <!-- Pipeline scenarios from book 4.2 -->
+  <section class="section" id="pipeline-scenarios">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Simple Pipeline Scenarios</h2>
+    </div>
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'tab-welcome4')">Scenario 1: Welcome Page</button>
+        <button class="tab-btn" onclick="tab(this,'tab-static4')">Scenario 2: Static Files</button>
+        <button class="tab-btn" onclick="tab(this,'tab-wwwroot4')">wwwroot Folder</button>
+      </div>
+      <div id="tab-welcome4" class="tab-panel active" style="padding:20px 0">
+        <p>The simplest possible pipeline: a single middleware that returns the same HTML response to every request, regardless of URL.</p>
+        <div class="code-block" style="border-radius:var(--radius);">
+          <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Listing 4.1 — Welcome page pipeline</span></div>
+          <div class="code-body"><span class="kw">var</span> builder = WebApplication.CreateBuilder(args);
+<span class="kw">var</span> app = builder.Build();
+
+app.<span class="fn">UseWelcomePage</span>();  <span class="cm">// handles ALL requests with a static HTML page</span>
+
+app.Run();</div>
+        </div>
+        <div class="callout info"><div class="callout-icon">🔧</div><div class="callout-body"><div class="callout-title">The Use* convention</div><div class="callout-text">Each middleware exposes a <code>Use*()</code> extension method on <code>WebApplication</code>. Under the hood, <code>UseWelcomePage()</code> calls <code>UseMiddleware&lt;WelcomePageMiddleware&gt;()</code>. The <code>Use*</code> prefix is a convention that aids discoverability via IntelliSense — type <code>app.Use</code> in Visual Studio to see all available middleware.</div></div></div>
+      </div>
+      <div id="tab-static4" class="tab-panel" style="padding:20px 0">
+        <p><code>StaticFileMiddleware</code> serves files from the <code>wwwroot</code> folder. If the file exists, it returns it. If not, the request falls through to the next middleware (ultimately a 404).</p>
+        <div class="code-block" style="border-radius:var(--radius);">
+          <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Listing 4.2 — Static file pipeline</span></div>
+          <div class="code-body"><span class="kw">var</span> builder = WebApplication.CreateBuilder(args);
+<span class="kw">var</span> app = builder.Build();
+
+app.<span class="fn">UseStaticFiles</span>();  <span class="cm">// serves files from wwwroot/</span>
+
+app.Run();
+
+<span class="cm">// GET /moon.jpg    → returns wwwroot/moon.jpg (200 OK)</span>
+<span class="cm">// GET /missing.jpg → 404 Not Found (file doesn't exist)</span></div>
+        </div>
+        <div class="callout tip"><div class="callout-icon">💡</div><div class="callout-body"><div class="callout-title">Automatic 404 at end of pipeline</div><div class="callout-text">ASP.NET Core automatically adds a dummy piece of middleware to the <em>end</em> of every pipeline. This dummy middleware always returns a 404. So if no earlier middleware handles the request, the user gets a clean 404 response — not an unhandled exception or a crash.</div></div></div>
+      </div>
+      <div id="tab-wwwroot4" class="tab-panel" style="padding:20px 0">
+        <div class="callout warn"><div class="callout-icon">📁</div><div class="callout-body"><div class="callout-title">The wwwroot folder — the web root</div><div class="callout-text">By default, <code>wwwroot</code> is the <strong>only folder</strong> ASP.NET Core will serve files from. It does not serve files from other folders for security reasons. The <code>wwwroot</code> folder is deployed as-is to production. Store your CSS, JavaScript, images, and other static assets here.</div></div></div>
+        <table class="data-table">
+          <thead><tr><th>File location</th><th>URL path</th><th>Served?</th></tr></thead>
+          <tbody>
+            <tr><td><code>wwwroot/images/logo.png</code></td><td><code>/images/logo.png</code></td><td><span class="pill green">✓ Yes</span></td></tr>
+            <tr><td><code>wwwroot/css/site.css</code></td><td><code>/css/site.css</code></td><td><span class="pill green">✓ Yes</span></td></tr>
+            <tr><td><code>Pages/Index.cshtml</code></td><td>any</td><td><span class="pill red">✗ No</span> — not in wwwroot</td></tr>
+            <tr><td><code>appsettings.json</code></td><td>any</td><td><span class="pill red">✗ Never served</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="defining-mw">
     <div class="section-header">
       <div class="section-number">1</div>
@@ -633,18 +699,79 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
   });
 });
-</script>
 
-<nav class="mobile-chapter-nav">
-  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
-  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding</a>
-  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
-  <a href="chapter4.html" class="active"><span class="ch-num">4</span>Middleware</a>
-  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
-  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
-  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
-  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
-  <a href="chapter9.html" class=""><span class="ch-num">9</span>Services</a>
-</nav>
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+  
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+</script>
+<div class="fab-panel" id="fabPanel">
+  <div class="fab-panel-header">Sections</div>
+  <button data-target="defining-mw"><span class="fab-num">1</span><span class="fab-dot"></span>Defining middleware</button>
+  <button data-target="httpcontext"><span class="fab-num">2</span><span class="fab-dot"></span>HttpContext object</button>
+  <button data-target="holding-page"><span class="fab-num">3</span><span class="fab-dot"></span>Holding page</button>
+  <button data-target="static-files"><span class="fab-num">4</span><span class="fab-dot"></span>Static files</button>
+  <button data-target="status-codes"><span class="fab-num">5</span><span class="fab-dot"></span>HTTP status codes</button>
+  <button data-target="minimal-api"><span class="fab-num">6</span><span class="fab-dot"></span>Minimal API in pipeline</button>
+</div>
 </body>
 </html>

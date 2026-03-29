@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 2 — Understanding Core</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
 <div class="course-wrap">
 
 <nav class="sidebar">
@@ -21,6 +30,7 @@
     <button class="nav-link" data-target="why-created" onclick="scrollPageTo('why-created')"><span class="dot"></span>Why ASP.NET Core was created</button>
     <button class="nav-link" data-target="dotnet-platform" onclick="scrollPageTo('dotnet-platform')"><span class="dot"></span>.NET 7 / .NET 8 platform</button>
     <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel hosting model</button>
+    <button class="nav-link" data-target="when-to-choose" onclick="scrollPageTo('when-to-choose')"><span class="dot"></span>When to Choose ASP.NET Core</button>
     <button class="nav-link" data-target="nuget" onclick="scrollPageTo('nuget')"><span class="dot"></span>NuGet package manager</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
@@ -357,10 +367,61 @@
     </div>
 
   </section>
-  <!-- SECTION 5 -->
-  <section class="section" id="nuget">
+
+  <!-- SECTION 5 — When to choose (book 2.4) -->
+  <section class="section" id="when-to-choose">
     <div class="section-header">
       <div class="section-number">5</div>
+      <h2 class="section-title">When to Choose ASP.NET Core</h2>
+    </div>
+    <p>When deciding whether to use ASP.NET Core, you have two primary dimensions: whether you're already a .NET developer, and whether you're creating a new application or converting an existing one.</p>
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Microsoft Support Policy</div>
+        <div class="callout-text">Microsoft provides full support for LTS versions of .NET for <strong>at least 3 years</strong> from release. Development is open on GitHub, so you can get answers from both the community and Microsoft directly.</div>
+      </div>
+    </div>
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'tab-newdev')">New to .NET</button>
+        <button class="tab-btn" onclick="tab(this,'tab-existdev')">.NET Framework Dev</button>
+        <button class="tab-btn" onclick="tab(this,'tab-convert')">Converting an App</button>
+      </div>
+      <div id="tab-newdev" class="tab-panel active" style="padding:20px 0">
+        <p>If you're new to .NET, you're joining at a great time. The framework is stable, high-performance, and cross-platform.</p>
+        <div class="compare-grid">
+          <div class="compare-card"><div class="compare-card-header neutral">🌐 Cross-Platform &amp; Containers</div><div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">Build and run on Mac, Windows, and Linux. ASP.NET Core is perfect for lightweight Docker container deployments — far lighter than virtual machines. The compile-once, run-anywhere promise is finally fully realized with .NET 7.</div></div>
+          <div class="compare-card"><div class="compare-card-header neutral">⚡ Self-Contained Deployment</div><div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">Package the .NET runtime <em>inside</em> your app (SCD — Self-Contained Deployment). The target machine doesn't need .NET installed. Deploy cross-platform with zero prerequisites.</div></div>
+          <div class="compare-card"><div class="compare-card-header neutral">🔧 Familiar Design Patterns</div><div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">Uses well-known patterns: MVC (Ruby on Rails), middleware pipeline (Node.js), dependency injection. If these are familiar from other frameworks, you'll feel at home immediately.</div></div>
+          <div class="compare-card"><div class="compare-card-header neutral">🚀 TechEmpower Benchmarks</div><div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">In TechEmpower round 20, ASP.NET Core with Kestrel ranked <strong>among the 10 fastest of 400+ frameworks</strong>. Performance is a primary focus — many improvements come from open-source contributors on GitHub.</div></div>
+        </div>
+      </div>
+      <div id="tab-existdev" class="tab-panel" style="padding:20px 0">
+        <p>ASP.NET Core and .NET 7 are now mature, stable platforms. It's time to use them for new apps.</p>
+        <div class="callout tip"><div class="callout-icon">✅</div><div class="callout-body"><div class="callout-title">Cross-platform = cheaper Linux cloud hosting</div><div class="callout-text">If you aren't using Windows-specific constructs (Registry, Directory Services), cross-platform deployment opens the door to <strong>cheaper Linux hosting</strong> or developing natively on macOS without a VM.</div></div></div>
+        <div class="callout warn"><div class="callout-icon">⚠️</div><div class="callout-body"><div class="callout-title">Windows Compatibility Pack</div><div class="callout-text">Windows-specific features like the Registry are available via a <strong>Compatibility Pack</strong> — but <em>only</em> when running on Windows, not Linux/macOS. Take care that such apps run only in a Windows environment.</div></div></div>
+        <div class="callout info"><div class="callout-icon">📦</div><div class="callout-body"><div class="callout-title">Modular pay-for-play architecture</div><div class="callout-text">ASP.NET Core is highly modular. You start with a bare-bones app and add only the libraries you need. Even MVC is an optional package. Key built-ins: middleware pipeline, DI, configuration, logging, async by default.</div></div></div>
+      </div>
+      <div id="tab-convert" class="tab-panel" style="padding:20px 0">
+        <p>Converting an existing app should always have a tangible benefit. These scenarios make conversion <strong>more difficult</strong>:</p>
+        <div class="callout danger"><div class="callout-icon">🚫</div><div class="callout-body"><div class="callout-title">Hard to convert — avoid direct migration</div><div class="callout-text"><strong>Web Forms</strong> — tied to System.Web.dll and IIS. Converting means a complete rewrite. Consider migrating gradually to <strong>Blazor Server</strong> instead.<br><br><strong>WCF Server</strong> — only partially supported. Consider <strong>gRPC</strong> as a modern RPC alternative with similar concepts.<br><br><strong>Large MVC apps with advanced extensibility</strong> — porting may require significant rethinking. Microsoft itself says this is "at least as big a rewrite as porting from Web Forms to MVC."</div></div></div>
+        <div class="callout tip"><div class="callout-icon">🌿</div><div class="callout-body"><div class="callout-title">Strangler Fig Pattern — migrate incrementally</div><div class="callout-text">Use <strong>System.Web adapters</strong>, Microsoft's <strong>YARP</strong> reverse proxy, and Visual Studio tooling to migrate one page or API at a time. This reduces risk by avoiding a big-bang rewrite. Best opportunity: small greenfield projects or apps needing significant future development.</div></div></div>
+        <table class="data-table"><thead><tr><th>Scenario</th><th>Recommendation</th></tr></thead><tbody>
+          <tr><td>Rarely used / not core business</td><td><span class="pill yellow">Don't convert</span> — .NET Framework is supported for the foreseeable future</td></tr>
+          <tr><td>Small app needing future development</td><td><span class="pill green">Good candidate</span> — use strangler fig pattern</td></tr>
+          <tr><td>New greenfield project</td><td><span class="pill green">Always use ASP.NET Core</span></td></tr>
+          <tr><td>Web Forms app</td><td><span class="pill blue">Consider Blazor Server</span> — similar component model</td></tr>
+          <tr><td>WCF Server app</td><td><span class="pill blue">Consider gRPC</span> — modern RPC with similar concepts</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="section" id="nuget">
+    <div class="section-header">
+      <div class="section-number">6</div>
       <h2 class="section-title">NuGet — The .NET Package Manager</h2>
     </div>
 
@@ -498,18 +559,72 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
   });
 });
-</script>
 
-<nav class="mobile-chapter-nav">
-  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
-  <a href="chapter2.html" class="active"><span class="ch-num">2</span>Understanding</a>
-  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
-  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
-  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
-  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
-  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
-  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
-  <a href="chapter9.html" class=""><span class="ch-num">9</span>Services</a>
-</nav>
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+</script>
+<button class="fab-sections" id="fabSections" aria-label="Sections"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+<div class="fab-panel" id="fabPanel">
+  <div class="fab-panel-header">Sections</div>
+  <button data-target="web-framework"><span class="fab-num">1</span><span class="fab-dot"></span>Using a web framework</button>
+  <button data-target="why-created"><span class="fab-num">2</span><span class="fab-dot"></span>Why ASP.NET Core was created</button>
+  <button data-target="dotnet-platform"><span class="fab-num">3</span><span class="fab-dot"></span>.NET 7 / .NET 8 platform</button>
+  <button data-target="kestrel"><span class="fab-num">4</span><span class="fab-dot"></span>Kestrel hosting model</button>
+  <button data-target="when-to-choose"><span class="fab-num">5</span><span class="fab-dot"></span>When to Choose ASP.NET Core</button>
+  <button data-target="nuget"><span class="fab-num">6</span><span class="fab-dot"></span>NuGet package manager</button>
+</div>
 </body>
 </html>

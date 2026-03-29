@@ -31,14 +31,14 @@
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
-      <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
     <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
     <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
     <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
-     <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
-    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
-    <a class="nav-link active" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link " href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+       <a class="nav-link active" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
     <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
   </div>
 </nav>
@@ -654,25 +654,94 @@ window.addEventListener('scroll', () => {
   const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
   document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
 });
-document.querySelectorAll('.nav-link').forEach(link => {
+document.querySelectorAll('.nav-link[data-target]').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
     const targetId = link.getAttribute('data-target');
     scrollPageTo(targetId);
   });
 });
-</script>
 
-<nav class="mobile-chapter-nav">
-  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
-  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding</a>
-  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
-  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
-  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
-  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
-  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
-  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
-  <a href="chapter9.html" class="active"><span class="ch-num">9</span>Services</a>
-</nav>
+
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+</script>
+<div class="fab-panel" id="fabPanel">
+  <div class="fab-panel-header">Sections</div>
+
+  <button data-target="solid"><span class="fab-num">1</span><span class="fab-dot"></span>SOLID Principles</button>
+
+  <button data-target="without-di"><span class="fab-num">2</span><span class="fab-dot"></span>The Problem Without DI</button>
+
+  <button data-target="problems"><span class="fab-num">3</span><span class="fab-dot"></span>Problems in Tight Coupling</button>
+
+  <button data-target="with-di"><span class="fab-num">4</span><span class="fab-dot"></span>How DI Solves It</button>
+
+  <button data-target="loose-coupling"><span class="fab-num">5</span><span class="fab-dot"></span>Loose Coupling & Interfaces</button>
+
+  <button data-target="registration"><span class="fab-num">6</span><span class="fab-dot"></span>Registration</button>
+
+  <button data-target="aspnetcore-di"><span class="fab-num">7</span><span class="fab-dot"></span>DI in ASP.NET Core</button>
+
+  <button data-target="framework-services"><span class="fab-num">8</span><span class="fab-dot"></span>Framework Services</button>
+
+  <button data-target="using-services"><span class="fab-num">9</span><span class="fab-dot"></span>Using Services</button>
+
+  <button data-target="iserviceprovider"><span class="fab-num">10</span><span class="fab-dot"></span>IServiceProvider</button>
+
+</div>
 </body>
 </html>
