@@ -7,6 +7,15 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 8 — Dependency Injection</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
 <div class="course-wrap">
 
 <!-- ── Sidebar ── -->
@@ -22,6 +31,7 @@
     <button class="nav-link" data-target="without-di" onclick="scrollPageTo('without-di')"><span class="dot"></span>The Problem Without DI</button>
     <button class="nav-link" data-target="problems" onclick="scrollPageTo('problems')"><span class="dot"></span>Problems in Tight Coupling</button>
     <button class="nav-link" data-target="with-di" onclick="scrollPageTo('with-di')"><span class="dot"></span>How DI Solves It</button>
+    <button class="nav-link" data-target="ioc-container" onclick="scrollPageTo('ioc-container')"><span class="dot"></span>IoC Container — building the graph</button>
     <button class="nav-link" data-target="loose-coupling" onclick="scrollPageTo('loose-coupling')"><span class="dot"></span>Loose Coupling &amp; Interfaces</button>
     <button class="nav-link" data-target="registration" onclick="scrollPageTo('registration')"><span class="dot"></span>Registration</button>
     <button class="nav-link" data-target="aspnetcore-di" onclick="scrollPageTo('aspnetcore-di')"><span class="dot"></span>DI in ASP.NET Core</button>
@@ -31,14 +41,14 @@
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
-    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+      <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
     <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
     <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
     <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
-    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
-    <a class="nav-link " href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
-       <a class="nav-link active" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+     <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link active" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
     <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
   </div>
 </nav>
@@ -277,6 +287,47 @@ app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>, (<span
 
 
   <!-- ══ SECTION 5 ══ -->
+
+  <!-- IoC Container formal definition — from book 8 -->
+  <section class="section" id="ioc-container">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">The IoC Container — How It Builds the Graph</h2>
+    </div>
+    <p>The <strong>DI container</strong> (also called an <strong>IoC container</strong> — Inversion of Control) is a single-responsibility component: its only job is creating objects and managing their lifetimes. You tell it <em>what</em> to create and <em>how long</em> to keep it; it figures out <em>how</em> to create the full dependency graph.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0;">
+      <div style="text-align:center;font-size:13px;font-family:var(--mono);">
+        <div style="color:var(--text3);margin-bottom:8px;">You ask the container for:</div>
+        <div style="display:inline-block;padding:10px 20px;background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.3);border-radius:8px;color:var(--accent);font-weight:700;">RegisterUser handler</div>
+        <div style="color:var(--text3);margin:8px 0;">↓ container resolves automatically</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:400px;margin:0 auto;">
+          <div style="padding:8px;background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.3);border-radius:6px;color:var(--accent2);font-size:12px;text-align:center;">IEmailSender<br><span style="color:var(--text3);font-size:10px;">→ EmailSender</span></div>
+          <div style="padding:8px;background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.3);border-radius:6px;color:var(--accent2);font-size:12px;text-align:center;">NetworkClient<br><span style="color:var(--text3);font-size:10px;">→ NetworkClient</span></div>
+          <div style="padding:8px;background:rgba(124,106,247,.1);border:1px solid rgba(124,106,247,.3);border-radius:6px;color:var(--accent2);font-size:12px;text-align:center;">MessageFactory<br><span style="color:var(--text3);font-size:10px;">→ MessageFactory</span></div>
+        </div>
+        <div style="color:var(--text3);margin:8px 0;">↓ and their dependencies</div>
+        <div style="display:inline-block;padding:8px 16px;background:rgba(45,164,78,.1);border:1px solid rgba(45,164,78,.3);border-radius:6px;color:var(--green);font-size:12px;">EmailServerSettings (singleton)</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-body">
+        <div class="callout-title">Inversion of Control — why it's called IoC</div>
+        <div class="callout-text">Traditionally, your code <em>creates</em> its dependencies (<code>new EmailSender()</code>). With IoC, this is <strong>inverted</strong>: the container creates dependencies and <em>provides</em> them to your code. You've surrendered control of object creation to the framework — hence "Inversion of Control." DI is one implementation of the IoC principle.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🏗️</div>
+      <div class="callout-body">
+        <div class="callout-title">RequestDelegateFactory — the bridge between DI and handlers</div>
+        <div class="callout-text"><code>RequestDelegateFactory</code> is the ASP.NET Core component that inspects your minimal API handler parameters. When it sees a type registered in the DI container, it calls the container to resolve it. When it sees a simple type or route parameter, it binds from the HTTP request. You never interact with it directly, but it's always working behind the scenes.</div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" id="loose-coupling">
     <div class="section-header">
       <div class="section-number">5</div>
@@ -564,7 +615,7 @@ builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmail
 
 <span class="cm">// app.Services is an IServiceProvider — the DI container's public API</span>
 <span class="kw">var</span> sender = app.Services.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IEmailSender</span>&gt;();
-sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3352575e5a5d73564b525e435f561d505c5e">[email&#160;protected]</a>"</span>); <span class="cm">// send startup notification</span>
+sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b0a0f0602052b0e130a061b070e45080406">[email&#160;protected]</a>"</span>); <span class="cm">// send startup notification</span>
 
 app.<span class="fn">Run</span>();</div>
     </div>
@@ -596,7 +647,63 @@ app.<span class="fn">Run</span>();</div>
 </main>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── FAB ──
+(function(){
+  var btn   = document.getElementById('fabSections');
+  var panel = document.getElementById('fabPanel');
+  if(!btn||!panel) return;
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(){panel.classList.remove('open');});
+  panel.addEventListener('click',function(e){e.stopPropagation();});
+  // sync active
+  var fabLinks = panel.querySelectorAll('[data-target]');
+  if(fabLinks.length){
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          fabLinks.forEach(function(l){l.classList.remove('active');});
+          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
+          if(l) l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
+  }
+  fabLinks.forEach(function(l){
+    l.addEventListener('click',function(){
+      var id=l.getAttribute('data-target');
+      var el=document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth'});
+      panel.classList.remove('open');
+    });
+  });
+})();
+
+// ── Mobile progress ──
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+
+</script><script>
 const feedbackOk = {
   'quiz-di1': "Correct! This is tight coupling in action. Every place that does new EmailSender() knows the concrete constructor signature. Add a parameter there and every call site breaks. DI solves this — you only update the registration, and every consumer gets the updated object automatically.",
   'quiz-di2': "Correct! Both classes implement IEmailSender, so they satisfy the same contract. The handler only knows about the interface — it doesn't care which concrete class is behind it. This is the Liskov Substitution Principle at work, and it's what makes DI so powerful for testing.",
@@ -657,91 +764,10 @@ window.addEventListener('scroll', () => {
 document.querySelectorAll('.nav-link[data-target]').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
-    const targetId = link.getAttribute('data-target');
-    scrollPageTo(targetId);
+    const target = link.getAttribute('data-target');
+    scrollPageTo(target);
   });
 });
-
-
-// ── Mobile drawer ──
-(function(){
-  var overlay = document.querySelector('.sidebar-overlay');
-  var sidebar = document.querySelector('.sidebar');
-  if(!overlay||!sidebar) return;
-  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
-  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
-  overlay.addEventListener('click', closeDrawer);
-  document.querySelectorAll('.nav-link').forEach(function(l){
-    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
-  });
-})();
-
-// ── FAB ──
-(function(){
-  var btn   = document.getElementById('fabSections');
-  var panel = document.getElementById('fabPanel');
-  if(!btn||!panel) return;
-  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
-  document.addEventListener('click',function(){panel.classList.remove('open');});
-  panel.addEventListener('click',function(e){e.stopPropagation();});
-  // sync active
-  var fabLinks = panel.querySelectorAll('[data-target]');
-  if(fabLinks.length){
-    var fo = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){
-          fabLinks.forEach(function(l){l.classList.remove('active');});
-          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
-          if(l) l.classList.add('active');
-        }
-      });
-    },{rootMargin:'-20% 0px -70% 0px'});
-    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
-  }
-  fabLinks.forEach(function(l){
-    l.addEventListener('click',function(){
-      var id=l.getAttribute('data-target');
-      var el=document.getElementById(id);
-      if(el) el.scrollIntoView({behavior:'smooth'});
-      panel.classList.remove('open');
-    });
-  });
-})();
-
-// ── Mobile progress ──
-(function(){
-  var fill = document.getElementById('mobileProgressFill');
-  if(!fill) return;
-  window.addEventListener('scroll',function(){
-    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
-    fill.style.width=Math.min(pct,100)+'%';
-  });
-})();
-
 </script>
-<!-- <div class="fab-panel" id="fabPanel">
-  <div class="fab-panel-header">Sections</div>
-
-  <button data-target="solid"><span class="fab-num">1</span><span class="fab-dot"></span>SOLID Principles</button>
-
-  <button data-target="without-di"><span class="fab-num">2</span><span class="fab-dot"></span>The Problem Without DI</button>
-
-  <button data-target="problems"><span class="fab-num">3</span><span class="fab-dot"></span>Problems in Tight Coupling</button>
-
-  <button data-target="with-di"><span class="fab-num">4</span><span class="fab-dot"></span>How DI Solves It</button>
-
-  <button data-target="loose-coupling"><span class="fab-num">5</span><span class="fab-dot"></span>Loose Coupling & Interfaces</button>
-
-  <button data-target="registration"><span class="fab-num">6</span><span class="fab-dot"></span>Registration</button>
-
-  <button data-target="aspnetcore-di"><span class="fab-num">7</span><span class="fab-dot"></span>DI in ASP.NET Core</button>
-
-  <button data-target="framework-services"><span class="fab-num">8</span><span class="fab-dot"></span>Framework Services</button>
-
-  <button data-target="using-services"><span class="fab-num">9</span><span class="fab-dot"></span>Using Services</button>
-
-  <button data-target="iserviceprovider"><span class="fab-num">10</span><span class="fab-dot"></span>IServiceProvider</button>
-
-</div> -->
 </body>
 </html>
