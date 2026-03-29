@@ -459,91 +459,101 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
 /* ── Responsive ── */
 
-/* hamburger hidden by default on all screen sizes */
-.menu-toggle { display: none; }
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 998;
-}
-.sidebar-overlay.show { display: block; }
+/* Hamburger — permanently gone */
+.menu-toggle { display: none !important; }
+.sidebar-overlay { display: none !important; }
+
+/* ── Bottom chapter nav (mobile only, hidden on desktop) ── */
+.mobile-chapter-nav { display: none; }
 
 @media (max-width: 900px) {
 
-  /* ── Layout: sidebar becomes sticky top bar ── */
-  .course-wrap { flex-direction: column; }
+  /* ── Overall layout ── */
+  .course-wrap {
+    flex-direction: column;
+    padding-bottom: 64px; /* room for bottom nav */
+  }
 
+  /* ── Sidebar → sticky top bar ── */
   .sidebar {
     width: 100%;
     height: auto;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
     border-right: none;
-    border-bottom: 2px solid var(--border);
+    border-bottom: 1px solid var(--border);
     padding: 0;
     overflow: visible;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    background: var(--bg2);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
   }
 
-  /* ── Top strip: course title + chapter label ── */
+  /* Top strip: ASP.NET Core 8 · Chapter X */
   .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
+    gap: 8px;
+    padding: 10px 16px 8px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 0;
   }
   .sidebar-logo .course-title {
     font-size: 10px;
     letter-spacing: .1em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .sidebar-logo .course-title::after {
+    content: ' ·';
+    color: var(--text3);
   }
   .sidebar-logo .chapter-label {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     margin-top: 0;
+    color: var(--text);
+    white-space: nowrap;
   }
+  /* Progress bar becomes a thin line under the top strip */
   .progress-bar {
     height: 2px;
     margin: 0;
     border-radius: 0;
+    background: var(--border);
   }
 
-  /* ── Sections nav: horizontal scrollable pill row ── */
-  .nav-section {
-    padding: 8px 12px;
-    margin-bottom: 0;
-  }
+  /* Chapters nav section → hidden (replaced by bottom nav) */
   .nav-section:last-child { display: none; }
   .nav-section-title { display: none; }
 
+  /* Sections nav → horizontal scrollable pill row */
   .nav-section:first-of-type {
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-bottom: 0;
   }
   .nav-section:first-of-type::-webkit-scrollbar { display: none; }
 
   .nav-link {
     display: inline-flex;
-    width: auto;
     flex-shrink: 0;
+    width: auto;
     padding: 5px 13px;
     border-radius: 20px;
     font-size: 12px;
     border: 1px solid var(--border);
-    background: var(--bg3);
+    background: var(--bg);
     white-space: nowrap;
+    color: var(--text2);
   }
   .nav-link .dot { display: none; }
   .nav-link.active {
@@ -553,16 +563,65 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     font-weight: 600;
   }
 
+  /* ── Bottom chapter navigation bar ── */
+  .mobile-chapter-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
+    padding: 0 4px;
+  }
+  .mobile-chapter-nav::-webkit-scrollbar { display: none; }
+  .mobile-chapter-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text3);
+    text-decoration: none;
+    border-top: 2px solid transparent;
+    transition: all .15s;
+    white-space: nowrap;
+    min-width: 60px;
+  }
+  .mobile-chapter-nav a .ch-num {
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text2);
+    margin-bottom: 2px;
+  }
+  .mobile-chapter-nav a.active {
+    color: var(--accent);
+    border-top-color: var(--accent);
+  }
+  .mobile-chapter-nav a.active .ch-num {
+    color: var(--accent);
+  }
+
   /* ── Main content ── */
   .main {
     max-width: 100%;
-    padding: 24px 16px 48px;
+    padding: 20px 16px 48px;
   }
 
   /* ── Typography ── */
   .chapter-title { font-size: 22px; }
   .chapter-subtitle { font-size: 14px; }
   .section-title { font-size: 17px; }
+  .chapter-header { margin-bottom: 28px; padding-bottom: 20px; }
 
   /* ── Grids ── */
   .compare-grid { grid-template-columns: 1fr; }
@@ -572,7 +631,4 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
   /* ── Tables ── */
   .data-table { display: block; overflow-x: auto; white-space: nowrap; }
-
-  /* ── Chapter header ── */
-  .chapter-header { margin-bottom: 32px; padding-bottom: 24px; }
 }

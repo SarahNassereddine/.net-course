@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
-<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('show')">☰</button>
-<div class="sidebar-overlay" onclick="document.querySelector('.sidebar').classList.remove('open'); this.classList.remove('show')"></div>
 <div class="course-wrap">
 
 <!-- Sidebar -->
@@ -493,10 +491,22 @@ document.querySelectorAll('.nav-link').forEach(link => {
   link.addEventListener('click', () => {
     if (window.innerWidth <= 900) {
       document.querySelector('.sidebar').classList.remove('open');
-      document.querySelector('.sidebar-overlay').classList.remove('show');
+      
     }
   });
 });
 </script>
+
+<nav class="mobile-chapter-nav">
+  <a href="index.html" class="active"><span class="ch-num">1</span>Getting Started</a>
+  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding Core</a>
+  <a href="chapter3.html" class=""><span class="ch-num">3</span>Your First App</a>
+  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
+  <a href="chapter5.html" class=""><span class="ch-num">5</span>Minimal APIs</a>
+  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
+  <a href="chapter7.html" class=""><span class="ch-num">7</span>Model Binding</a>
+  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro to DI</a>
+  <a href="chapter9.html" class=""><span class="ch-num">9</span>Registering</a>
+</nav>
 </body>
 </html>
