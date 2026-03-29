@@ -476,7 +476,7 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-section .nav-link').forEach(link => {
+      document.querySelectorAll('.nav-section[onclick]').forEach(link => {
         link.classList.remove('active');
       });
 
