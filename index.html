@@ -18,11 +18,11 @@
   </div>
   <div class="nav-section">
     <div class="nav-section-title">Sections</div>
-    <button class="nav-link active" onclick="scrollPageTo('what-is')"><span class="dot"></span>What is ASP.NET Core?</button>
-    <button class="nav-link" onclick="scrollPageTo('app-types')"><span class="dot"></span>Application types</button>
-    <button class="nav-link" onclick="scrollPageTo('choosing')"><span class="dot"></span>Choosing ASP.NET Core</button>
-    <button class="nav-link" onclick="scrollPageTo('how-it-works')"><span class="dot"></span>How it works</button>
-    <button class="nav-link" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel & request flow</button>
+    <button class="nav-link active" data-target="what-is" onclick="scrollPageTo('what-is')"><span class="dot"></span>What is ASP.NET Core?</button>
+    <button class="nav-link" data-target="app-types" onclick="scrollPageTo('app-types')"><span class="dot"></span>Application types</button>
+    <button class="nav-link" data-target="choosing" onclick="scrollPageTo('choosing')"><span class="dot"></span>Choosing ASP.NET Core</button>
+    <button class="nav-link" data-target="how-it-works" onclick="scrollPageTo('how-it-works')"><span class="dot"></span>How it works</button>
+    <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel & request flow</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
@@ -469,24 +469,20 @@ const observerOptions = {
   rootMargin: '-20% 0px -70% 0px',
   threshold: 0
 };
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-section[onclick]').forEach(link => {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
         link.classList.remove('active');
       });
-
       const id = entry.target.getAttribute('id');
       const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
-      
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
   });
 }, observerOptions);
-
 
 document.querySelectorAll('section.section').forEach(section => {
   observer.observe(section);

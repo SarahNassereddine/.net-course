@@ -17,12 +17,12 @@
   </div>
   <div class="nav-section">
     <div class="nav-section-title">Sections</div>
-    <button class="nav-link active" onclick="scrollPageTo('overview')"><span class="dot"></span>Application overview</button>
-    <button class="nav-link" onclick="scrollPageTo('project-layout')"><span class="dot"></span>Project layout</button>
-    <button class="nav-link" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
-    <button class="nav-link" onclick="scrollPageTo('program-cs')"><span class="dot"></span>Program.cs</button>
-    <button class="nav-link" onclick="scrollPageTo('adding-features')"><span class="dot"></span>Adding functionality</button>
-    <button class="nav-link" onclick="scrollPageTo('services')"><span class="dot"></span>Services</button>
+    <button class="nav-link active" data-target="overview" onclick="scrollPageTo('overview')"><span class="dot"></span>Application overview</button>
+    <button class="nav-link" data-target="project-layout" onclick="scrollPageTo('project-layout')"><span class="dot"></span>Project layout</button>
+    <button class="nav-link" data-target="csproj" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
+    <button class="nav-link" data-target="program-cs" onclick="scrollPageTo('program-cs')"><span class="dot"></span>Program.cs</button>
+    <button class="nav-link" data-target="adding-features" onclick="scrollPageTo('adding-features')"><span class="dot"></span>Adding functionality</button>
+    <button class="nav-link" data-target="services" onclick="scrollPageTo('services')"><span class="dot"></span>Services</button>
     <button class="nav-link" onclick="scrollPageTo('middleware')"><span class="dot"></span>Middleware &amp; endpoints</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
@@ -562,20 +562,17 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-section[onclick]').forEach(link => {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
         link.classList.remove('active');
       });
-
       const id = entry.target.getAttribute('id');
       const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
-      
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
   });
 }, observerOptions);
-
 
 document.querySelectorAll('section.section').forEach(section => {
   observer.observe(section);

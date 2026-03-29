@@ -17,11 +17,11 @@
   </div>
   <div class="nav-section">
     <div class="nav-section-title">Sections</div>
-    <button class="nav-link active" onclick="scrollPageTo('web-framework')"><span class="dot"></span>Using a web framework</button>
-    <button class="nav-link" onclick="scrollPageTo('why-created')"><span class="dot"></span>Why ASP.NET Core was created</button>
-    <button class="nav-link" onclick="scrollPageTo('dotnet')"><span class="dot"></span>.NET 7 / .NET 8 platform</button>
-    <button class="nav-link" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel hosting model</button>
-    <button class="nav-link" onclick="scrollPageTo('nuget')"><span class="dot"></span>NuGet package manager</button>
+    <button class="nav-link active" data-target="web-framework" onclick="scrollPageTo('web-framework')"><span class="dot"></span>Using a web framework</button>
+    <button class="nav-link" data-target="why-created" onclick="scrollPageTo('why-created')"><span class="dot"></span>Why ASP.NET Core was created</button>
+    <button class="nav-link" data-target="dotnet-platform" onclick="scrollPageTo('dotnet-platform')"><span class="dot"></span>.NET 7 / .NET 8 platform</button>
+    <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel hosting model</button>
+    <button class="nav-link" data-target="nuget" onclick="scrollPageTo('nuget')"><span class="dot"></span>NuGet package manager</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
@@ -472,24 +472,20 @@ const observerOptions = {
   rootMargin: '-20% 0px -70% 0px',
   threshold: 0
 };
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-section[onclick]').forEach(link => {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
         link.classList.remove('active');
       });
-
       const id = entry.target.getAttribute('id');
       const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
-      
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
   });
 }, observerOptions);
-
 
 document.querySelectorAll('section.section').forEach(section => {
   observer.observe(section);

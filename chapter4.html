@@ -17,12 +17,12 @@
   </div>
   <div class="nav-section">
     <div class="nav-section-title">Sections</div>
-    <button class="nav-link active" onclick="scrollPageTo('defining-mw')"><span class="dot"></span>Defining middleware</button>
-    <button class="nav-link" onclick="scrollPageTo('httpcontext')"><span class="dot"></span>HttpContext object</button>
-    <button class="nav-link" onclick="scrollPageTo('holding-page')"><span class="dot"></span>Holding page</button>
-    <button class="nav-link" onclick="scrollPageTo('static-files')"><span class="dot"></span>Static files</button>
-    <button class="nav-link" onclick="scrollPageTo('status-codes')"><span class="dot"></span>HTTP status codes</button>
-    <button class="nav-link" onclick="scrollPageTo('minimal-api')"><span class="dot"></span>Minimal API in pipeline</button>
+    <button class="nav-link active" data-target="defining-mw" onclick="scrollPageTo('defining-mw')"><span class="dot"></span>Defining middleware</button>
+    <button class="nav-link" data-target="httpcontext" onclick="scrollPageTo('httpcontext')"><span class="dot"></span>HttpContext object</button>
+    <button class="nav-link" data-target="holding-page" onclick="scrollPageTo('holding-page')"><span class="dot"></span>Holding page</button>
+    <button class="nav-link" data-target="static-files" onclick="scrollPageTo('static-files')"><span class="dot"></span>Static files</button>
+    <button class="nav-link" data-target="status-codes" onclick="scrollPageTo('status-codes')"><span class="dot"></span>HTTP status codes</button>
+    <button class="nav-link" data-target="minimal-api" onclick="scrollPageTo('minimal-api')"><span class="dot"></span>Minimal API in pipeline</button>
     <button class="nav-link" onclick="scrollPageTo('error-handling')"><span class="dot"></span>Error handling</button>
     <button class="nav-link" onclick="scrollPageTo('dev-exception')"><span class="dot"></span>Dev exception page</button>
     <button class="nav-link" onclick="scrollPageTo('prod-exception')"><span class="dot"></span>Production exceptions</button>
@@ -607,24 +607,20 @@ const observerOptions = {
   rootMargin: '-20% 0px -70% 0px',
   threshold: 0
 };
-
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      document.querySelectorAll('.nav-section[onclick]').forEach(link => {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
         link.classList.remove('active');
       });
-
       const id = entry.target.getAttribute('id');
       const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
-      
       if (activeLink) {
         activeLink.classList.add('active');
       }
     }
   });
 }, observerOptions);
-
 
 document.querySelectorAll('section.section').forEach(section => {
   observer.observe(section);
