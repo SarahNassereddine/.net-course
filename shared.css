@@ -459,11 +459,8 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
 /* ── Responsive ── */
 
-/* Hamburger — permanently gone */
 .menu-toggle { display: none !important; }
 .sidebar-overlay { display: none !important; }
-
-/* ── Bottom chapter nav (mobile only, hidden on desktop) ── */
 .mobile-chapter-nav { display: none; }
 
 @media (max-width: 900px) {
@@ -471,10 +468,12 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
   /* ── Overall layout ── */
   .course-wrap {
     flex-direction: column;
-    padding-bottom: 64px; /* room for bottom nav */
+    padding-bottom: 72px;
   }
 
-  /* ── Sidebar → sticky top bar ── */
+  /* ════════════════════════════════
+     TOP BAR — sticky header
+  ════════════════════════════════ */
   .sidebar {
     width: 100%;
     height: auto;
@@ -488,53 +487,53 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     display: flex;
     flex-direction: column;
     background: var(--bg2);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
 
-  /* Top strip: ASP.NET Core 8 · Chapter X */
+  /* Course title + chapter label row */
   .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px 8px;
+    justify-content: space-between;
+    padding: 12px 16px 10px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 0;
   }
   .sidebar-logo .course-title {
     font-size: 10px;
-    letter-spacing: .1em;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
     color: var(--accent);
-    white-space: nowrap;
-  }
-  .sidebar-logo .course-title::after {
-    content: ' ·';
-    color: var(--text3);
   }
   .sidebar-logo .chapter-label {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     margin-top: 0;
     color: var(--text);
-    white-space: nowrap;
   }
-  /* Progress bar becomes a thin line under the top strip */
+  /* thin progress line */
   .progress-bar {
     height: 2px;
     margin: 0;
     border-radius: 0;
     background: var(--border);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
-  /* Chapters nav section → hidden (replaced by bottom nav) */
+  /* Hide chapters nav — replaced by bottom bar */
   .nav-section:last-child { display: none; }
   .nav-section-title { display: none; }
 
-  /* Sections nav → horizontal scrollable pill row */
+  /* Sections row — scrollable pills */
   .nav-section:first-of-type {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
@@ -543,92 +542,114 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
   }
   .nav-section:first-of-type::-webkit-scrollbar { display: none; }
 
+  /* Section pill buttons */
   .nav-link {
     display: inline-flex;
+    align-items: center;
     flex-shrink: 0;
     width: auto;
-    padding: 5px 13px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 12px;
+    font-weight: 500;
     border: 1px solid var(--border);
     background: var(--bg);
-    white-space: nowrap;
     color: var(--text2);
+    white-space: nowrap;
+    text-decoration: none;
+    transition: all .15s;
   }
   .nav-link .dot { display: none; }
+  .nav-link:hover {
+    background: var(--bg3);
+    color: var(--text);
+  }
   .nav-link.active {
     background: rgba(0,212,170,.12);
-    border-color: rgba(0,212,170,.45);
+    border-color: rgba(0,212,170,.5);
     color: var(--accent);
     font-weight: 600;
   }
 
-  /* ── Bottom chapter navigation bar ── */
+  /* ════════════════════════════════
+     BOTTOM NAV — chapter browser
+  ════════════════════════════════ */
   .mobile-chapter-nav {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     z-index: 200;
     background: var(--bg2);
     border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
-    padding: 0 4px;
+    padding: 0;
+    height: 62px;
   }
   .mobile-chapter-nav::-webkit-scrollbar { display: none; }
+
   .mobile-chapter-nav a {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    padding: 8px 10px;
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text3);
+    min-width: 68px;
+    padding: 6px 8px;
+    gap: 3px;
     text-decoration: none;
+    color: var(--text3);
+    font-size: 10px;
+    font-weight: 500;
+    font-family: var(--sans);
     border-top: 2px solid transparent;
     transition: all .15s;
     white-space: nowrap;
-    min-width: 60px;
   }
   .mobile-chapter-nav a .ch-num {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     font-family: var(--mono);
+    color: var(--text3);
+    line-height: 1;
+    transition: all .15s;
+  }
+  .mobile-chapter-nav a:hover {
     color: var(--text2);
-    margin-bottom: 2px;
+    background: var(--bg3);
+  }
+  .mobile-chapter-nav a:hover .ch-num {
+    color: var(--text);
   }
   .mobile-chapter-nav a.active {
     color: var(--accent);
     border-top-color: var(--accent);
+    background: rgba(0,212,170,.05);
   }
   .mobile-chapter-nav a.active .ch-num {
     color: var(--accent);
   }
 
-  /* ── Main content ── */
+  /* ════════════════════════════════
+     MAIN CONTENT
+  ════════════════════════════════ */
   .main {
     max-width: 100%;
-    padding: 20px 16px 48px;
+    padding: 24px 16px 48px;
   }
 
-  /* ── Typography ── */
+  .chapter-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+  }
   .chapter-title { font-size: 22px; }
   .chapter-subtitle { font-size: 14px; }
   .section-title { font-size: 17px; }
-  .chapter-header { margin-bottom: 28px; padding-bottom: 20px; }
 
-  /* ── Grids ── */
   .compare-grid { grid-template-columns: 1fr; }
-
-  /* ── Code ── */
   .code-body { font-size: 12px; }
+  .data-table { display: block; overflow-x: auto; }
 
-  /* ── Tables ── */
-  .data-table { display: block; overflow-x: auto; white-space: nowrap; }
 }

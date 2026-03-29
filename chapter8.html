@@ -7,8 +7,6 @@
 <link rel="stylesheet" href="shared.css">
 </head>
 <body>
-<button class="menu-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open'); document.querySelector('.sidebar-overlay').classList.toggle('show')">☰</button>
-<div class="sidebar-overlay" onclick="document.querySelector('.sidebar').classList.remove('open'); this.classList.remove('show')"></div>
 <div class="course-wrap">
 
 <!-- ── Sidebar ── -->
@@ -566,7 +564,7 @@ builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmail
 
 <span class="cm">// app.Services is an IServiceProvider — the DI container's public API</span>
 <span class="kw">var</span> sender = app.Services.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IEmailSender</span>&gt;();
-sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"admin@example.com"</span>); <span class="cm">// send startup notification</span>
+sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3352575e5a5d73564b525e435f561d505c5e">[email&#160;protected]</a>"</span>); <span class="cm">// send startup notification</span>
 
 app.<span class="fn">Run</span>();</div>
     </div>
@@ -598,7 +596,7 @@ app.<span class="fn">Run</span>();</div>
 </main>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const feedbackOk = {
   'quiz-di1': "Correct! This is tight coupling in action. Every place that does new EmailSender() knows the concrete constructor signature. Add a parameter there and every call site breaks. DI solves this — you only update the registration, and every consumer gets the updated object automatically.",
   'quiz-di2': "Correct! Both classes implement IEmailSender, so they satisfy the same contract. The handler only knows about the interface — it doesn't care which concrete class is behind it. This is the Liskov Substitution Principle at work, and it's what makes DI so powerful for testing.",
@@ -657,13 +655,24 @@ window.addEventListener('scroll', () => {
   document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
 });
 document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    if (window.innerWidth <= 900) {
-      document.querySelector('.sidebar').classList.remove('open');
-      document.querySelector('.sidebar-overlay').classList.remove('show');
-    }
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const targetId = link.getAttribute('data-target');
+    scrollPageTo(targetId);
   });
 });
 </script>
+
+<nav class="mobile-chapter-nav">
+  <a href="index.html" class=""><span class="ch-num">1</span>Getting Started</a>
+  <a href="chapter2.html" class=""><span class="ch-num">2</span>Understanding</a>
+  <a href="chapter3.html" class=""><span class="ch-num">3</span>First App</a>
+  <a href="chapter4.html" class=""><span class="ch-num">4</span>Middleware</a>
+  <a href="chapter5.html" class=""><span class="ch-num">5</span>Min. APIs</a>
+  <a href="chapter6.html" class=""><span class="ch-num">6</span>Routing</a>
+  <a href="chapter7.html" class=""><span class="ch-num">7</span>Binding</a>
+  <a href="chapter8.html" class=""><span class="ch-num">8</span>Intro DI</a>
+  <a href="chapter9.html" class="active"><span class="ch-num">9</span>Services</a>
+</nav>
 </body>
 </html>
