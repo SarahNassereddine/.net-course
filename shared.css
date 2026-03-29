@@ -213,7 +213,7 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 .fn  { color: #3b887f; }
 .str { color: #535533; }
 .cm  { color: #6272a4; font-style: italic; }
-.tp  { color: #8be9fd; }
+.tp  { color: #7dd4e7; }
 .nm  { color: #ffb86c; }
 .op  { color: var(--text2); }
 
