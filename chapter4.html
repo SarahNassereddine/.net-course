@@ -627,6 +627,14 @@ const observer = new IntersectionObserver((entries) => {
 document.querySelectorAll('section.section').forEach(section => {
   observer.observe(section);
 });
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.querySelector('.sidebar-overlay').classList.remove('show');
+    }
+  });
+});
 </script>
 </body>
 </html>

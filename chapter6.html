@@ -815,6 +815,14 @@ window.addEventListener('scroll', () => {
   const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
   document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
 });
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) {
+      document.querySelector('.sidebar').classList.remove('open');
+      document.querySelector('.sidebar-overlay').classList.remove('show');
+    }
+  });
+});
 </script>
 </body>
 </html>
