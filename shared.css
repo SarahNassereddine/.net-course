@@ -459,177 +459,121 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
 /* ── Responsive ── */
 
-.menu-toggle { display: none !important; }
-.sidebar-overlay { display: none !important; }
-.mobile-chapter-nav { display: none; }
+/* Hidden on desktop by default */
+.menu-toggle        { display: none !important; }
+.sidebar-overlay    { display: none !important; }
+.mobile-chapter-nav { display: none !important; }
+.fab-sections       { display: none; }
+.fab-panel          { display: none; }
 
 @media (max-width: 900px) {
 
-  /* ── Overall layout ── */
-  .course-wrap {
-    flex-direction: column;
-    padding-bottom: 72px;
+  /* ════════════════════════════════
+     LAYOUT
+  ════════════════════════════════ */
+  .course-wrap { display: block; }
+
+  /* ════════════════════════════════
+     SIDEBAR — full left drawer
+  ════════════════════════════════ */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 300;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.13);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(.4,0,.2,1);
+    overflow-y: auto;
+    display: block;
+    padding: 24px 0;
+  }
+  .sidebar.open {
+    transform: translateX(0);
   }
 
   /* ════════════════════════════════
-     TOP BAR — sticky header
+     OVERLAY behind drawer
   ════════════════════════════════ */
-  .sidebar {
-    width: 100%;
-    height: auto;
+  .sidebar-overlay {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0);
+    z-index: 299;
+    pointer-events: none;
+    transition: background 0.28s ease;
+  }
+  .sidebar-overlay.show {
+    background: rgba(0,0,0,0.45);
+    pointer-events: all;
+  }
+
+  /* ════════════════════════════════
+     TOP BAR — minimal header
+  ════════════════════════════════ */
+  .mobile-topbar {
+    display: flex !important;
     position: sticky;
     top: 0;
     z-index: 200;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 0;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
+    height: 54px;
     background: var(--bg2);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
-
-  /* Course title + chapter label row */
-  .sidebar-logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px 10px;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
   }
-  .sidebar-logo .course-title {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .sidebar-logo .chapter-label {
-    font-size: 15px;
+  .mobile-topbar-title {
+    flex: 1;
+    font-size: 14px;
     font-weight: 700;
-    margin-top: 0;
     color: var(--text);
   }
-  /* thin progress line */
-  .progress-bar {
-    height: 2px;
-    margin: 0;
-    border-radius: 0;
-    background: var(--border);
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-  }
-
-  /* Hide chapters nav — replaced by bottom bar */
-  .nav-section:last-child { display: none; }
-  .nav-section-title { display: none; }
-
-  /* Sections row — scrollable pills */
-  .nav-section:first-of-type {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 14px;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    margin-bottom: 0;
-  }
-  .nav-section:first-of-type::-webkit-scrollbar { display: none; }
-
-  /* Section pill buttons */
-  .nav-link {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    width: auto;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--text2);
-    white-space: nowrap;
-    text-decoration: none;
-    transition: all .15s;
-  }
-  .nav-link .dot { display: none; }
-  .nav-link:hover {
-    background: var(--bg3);
-    color: var(--text);
-  }
-  .nav-link.active {
-    background: rgba(0,212,170,.12);
-    border-color: rgba(0,212,170,.5);
+  .mobile-topbar-sub {
+    font-size: 11px;
     color: var(--accent);
     font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
   }
 
-  /* ════════════════════════════════
-     BOTTOM NAV — chapter browser
-  ════════════════════════════════ */
-  .mobile-chapter-nav {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 200;
-    background: var(--bg2);
-    border-top: 1px solid var(--border);
-    box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: 0;
-    height: 62px;
-  }
-  .mobile-chapter-nav::-webkit-scrollbar { display: none; }
-
-  .mobile-chapter-nav a {
-    display: flex;
-    flex-direction: column;
+  /* Hamburger button */
+  .menu-toggle {
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    min-width: 68px;
-    padding: 6px 8px;
-    gap: 3px;
-    text-decoration: none;
-    color: var(--text3);
-    font-size: 10px;
-    font-weight: 500;
-    font-family: var(--sans);
-    border-top: 2px solid transparent;
-    transition: all .15s;
-    white-space: nowrap;
-  }
-  .mobile-chapter-nav a .ch-num {
-    font-size: 15px;
-    font-weight: 700;
-    font-family: var(--mono);
-    color: var(--text3);
-    line-height: 1;
-    transition: all .15s;
-  }
-  .mobile-chapter-nav a:hover {
-    color: var(--text2);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
     background: var(--bg3);
-  }
-  .mobile-chapter-nav a:hover .ch-num {
     color: var(--text);
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 0;
+    padding: 0;
   }
-  .mobile-chapter-nav a.active {
-    color: var(--accent);
-    border-top-color: var(--accent);
-    background: rgba(0,212,170,.05);
+  .menu-toggle svg { display: block; }
+
+  /* Progress bar under topbar */
+  .mobile-progress {
+    display: block !important;
+    position: sticky;
+    top: 54px;
+    z-index: 199;
+    height: 3px;
+    background: var(--border);
   }
-  .mobile-chapter-nav a.active .ch-num {
-    color: var(--accent);
+  .mobile-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width .3s;
   }
 
   /* ════════════════════════════════
@@ -637,19 +581,127 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
   ════════════════════════════════ */
   .main {
     max-width: 100%;
-    padding: 24px 16px 48px;
+    padding: 24px 16px 100px;
   }
-
-  .chapter-header {
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-  }
-  .chapter-title { font-size: 22px; }
+  .chapter-title    { font-size: 22px; }
   .chapter-subtitle { font-size: 14px; }
-  .section-title { font-size: 17px; }
+  .section-title    { font-size: 17px; }
+  .chapter-header   { margin-bottom: 28px; padding-bottom: 20px; }
+  .compare-grid     { grid-template-columns: 1fr; }
+  .code-body        { font-size: 12px; }
+  .data-table       { display: block; overflow-x: auto; }
 
-  .compare-grid { grid-template-columns: 1fr; }
-  .code-body { font-size: 12px; }
-  .data-table { display: block; overflow-x: auto; }
+  /* ════════════════════════════════
+     FAB — floating sections button
+  ════════════════════════════════ */
+  .fab-sections {
+    display: flex !important;
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    z-index: 250;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,212,170,0.45);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    font-size: 0;
+  }
+  .fab-sections:active {
+    transform: scale(.93);
+    box-shadow: 0 2px 8px rgba(0,212,170,.3);
+  }
+  .fab-sections svg { display: block; }
 
+  /* FAB panel — section list */
+  .fab-panel {
+    display: block !important;
+    position: fixed;
+    bottom: 86px;
+    right: 16px;
+    z-index: 249;
+    width: 240px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    overflow: hidden;
+    transform: scale(.9) translateY(10px);
+    transform-origin: bottom right;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .2s cubic-bezier(.4,0,.2,1);
+  }
+  .fab-panel.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+  .fab-panel-header {
+    padding: 10px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+  }
+  .fab-panel a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+    cursor: pointer;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    font-family: var(--sans);
+    text-align: left;
+  }
+  .fab-panel a:last-child { border-bottom: none; }
+  .fab-panel a:hover { background: var(--bg3); color: var(--text); }
+  .fab-panel a.active {
+    background: rgba(0,212,170,.08);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .fab-panel a .fab-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .fab-panel a.active .fab-dot { background: var(--accent); }
+  .fab-num {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: var(--mono);
+    color: var(--text3);
+    width: 16px;
+    flex-shrink: 0;
+  }
+
+}
+
+/* Desktop: hide mobile-only elements */
+@media (min-width: 901px) {
+  .mobile-topbar    { display: none !important; }
+  .mobile-progress  { display: none !important; }
+  .fab-sections     { display: none !important; }
+  .fab-panel        { display: none !important; }
+  .mobile-chapter-nav { display: none !important; }
 }
