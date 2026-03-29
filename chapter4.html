@@ -36,6 +36,9 @@
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
        <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+         <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+
   </div>
 </nav>
 
@@ -120,57 +123,134 @@ app.<span class="fn">Run</span>();</div>
       <div class="quiz-feedback" id="quiz-mw-def1-fb"></div>
     </div>
   </section>
-
-  <!-- SECTION 2 -->
-  <section class="section" id="httpcontext">
-    <div class="section-header">
-      <div class="section-number">2</div>
-      <h2 class="section-title">The HttpContext Object</h2>
+<!-- SECTION 2 -->
+<section class="section" id="httpcontext">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2 class="section-title">The HttpContext Object</h2>
+  </div>
+ 
+  <p>For every incoming request, the ASP.NET Core web server (<strong>Kestrel</strong>) constructs an <strong>HttpContext</strong> object. Think of it as a storage box dedicated to a single request — it holds everything about that request and its eventual response for as long as the request lives.</p>
+ 
+  <!-- Pipeline overview callout -->
+  <div class="callout info">
+    <div class="callout-icon">📋</div>
+    <div class="callout-body">
+      <div class="callout-title">Full Request Lifecycle</div>
+      <div class="callout-text">
+        1. <strong>Browser</strong> sends an HTTP request.<br>
+        2. <strong>IIS (Reverse Proxy)</strong> receives the raw request and checks for security threats.<br>
+        3. <strong>IIS forwards</strong> the request to Kestrel.<br>
+        4. <strong>Kestrel</strong> builds an <strong>HttpContext</strong> and runs your C# middleware pipeline.<br>
+        5. Each middleware layer <strong>reads and may update</strong> the HttpContext (credentials, routing, posted data, etc.).<br>
+        6. Your application code sets the <strong>response</strong> on the HttpContext.<br>
+        7. <strong>Kestrel</strong> converts the updated HttpContext into a raw HTTP response.<br>
+        8. Kestrel returns it to <strong>IIS</strong>, which forwards the response back to the browser.
+      </div>
     </div>
-
-    <p>Every piece of middleware receives the <strong>HttpContext</strong> for the current request. It is the central object containing everything about an individual HTTP request and its response.</p>
-
-    <div class="callout info">
-      <div class="callout-icon">📋</div>
-      <div class="callout-body">
-        <div class="callout-title"> Note — Arabic Summary (from s)</div>
-        <div class="callout-text">
-          <strong>Flow summary:</strong><br>
-          1. Browser sends a Request.<br>
-          2. IIS (Reverse Proxy) receives it, checks for security threats.<br>
-          3. IIS forwards the request to Kestrel.<br>
-          4. Kestrel receives the request, builds an <strong>HttpContext</strong>, and runs your C# code.<br>
-          5. C# finishes processing, gives the Result back to Kestrel.<br>
-          6. Kestrel returns it to IIS, and IIS sends it back to the Browser.
+  </div>
+ 
+  <!-- Construction -->
+  <div style="display:flex;align-items:center;gap:8px;margin:24px 0 10px;">
+    <div style="width:3px;height:16px;border-radius:2px;background:var(--accent2);flex-shrink:0;"></div>
+    <span style="font-size:14px;font-weight:600;color:var(--text);">Construction by the web server</span>
+  </div>
+  <p>When Kestrel receives a request from the reverse proxy, it immediately builds an <strong>HttpContext</strong> and populates it with the raw request details. This object is then threaded through every middleware component in your pipeline.</p>
+ 
+  <!-- Contents table -->
+  <div style="display:flex;align-items:center;gap:8px;margin:24px 0 10px;">
+    <div style="width:3px;height:16px;border-radius:2px;background:var(--accent2);flex-shrink:0;"></div>
+    <span style="font-size:14px;font-weight:600;color:var(--text);">Contents of HttpContext</span>
+  </div>
+  <table class="data-table">
+    <tr><th>HttpContext Property</th><th>What it Contains</th></tr>
+    <tr><td><strong>Request</strong></td><td>URL, method (GET/POST), headers, body, query string, form data</td></tr>
+    <tr><td><strong>Response</strong></td><td>Status code, headers, body being written</td></tr>
+    <tr><td><strong>User</strong></td><td>The ClaimsPrincipal representing the current user (set by Auth middleware)</td></tr>
+    <tr><td><strong>RequestServices</strong></td><td>The DI service provider scoped to this request</td></tr>
+    <tr><td><strong>Items</strong></td><td>Dictionary for middleware to share data within a single request</td></tr>
+    <tr><td><strong>Connection</strong></td><td>Client IP, port, TLS certificate information</td></tr>
+  </table>
+ 
+  <!-- Middleware access -->
+  <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <div style="padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0;"></div>
+      <span style="font-size:13px;font-weight:600;color:var(--text);letter-spacing:.02em;">Middleware access to HttpContext</span>
+    </div>
+    <div style="padding:4px 0 4px;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(45,164,78,0.03);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(45,164,78,0.15);border:1px solid rgba(45,164,78,0.25);color:var(--green);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);">01</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:3px;">Identify the requested page</div>
+         <div style="font-size:13px;color:var(--text2);line-height:1.6;">Routing middleware maps <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.Request.Path</code> to the matching endpoint handler in your application.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(9,105,218,0.03);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(9,105,218,0.15);border:1px solid rgba(9,105,218,0.25);color:var(--blue);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);">02</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:3px;">Examine user credentials</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.6;">Authentication middleware reads and sets <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.User</code> — a <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ClaimsPrincipal</code> identifying who is making the request.</div>
+       
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;background:rgba(247,140,108,0.04);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(247,140,108,0.18);border:1px solid rgba(247,140,108,0.3);color:var(--accent3);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--mono);">03</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:3px;">Retrieve posted data</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.6;">Endpoint handlers read <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.Request.Body</code> or <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.Request.Form</code> to access data submitted by the client.</div>
         </div>
       </div>
     </div>
-
-    <table class="data-table">
-      <tr><th>HttpContext Property</th><th>What it Contains</th></tr>
-      <tr><td><strong>Request</strong></td><td>URL, method (GET/POST), headers, body, query string, form data</td></tr>
-      <tr><td><strong>Response</strong></td><td>Status code, headers, body being written</td></tr>
-      <tr><td><strong>User</strong></td><td>The ClaimsPrincipal representing the current user (set by Auth middleware)</td></tr>
-      <tr><td><strong>RequestServices</strong></td><td>The DI service provider scoped to this request</td></tr>
-      <tr><td><strong>Items</strong></td><td>Dictionary for middleware to share data within a single request</td></tr>
-      <tr><td><strong>Connection</strong></td><td>Client IP, port, TLS certificate information</td></tr>
-    </table>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Accessing HttpContext in a Minimal API endpoint</span></div>
-      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/info"</span>, (<span class="tp">HttpContext</span> ctx) =>
+  </div>
+ 
+  <!-- Processing & response -->
+  <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <div style="padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;"></div>
+      <span style="font-size:13px;font-weight:600;color:var(--text);letter-spacing:.02em;">Processing, updating, and returning the response</span>
+    </div>
+    <div style="padding:12px 20px 4px;background:rgba(0,212,170,0.03);border-bottom:1px solid var(--border);">
+      <p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:10px;">After your application processes the request, it writes the result back into the <strong style="color:var(--text);">same</strong> <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">HttpContext</code> via <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.Response</code>. The updated object travels back through the middleware pipeline in reverse, giving each layer a chance to add headers, compress the body, and more.</p>
+    </div>
+    <div style="padding:4px 0 4px;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border);">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);color:var(--accent);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">1</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;"><strong style="color:var(--text);">Application code</strong> writes status code, headers, and body into <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">ctx.Response</code>. The object passes back through middleware in reverse order.</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border);">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);color:var(--accent);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">2</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;"><strong style="color:var(--text);">Kestrel</strong> serializes the updated <code style="font-family:var(--mono);font-size:12px;background:var(--bg3);padding:1px 5px;border-radius:4px;border:1px solid var(--border);">HttpContext</code> into a raw HTTP response.</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 20px;border-bottom:1px solid var(--border);">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);color:var(--accent);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">3</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;">The raw response is sent back to <strong style="color:var(--text);">IIS</strong> (the reverse proxy), which strips internal headers and forwards it toward the client.</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:12px 20px;">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.3);color:var(--accent);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">4</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6;"><strong style="color:var(--text);">IIS</strong> delivers the final HTTP response to the user's browser.</div>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Code sample -->
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">C#</span>
+      <span class="code-label">Accessing HttpContext in a Minimal API endpoint</span>
+    </div>
+    <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/info"</span>, (<span class="tp">HttpContext</span> ctx) =>
 {
-    <span class="kw">var</span> path    = ctx.Request.Path;           <span class="cm">// e.g. "/info"</span>
-    <span class="kw">var</span> method  = ctx.Request.Method;         <span class="cm">// "GET"</span>
-    <span class="kw">var</span> clientIp= ctx.Connection.RemoteIpAddress;
-    <span class="kw">var</span> user    = ctx.User.Identity?.Name;    <span class="cm">// null if not authenticated</span>
-
+    <span class="kw">var</span> path     = ctx.Request.Path;             <span class="cm">// e.g. "/info"</span>
+    <span class="kw">var</span> method   = ctx.Request.Method;           <span class="cm">// "GET"</span>
+    <span class="kw">var</span> clientIp = ctx.Connection.RemoteIpAddress; <span class="cm">// caller's IP</span>
+    <span class="kw">var</span> user     = ctx.User.Identity?.Name;       <span class="cm">// null if not authenticated</span>
+ 
     ctx.Response.StatusCode = <span class="nm">200</span>;
     <span class="kw">return</span> <span class="str">$"Path: {path}, Method: {method}"</span>;
 });</div>
-    </div>
-  </section>
-
+  </div>
+</section>
   <!-- SECTION 3 -->
   <section class="section" id="holding-page">
     <div class="section-header">

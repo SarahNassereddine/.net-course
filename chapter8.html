@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 8 — Introduction to Dependency Injection</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 8</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="solid" onclick="scrollPageTo('solid')"><span class="dot"></span>SOLID Principles</button>
+    <button class="nav-link" data-target="without-di" onclick="scrollPageTo('without-di')"><span class="dot"></span>The Problem Without DI</button>
+    <button class="nav-link" data-target="problems" onclick="scrollPageTo('problems')"><span class="dot"></span>Problems in Tight Coupling</button>
+    <button class="nav-link" data-target="with-di" onclick="scrollPageTo('with-di')"><span class="dot"></span>How DI Solves It</button>
+    <button class="nav-link" data-target="loose-coupling" onclick="scrollPageTo('loose-coupling')"><span class="dot"></span>Loose Coupling &amp; Interfaces</button>
+    <button class="nav-link" data-target="registration" onclick="scrollPageTo('registration')"><span class="dot"></span>Registration</button>
+    <button class="nav-link" data-target="aspnetcore-di" onclick="scrollPageTo('aspnetcore-di')"><span class="dot"></span>DI in ASP.NET Core</button>
+    <button class="nav-link" data-target="framework-services" onclick="scrollPageTo('framework-services')"><span class="dot"></span>Framework Services</button>
+    <button class="nav-link" data-target="using-services" onclick="scrollPageTo('using-services')"><span class="dot"></span>Using Services</button>
+    <button class="nav-link" data-target="iserviceprovider" onclick="scrollPageTo('iserviceprovider')"><span class="dot"></span>IServiceProvider</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+      <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+     <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link active" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 8</div>
+    <h1 class="chapter-title">An Introduction to Dependency Injection</h1>
+    <p class="chapter-subtitle">Why manually creating objects hurts your code — and how the DI container takes that responsibility away, giving you modular, testable, loosely coupled apps.</p>
+  </div>
+
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="solid">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">SOLID Principles — Why DI Exists</h2>
+    </div>
+
+    <p>ASP.NET Core was designed from the ground up to be <strong>modular</strong> and to follow good software engineering practices. The backbone of those practices is the set of <strong>SOLID</strong> principles — five guidelines for writing maintainable, extensible object-oriented code.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent);margin-bottom:6px;">S</div>
+        <div style="font-weight:700;color:var(--text);font-size:13px;">Single Responsibility</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">A class should have only one reason to change. Don't make one class do everything.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent2);margin-bottom:6px;">O</div>
+        <div style="font-weight:700;color:var(--text);font-size:13px;">Open-Closed</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Open for extension, closed for modification. Add behavior without changing existing code.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent3);margin-bottom:6px;">L</div>
+        <div style="font-weight:700;color:var(--text);font-size:13px;">Liskov Substitution</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">A subclass should be replaceable for its parent class without breaking the program. If <code>Dog</code> extends <code>Animal</code>, anywhere you use <code>Animal</code> must also work with <code>Dog</code>.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--blue);margin-bottom:6px;">I</div>
+        <div style="font-weight:700;color:var(--text);font-size:13px;">Interface Segregation</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">Don't force clients to depend on methods they don't use. Prefer small, focused interfaces over fat ones.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;grid-column:1/-1;">
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green);margin-bottom:6px;">D</div>
+        <div style="font-weight:700;color:var(--text);font-size:13px;">Dependency Inversion ← this is what DI is about</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;">High-level modules should not depend on low-level modules directly. Both should depend on <em>abstractions</em> (interfaces). Don't hard-code <code>new EmailSender()</code> — depend on <code>IEmailSender</code> and let something else provide the implementation.</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Dependency Injection is the mechanism that implements Dependency Inversion</div>
+        <div class="callout-text">The <strong>D</strong> in SOLID says "depend on abstractions, not concretions." DI is how you actually achieve this — a container creates objects for you and hands them in (injects them), so your code never has to call <code>new</code> on its dependencies.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="without-di">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">The Problem Without DI</h2>
+    </div>
+
+    <p>Imagine a <code>RegisterUser</code> endpoint that sends a welcome email. Without DI, the handler creates <code>EmailSender</code> itself — and <code>EmailSender</code> has its own dependencies that also need to be created manually.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Without DI — creating the whole dependency graph manually</span></div>
+      <div class="code-body"><span class="cm">// ❶ RegisterUser has an IMPLICIT dependency on EmailSender</span>
+<span class="cm">//    You can only know this by reading the source code</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>, (<span class="tp">UserDto</span> user) =>
+{
+    <span class="cm">// ❷ Must create MessageFactory first</span>
+    <span class="kw">var</span> factory = <span class="kw">new</span> <span class="tp">MessageFactory</span>();
+
+    <span class="cm">// ❸ NetworkClient also has dependencies</span>
+    <span class="kw">var</span> settings = <span class="kw">new</span> <span class="tp">EmailServerSettings</span>(<span class="str">"smtp.example.com"</span>, <span class="nm">587</span>);
+    <span class="kw">var</span> network  = <span class="kw">new</span> <span class="tp">NetworkClient</span>(settings);
+
+    <span class="cm">// ❹ Now finally can create EmailSender</span>
+    <span class="kw">var</span> sender = <span class="kw">new</span> <span class="tp">EmailSender</span>(network, factory);
+
+    <span class="cm">// ❺ Only these two lines are the actual "work"</span>
+    sender.<span class="fn">SendWelcomeEmail</span>(user.Email);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});</div>
+    </div>
+
+    <p>Notice how only the last two lines do meaningful work. Everything above is <strong>ceremony</strong> — boilerplate you write just to construct the objects you actually need. The more complex your app, the deeper this dependency graph grows.</p>
+
+   
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:20px 0;">
+      <div style="text-align:center;font-family:var(--mono);font-size:13px;line-height:2.2;color:var(--text2);">
+        <div style="color:var(--accent);font-weight:700;font-size:15px;">RegisterUser Handler</div>
+        <div style="color:var(--text3);">↓ must manually create</div>
+        <div style="color:var(--accent2);font-weight:600;">EmailSender</div>
+        <div style="color:var(--text3);">↙ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↘</div>
+        <div style="display:flex;justify-content:center;gap:80px;">
+          <div>
+            <div style="color:var(--accent3);font-weight:600;">NetworkClient</div>
+            <div style="color:var(--text3);">↓</div>
+            <div style="color:var(--green);font-weight:600;">EmailServerSettings</div>
+            <div style="color:var(--text3);font-size:11px;">(Host, Port)</div>
+          </div>
+          <div>
+            <div style="color:var(--accent3);font-weight:600;">MessageFactory</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>The graph can be many layers deep. In real applications, a single root service can pull in dozens of dependencies transitively. Managing this manually is unsustainable.</p>
+
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">The dependency graph is the root of the problem</div>
+        <div class="callout-text">The dependency graph is the set of objects that must be created to produce one "root" object. When you create these manually, every call site in your app becomes responsible for knowing how to build the entire graph — and if any class gains a new dependency, you have to update every place it's used.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="problems">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Problems With Manual Object Creation</h2>
+    </div>
+
+    <p>The previous code violates several of the SOLID principles. Here's exactly what goes wrong:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(207,34,46,.04);">
+        <div style="font-size:20px;flex-shrink:0;">🚫</div>
+        <div>
+          <div style="font-weight:700;color:var(--red);font-size:13px;">Violates SRP — Doing two jobs at once</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">The handler is responsible for <em>both</em> constructing an <code>EmailSender</code> object and using it to send email. Those are two separate responsibilities.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(207,34,46,.04);">
+        <div style="font-size:20px;flex-shrink:0;">📜</div>
+        <div>
+          <div style="font-weight:700;color:var(--red);font-size:13px;">Ceremony — Boilerplate that adds no value</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">In the example, only 2 of the 5+ lines of code do real work. The rest is just wiring up objects. This obscures the intent of the method and makes it harder to read.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(207,34,46,.04);">
+        <div style="font-size:20px;flex-shrink:0;">🔗</div>
+        <div>
+          <div style="font-weight:700;color:var(--red);font-size:13px;">Tied to the implementation — Hard to change</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">If you refactor <code>EmailSender</code> and add a new dependency, you must update every place that creates it. A change in one class ripples outward to all its call sites.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(207,34,46,.04);">
+        <div style="font-size:20px;flex-shrink:0;">🧪</div>
+        <div>
+          <div style="font-weight:700;color:var(--red);font-size:13px;">Impossible to unit test</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">If you test <code>RegisterUser</code>, a real email will be sent every time the test runs. You can't swap <code>EmailSender</code> for a fake (mock) version because the handler creates it directly.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-di1" class="quiz-block">
+      <div class="quiz-question">🧠 A handler creates <code>new EmailSender()</code> directly inside its body. A colleague adds a new required dependency to the <code>EmailSender</code> constructor. What problem does this cause?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-di1',false)">Nothing — C# handles this automatically with optional parameters</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di1',true)">Every place in the codebase that does <code>new EmailSender()</code> must be updated to pass the new dependency — tight coupling means one change ripples everywhere</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di1',false)">Only the EmailSender class itself needs to change</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di1',false)">The DI container will automatically detect and inject the new dependency</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-di1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="with-di">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">How Dependency Injection Solves It</h2>
+    </div>
+
+    <p>With DI, your handler <strong>declares what it needs</strong> as a constructor/parameter, and the <strong>DI container</strong> (also called the IoC container — Inversion of Control) takes care of building the entire dependency graph and providing it.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Without DI</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;">app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>, (<span class="tp">UserDto</span> user) =>
+{
+    <span class="cm">// Handler builds everything itself</span>
+    <span class="kw">var</span> settings = <span class="kw">new</span> <span class="tp">EmailServerSettings</span>(...);
+    <span class="kw">var</span> network  = <span class="kw">new</span> <span class="tp">NetworkClient</span>(settings);
+    <span class="kw">var</span> factory  = <span class="kw">new</span> <span class="tp">MessageFactory</span>();
+    <span class="kw">var</span> sender   = <span class="kw">new</span> <span class="tp">EmailSender</span>(network, factory);
+    sender.<span class="fn">SendWelcomeEmail</span>(user.Email);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With DI</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;">app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>,
+    (<span class="tp">UserDto</span> user, <span class="tp">IEmailSender</span> sender) =>
+{
+    <span class="cm">// Container provides sender automatically</span>
+    sender.<span class="fn">SendWelcomeEmail</span>(user.Email);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});</div>
+      </div>
+    </div>
+
+    <p>The handler no longer knows or cares <em>how</em> to create <code>IEmailSender</code>. It just uses it. The DI container is the only thing with a single responsibility of creating objects — it reads your registrations, builds the graph, and hands the ready-made service to your handler.</p>
+
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);">Who is responsible for what</div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;">
+        <div style="padding:10px 16px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:6px;"><strong style="color:var(--accent);">DI Container</strong> — knows how to create every registered service and its full dependency graph</div>
+        <div style="padding:10px 16px;background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.2);border-radius:6px;"><strong style="color:var(--accent2);">Minimal API Framework</strong> — asks the container for whatever services the handler's parameters declare</div>
+        <div style="padding:10px 16px;background:rgba(9,105,218,.07);border:1px solid rgba(9,105,218,.2);border-radius:6px;"><strong style="color:var(--blue);">Your Handler</strong> — just declares its dependencies as parameters and uses them; never calls <code>new</code></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Implicit vs. Explicit Dependencies</div>
+        <div class="callout-text">Without DI, <code>RegisterUser</code> has an <strong>implicit</strong> dependency on <code>EmailSender</code> — you can only discover it by reading the source code. With DI, the parameter <code>IEmailSender sender</code> makes the dependency <strong>explicit</strong> in the method signature — it's visible at a glance, and tools like IDEs and DI validators can check it.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="loose-coupling">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Loose Coupling &amp; Coding to Interfaces</h2>
+    </div>
+
+    <p><strong>Coupling</strong> describes how much one class needs to know about another to use it. The tighter the coupling, the harder your code is to change and test.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+      <div style="background:rgba(207,34,46,.04);border:1px solid rgba(207,34,46,.2);border-radius:var(--radius);padding:16px;">
+        <div style="font-weight:700;color:var(--red);font-size:13px;margin-bottom:8px;">🔒 Tight Coupling</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">Handler creates <code>new EmailSender()</code>. It knows the concrete class, knows how to build it, and knows all its deps. Any change to <code>EmailSender</code> breaks the handler.</div>
+      </div>
+      <div style="background:rgba(45,164,78,.04);border:1px solid rgba(45,164,78,.2);border-radius:var(--radius);padding:16px;">
+        <div style="font-weight:700;color:var(--green);font-size:13px;margin-bottom:8px;">🔓 Loose Coupling</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">Handler depends on <code>IEmailSender</code> interface. It only knows about the contract (what methods exist). Any implementation can be swapped in without touching the handler.</div>
+      </div>
+    </div>
+
+    <p>The key pattern is: <strong>code to abstractions (interfaces), not to concrete types.</strong> This unlocks two huge benefits:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">
+        <div style="font-size:18px;flex-shrink:0;">🔄</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:13px;">Swappable implementations</div><div style="font-size:13px;color:var(--text2);margin-top:2px;">Register <code>SmtpEmailSender</code> in production and <code>DummyEmailSender</code> in development. The handler code never changes — only the DI registration changes.</div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;">
+        <div style="font-size:18px;flex-shrink:0;">🧪</div>
+        <div><div style="font-weight:700;color:var(--text);font-size:13px;">Easy unit testing</div><div style="font-size:13px;color:var(--text2);margin-top:2px;">In tests, inject a mock <code>IEmailSender</code> that records calls instead of sending real emails. No test runner ever touches your mail server.</div></div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Coding to an interface — the contract</span></div>
+      <div class="code-body"><span class="cm">// The abstraction (contract) — only this is what the handler sees</span>
+<span class="kw">public interface</span> <span class="tp">IEmailSender</span>
+{
+    <span class="kw">void</span> <span class="fn">SendWelcomeEmail</span>(<span class="kw">string</span> toAddress);
+}
+
+<span class="cm">// Production implementation</span>
+<span class="kw">public class</span> <span class="tp">EmailSender</span> : <span class="tp">IEmailSender</span>
+{
+    <span class="kw">public</span> <span class="tp">EmailSender</span>(<span class="tp">NetworkClient</span> network, <span class="tp">MessageFactory</span> factory) { ... }
+    <span class="kw">public void</span> <span class="fn">SendWelcomeEmail</span>(<span class="kw">string</span> toAddress) { <span class="cm">/* real SMTP logic */</span> }
+}
+
+<span class="cm">// Test/dummy implementation — no actual email is ever sent</span>
+<span class="kw">public class</span> <span class="tp">DummyEmailSender</span> : <span class="tp">IEmailSender</span>
+{
+    <span class="kw">public void</span> <span class="fn">SendWelcomeEmail</span>(<span class="kw">string</span> toAddress) { <span class="cm">/* do nothing */</span> }
+}</div>
+    </div>
+
+    <div id="quiz-di2" class="quiz-block">
+      <div class="quiz-question">🧠 Your handler accepts <code>IEmailSender sender</code>. In production the DI container injects <code>EmailSender</code>; in tests you inject <code>DummyEmailSender</code>. Why does this work?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-di2',false)">Both classes have the same name so C# treats them as interchangeable</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di2',true)">Both implement <code>IEmailSender</code>, so they satisfy the interface contract — the handler only cares about the interface, not the concrete class behind it</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di2',false)">The handler uses reflection to detect which class is available at runtime</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di2',false)">You need to add an <code>[AllowSubstitution]</code> attribute for this to work</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-di2-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="registration">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Registration — Telling the Container What to Use</h2>
+    </div>
+
+    <p>The DI container needs to know: "When someone asks for <code>IEmailSender</code>, which concrete class should I create?" This act of telling the container is called <strong>registration</strong>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">The registration statement in plain English</div>
+        <div class="callout-text">"When any class or handler declares a dependency on <strong>IEmailSender</strong>, create an instance of <strong>EmailSender</strong> and provide it."<br><br>This is the process that decouples the contract (interface) from the implementation (concrete class).</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — registering services</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// ❶ Register: "When IEmailSender is needed, use EmailSender"</span>
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">EmailSender</span>&gt;();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// ❷ The handler just asks for IEmailSender — container resolves it</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>, (<span class="tp">UserDto</span> user, <span class="tp">IEmailSender</span> sender) =>
+{
+    sender.<span class="fn">SendWelcomeEmail</span>(user.Email);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});
+
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <p>To swap implementations, you change <strong>only the registration line</strong>. The handler itself is untouched — that's the power of coding to an interface.</p>
+  </section>
+
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="aspnetcore-di">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">DI in ASP.NET Core — How It Flows</h2>
+    </div>
+
+    <p>In ASP.NET Core minimal APIs, dependency injection is wired into the framework itself. The <strong>RequestDelegateFactory</strong> (part of the minimal API infrastructure) inspects your handler's parameters and automatically requests matching services from the DI container before invoking your handler.</p>
+
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);">Request flow with DI</div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;font-family:var(--mono);">
+        <div style="padding:10px 16px;background:rgba(9,105,218,0.07);border:1px solid rgba(9,105,218,0.2);border-radius:6px;color:var(--blue);">① HTTP Request arrives → RoutingMiddleware selects the endpoint</div>
+        <div style="padding:10px 16px;background:rgba(124,106,247,0.07);border:1px solid rgba(124,106,247,0.2);border-radius:6px;color:var(--accent2);">② RequestDelegateFactory inspects handler parameter types</div>
+        <div style="padding:10px 16px;background:rgba(247,140,108,0.07);border:1px solid rgba(247,140,108,0.2);border-radius:6px;color:var(--accent3);">③ For each service-type parameter → asks DI container to resolve it</div>
+        <div style="padding:10px 16px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.2);border-radius:6px;color:var(--accent);">④ DI container builds the full dependency graph and returns the service</div>
+        <div style="padding:10px 16px;background:rgba(45,164,78,0.07);border:1px solid rgba(45,164,78,0.2);border-radius:6px;color:var(--green);">⑤ Handler is invoked with all parameters populated — ready to use</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">How does the framework tell apart a service from a model binding parameter?</div>
+        <div class="callout-text">When a handler parameter is a type that's registered in the DI container, the framework injects it as a service. When it's not registered, the framework falls back to model binding (route, query string, body). This is why adding a parameter like <code>IEmailSender sender</code> just works — as long as you've registered the type.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="framework-services">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Adding Framework Services to the Container</h2>
+    </div>
+
+    <p>ASP.NET Core itself uses DI to configure its own internal components (like the Kestrel web server) and optional features (like Razor Pages or authentication). You register these services via <code>builder.Services</code> in <code>Program.cs</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">builder.Services — the IServiceCollection</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// builder.Services is of type IServiceCollection</span>
+<span class="cm">// This is where you declare all your app's services</span>
+
+<span class="cm">// ❶ Core services (Kestrel, routing, etc.) are added automatically</span>
+<span class="cm">//    by WebApplicationBuilder — you don't need to do anything</span>
+
+<span class="cm">// ❷ Optional framework features need explicit registration</span>
+builder.Services.<span class="fn">AddRazorPages</span>();       <span class="cm">// registers all Razor Pages services</span>
+builder.Services.<span class="fn">AddAuthentication</span>();    <span class="cm">// registers auth middleware</span>
+builder.Services.<span class="fn">AddAuthorization</span>();     <span class="cm">// registers authorization services</span>
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();</div>
+    </div>
+
+    <p>The convention is that every library with required services exposes an <code>Add*()</code> extension method on <code>IServiceCollection</code>. This method adds everything the library needs internally, so you don't have to wire it up manually.</p>
+
+
+      <div class="callout tip">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Registration — telling the container which implementation to use</div>
+        <div class="callout-text">The process of telling the DI container <em>"when someone asks for IEmailSender, provide an EmailSender"</em> is called <strong>registration</strong>. In production: <code>builder.Services.AddTransient&lt;IEmailSender, EmailSender&gt;()</code>. In tests: swap for <code>AddTransient&lt;IEmailSender, DummyEmailSender&gt;()</code>. The handler never changes.</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Forgot to register a service? You'll get an exception.</div>
+        <div class="callout-text">There's no way to know at a glance which libraries require explicit registration — you have to check the docs. If you forget, ASP.NET Core will throw an <code>InvalidOperationException</code> at runtime with a message like <em>"Unable to resolve service for type '...' while attempting to activate '...'"</em>. Always check for this exception in your logs when adding a new package.</div>
+      </div>
+    </div>
+
+    <p>You can also <strong>configure services</strong> by passing an options object or using an options lambda when calling <code>Add*()</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Configuring services with options</span></div>
+      <div class="code-body"><span class="cm">// Using a lambda to configure options inline</span>
+builder.Services.<span class="fn">AddRazorPages</span>(options =>
+{
+    options.Conventions.<span class="fn">AuthorizeFolder</span>(<span class="str">"/Admin"</span>);
+});</div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="using-services">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Using Services From the DI Container</h2>
+    </div>
+
+     <p>In a minimal API application, you have <strong>two main ways</strong> to access services:</p>
+
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'tab-handler')">1. Inject into a handler</button>
+        <button class="tab-btn" onclick="tab(this,'tab-program')">2. Access in Program.cs</button>
+      </div>
+      <div class="tab-panel active" id="tab-handler">
+        <div class="code-block" style="border-radius:0 0 var(--radius) var(--radius);margin-top:0;">
+          <div class="code-header">
+            <span class="code-lang">C#</span>
+            <span class="code-label">Injecting into an endpoint handler (canonical approach)</span>
+          </div>
+          <div class="code-body"><span class="cm">// ASP.NET Core's RequestDelegateFactory inspects the parameters.</span>
+<span class="cm">// Parameters that are registered services are resolved from DI.</span>
+<span class="cm">// Simple types (strings, ints) are bound from the route/query string.</span>
+<span class="cm">// Complex types (records, classes) are bound from the request body.</span>
+
+app.MapGet(<span class="str">"/users/{id}"</span>, (<span class="tp">int</span> id, <span class="tp">LinkGenerator</span> linker) =>
+{
+    <span class="cm">// 'id' comes from the route segment</span>
+    <span class="cm">// 'linker' is a service from the DI container</span>
+    <span class="kw">var</span> link = linker.GetPathByName(<span class="str">"GetUser"</span>, <span class="kw">new</span> { id });
+    <span class="kw">return</span> Results.Ok(link);
+});</div>
+        </div>
+        <div class="callout info" style="border-radius:0 0 var(--radius) var(--radius);margin:0;">
+          <div class="callout-icon">🔍</div>
+          <div class="callout-body">
+            <div class="callout-title">How does it know what's a service vs a route param?</div>
+            <div class="callout-text"><code>RequestDelegateFactory</code> checks if a parameter type is registered in the DI container. If it is, it pulls it from there. If it isn't, it tries to bind it from the request (route, query string, or body). This is automatic — you never need attributes for registered services.</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-program">
+        <div class="code-block" style="border-radius:0 0 var(--radius) var(--radius);margin-top:0;">
+          <div class="code-header">
+            <span class="code-lang">C#</span>
+            <span class="code-label">Accessing services in Program.cs directly</span>
+          </div>
+          <div class="code-body"><span class="kw">var</span> app = builder.Build();
+
+<span class="cm">// Use app.Services (IServiceProvider) to resolve services directly</span>
+<span class="cm">// Useful for startup tasks (e.g., database migrations)</span>
+
+<span class="kw">var</span> dbContext = app.Services.GetRequiredService&lt;<span class="tp">AppDbContext</span>&gt;();
+<span class="kw">await</span> dbContext.Database.MigrateAsync();  <span class="cm">// run before app starts</span>
+
+app.Run();</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="iserviceprovider">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">IServiceProvider — Direct Access Outside Requests</h2>
+    </div>
+
+    <p>Sometimes you need a service during app startup — before any HTTP request arrives. For example, to run a database migration or seed initial data. In these cases, inject from the container directly using <code>app.Services</code>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Two key IServiceProvider methods</div>
+        <div class="callout-text">
+          <code>GetService&lt;T&gt;()</code> — returns the service T if registered; returns <strong>null</strong> if not found.<br><br>
+          <code>GetRequiredService&lt;T&gt;()</code> — returns the service T if registered; <strong>throws <code>InvalidOperationException</code></strong> if not found. Prefer this when you're certain the service should be there.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Method 2 — access services in Program.cs via IServiceProvider</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">EmailSender</span>&gt;();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// app.Services is an IServiceProvider — the DI container's public API</span>
+<span class="kw">var</span> sender = app.Services.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IEmailSender</span>&gt;();
+sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"admin@example.com"</span>); <span class="cm">// send startup notification</span>
+
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">IServiceCollection vs. IServiceProvider — a crucial distinction</div>
+        <div class="callout-text">
+          <strong>IServiceCollection</strong> (<code>builder.Services</code>) — used <em>before</em> the app is built. This is where you <em>register</em> services.<br><br>
+          <strong>IServiceProvider</strong> (<code>app.Services</code>) — used <em>after</em> the app is built. This is where you <em>resolve</em> (retrieve) services.<br><br>
+          Think of IServiceCollection as the recipe book, and IServiceProvider as the kitchen that uses it.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-di3" class="quiz-block">
+      <div class="quiz-question">🧠 You need to run a database migration before the app starts handling requests. You call <code>app.Services.GetRequiredService&lt;DbContext&gt;()</code> but get an <code>InvalidOperationException</code>. What's the most likely cause?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-di3',false)">You should use <code>GetService&lt;T&gt;()</code> instead — <code>GetRequiredService</code> is only for handlers</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di3',true)">The <code>DbContext</code> was never registered in <code>builder.Services</code> — the container can only resolve what's been registered</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di3',false)">You can't call <code>app.Services</code> before <code>app.Run()</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-di3',false)">IServiceProvider can only be used inside HTTP request handlers</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-di3-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+const feedbackOk = {
+  'quiz-di1': "Correct! This is tight coupling in action. Every place that does new EmailSender() knows the concrete constructor signature. Add a parameter there and every call site breaks. DI solves this — you only update the registration, and every consumer gets the updated object automatically.",
+  'quiz-di2': "Correct! Both classes implement IEmailSender, so they satisfy the same contract. The handler only knows about the interface — it doesn't care which concrete class is behind it. This is the Liskov Substitution Principle at work, and it's what makes DI so powerful for testing.",
+  'quiz-di3': "Correct! GetRequiredService throws InvalidOperationException when the requested type isn't registered. The fix is to add builder.Services.AddDbContext<YourDbContext>() before building the app. The container can only provide what you've told it about."
+};
+const feedbackErr = {
+  'quiz-di1': "Not quite. C# doesn't automatically adapt constructors. Every place that calls new EmailSender() passes exactly the arguments the constructor specifies. Add a new required argument and every call site that doesn't pass it fails to compile — that's the tight coupling problem DI is designed to solve.",
+  'quiz-di2': "Not quite. C# doesn't care about class names — it cares about types and interfaces. The reason both implementations can be used interchangeably is that they both implement the IEmailSender interface, satisfying the contract the handler depends on.",
+  'quiz-di3': "Not quite. app.Services is available as soon as app is built (after builder.Build()), and you can call GetRequiredService before app.Run(). The most common cause of InvalidOperationException from GetRequiredService is a missing registration — you forgot to call builder.Services.Add*() for that type."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal'); });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function scrollPageTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+</script>
+</body>
+</html>

@@ -33,7 +33,9 @@
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
      <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
-  
+       <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+
   </div>
 </nav>
 
@@ -44,37 +46,43 @@
     <h1 class="chapter-title">Getting Started with ASP.NET Core</h1>
     <p class="chapter-subtitle">An introduction to the ASP.NET Core framework — what it is, what you can build with it, and how HTTP requests flow through it.</p>
   </div>
-
-  <!-- SECTION 1 -->
+ <!-- SECTION 1 -->
   <section class="section" id="what-is">
     <div class="section-header">
       <div class="section-number">1</div>
       <h2 class="section-title">What is ASP.NET Core?</h2>
     </div>
-
+ 
     <p>ASP.NET Core is a modern, cross-platform, open-source web framework for building internet-connected applications. Rather than writing low-level networking code yourself, ASP.NET Core gives you <strong>structure, helper functions, and a complete framework</strong> so you can focus on business logic.</p>
-
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-card-header neutral">🏗️ Framework Benefits</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.9;color:var(--text2)">
-• Offers structure, helper functions, and application scaffolding<br>
-• Reduces the need for manual coding, enhancing efficiency<br>
-• Manages the underlying networking structure for you<br>
-• Your handlers are called <em>by</em> the framework
-        </div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-card-header neutral">🧠 Business Logic</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.9;color:var(--text2)">
-• The core of your application<br>
-• <strong>Independent</strong> of ASP.NET Core — no framework dependencies<br>
-• Interacts with databases, remote APIs, and other services<br>
-• You write this; the framework calls it
-        </div>
+<div style="display:flex;flex-direction:column;gap:0;margin:20px 0 24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+ 
+  <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(9,105,218,0.04);border-bottom:1px solid var(--border);">
+    <div style="width:28px;height:28px;border-radius:6px;background:rgba(9,105,218,0.15);border:1px solid rgba(9,105,218,0.25);color:var(--blue);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🏗️</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Framework Benefits</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.75;">
+        Offers structure, helper functions, and application scaffolding.<br>
+        Reduces the need for manual coding, enhancing efficiency.<br>
+        Manages the underlying networking structure for you.<br>
+        Your handlers are called <em>by</em> the framework.
       </div>
     </div>
-
+  </div>
+ 
+  <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;background:rgba(45,164,78,0.04);">
+    <div style="width:28px;height:28px;border-radius:6px;background:rgba(45,164,78,0.15);border:1px solid rgba(45,164,78,0.25);color:var(--green);font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">🧠</div>
+    <div>
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;">Business Logic</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.75;">
+        The core of your application.<br>
+        <strong>Independent</strong> of ASP.NET Core — no framework dependencies.<br>
+        Interacts with databases, remote APIs, and other services.<br>
+        You write this; the framework calls it.
+      </div>
+    </div>
+  </div>
+ 
+</div>
     <div class="callout info">
       <div class="callout-icon">🔄</div>
       <div class="callout-body">
@@ -87,7 +95,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- Architecture Diagram -->
     <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
       <div class="code-header"><span class="code-lang">Architecture</span><span class="code-label">ASP.NET Core Application Layers</span></div>
@@ -122,6 +130,7 @@
       </div>
     </div>
   </section>
+ 
 
   <!-- SECTION 2 -->
   <section class="section" id="app-types">
@@ -174,24 +183,68 @@
           </tr>
         </table>
       </div>
+<div id="tab-blazor" class="tab-panel" style="padding:20px 0">
 
-      <div id="tab-blazor" class="tab-panel" style="padding:20px 0">
-        <div class="compare-grid">
-          <div class="compare-card">
-            <div class="compare-card-header neutral">Blazor WebAssembly</div>
-            <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2)">
-              Runs <strong>in the browser</strong> using the WebAssembly standard. You write C# instead of JavaScript. Comparable to Angular, React, and Vue — a true SPA framework.
-            </div>
-          </div>
-          <div class="compare-card">
-            <div class="compare-card-header neutral">Blazor Server</div>
-            <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2)">
-              Runs on the <strong>server</strong>, maintains a stateful connection (SignalR) to the browser. Combines ease of server rendering with client-side interactivity.
-            </div>
-          </div>
+  <p style="color:var(--text2);font-size:14px;line-height:1.8;margin-bottom:24px">
+    Blazor is ASP.NET Core's framework for building interactive UIs using <strong>C# instead of JavaScript</strong>. 
+    It comes in two hosting models, and ASP.NET Core allows you to <strong>combine both within a single application</strong>.
+  </p>
+
+  <div class="compare-grid">
+
+    <!-- Blazor WebAssembly -->
+    <div class="compare-card">
+      <div class="compare-card-header neutral">⚡ Blazor WebAssembly</div>
+      <div style="padding:16px 18px;font-family:var(--sans);font-size:13px;color:var(--text2);line-height:1.85">
+
+        <div style="margin-bottom:12px">
+          Runs <strong>directly in the browser</strong> using WebAssembly — a low-level binary format that lets C# execute in the browser at near-native speed, without plugins or JavaScript.
         </div>
-      </div>
 
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px">
+          A true <strong>single-page app (SPA)</strong> framework — comparable to Angular, React, and Vue, but written entirely in C#.
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:12px;color:var(--accent);font-weight:600;font-size:12px;letter-spacing:.04em">
+          ✦ BEST FOR: Rich client-side interactivity with no server round-trips
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Blazor Server -->
+    <div class="compare-card">
+      <div class="compare-card-header neutral">🖥️ Blazor Server</div>
+      <div style="padding:16px 18px;font-family:var(--sans);font-size:13px;color:var(--text2);line-height:1.85">
+
+        <div style="margin-bottom:12px">
+          Runs on the <strong>server</strong> — UI events are handled server-side and synced to the browser in real time via a persistent connection.
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:12px">
+          Combines the <strong>simplicity of server-rendered development</strong> with the <strong>interactivity of client-side SPAs</strong> — giving you a stateful, responsive UI without shipping logic to the browser.
+        </div>
+
+        <div style="border-top:1px solid var(--border);padding-top:12px;color:var(--accent);font-weight:600;font-size:12px;letter-spacing:.04em">
+          ✦ BEST FOR: Stateful apps that need real-time UI without client-side complexity
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="callout info" style="margin-top:24px">
+    <div class="callout-icon">🔗</div>
+    <div class="callout-body">
+      <div class="callout-title">Flexible by Design</div>
+      <div class="callout-text">
+        ASP.NET Core lets you combine Blazor WebAssembly and Blazor Server <strong>within a single application</strong> — you are not locked into one model.
+      </div>
+    </div>
+  </div>
+
+</div>
       <div id="tab-choice" class="tab-panel" style="padding:20px 0">
         <div class="callout tip">
           <div class="callout-icon">🧭</div>

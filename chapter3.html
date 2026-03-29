@@ -34,7 +34,10 @@
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
        <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
-</div>
+     <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+
+  </div>
 </nav>
 
 <main class="main" id="mainContent">
@@ -86,6 +89,109 @@
         <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--text3);">All middleware in the pipeline can read from and write to HttpContext</div>
       </div>
     </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin:20px 0;font-family:var(--sans);">
+
+  <!-- Top row: Request → Web host → Response -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:8px;">
+
+    <!-- Request -->
+    <div style="text-align:center;">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px;max-width:120px;text-align:left;line-height:1.4;"><strong>1.</strong> An HTTP request is made to the server for the home page.</div>
+      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;color:var(--text2);">Request</div>
+    </div>
+
+    <div style="color:var(--text3);font-size:18px;margin-top:18px;">→</div>
+
+    <!-- Web host -->
+    <div style="background:rgba(45,164,78,0.15);border:2px solid rgba(45,164,78,0.4);border-radius:10px;padding:12px 20px;text-align:center;min-width:180px;">
+      <div style="font-size:13px;font-weight:600;color:var(--green);">Web host / reverse proxy</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px;">(IIS / Nginx / Apache)</div>
+    </div>
+
+    <div style="color:var(--text3);font-size:18px;margin-top:18px;">→</div>
+
+    <!-- Response -->
+    <div style="text-align:center;">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px;max-width:100px;text-align:left;line-height:1.4;"><strong>7.</strong> The response text is sent to the browser.</div>
+      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:8px 14px;font-size:12px;color:var(--text2);">Response</div>
+    </div>
+
+  </div>
+
+  <!-- Down arrow from web host -->
+  <div style="display:flex;justify-content:center;margin-left:-160px;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div style="width:1.5px;height:20px;background:var(--text3);"></div>
+      <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--text3);"></div>
+    </div>
+  </div>
+
+  <!-- ASP.NET Core app container -->
+  <div style="border:1.5px dashed var(--border);border-radius:12px;padding:20px;margin-top:4px;background:rgba(0,0,0,0.02);display:flex;gap:20px;align-items:stretch;">
+
+    <!-- Left annotations -->
+    <div style="display:flex;flex-direction:column;justify-content:space-between;min-width:160px;gap:8px;padding-right:8px;">
+      <div style="font-size:10px;color:var(--text3);line-height:1.5;"><strong>2.</strong> Request is forwarded by IIS/Nginx/Apache to your ASP.NET Core app.</div>
+      <div style="font-size:10px;color:var(--text3);line-height:1.5;"><strong>3.</strong> The ASP.NET Core web server receives the HTTP request and passes it to the middleware.</div>
+      <div style="font-size:10px;color:var(--text3);line-height:1.5;"><strong>4.</strong> Middleware processes the request, logging some values, and passes the request to the endpoint middleware.</div>
+      <div style="font-size:10px;color:var(--text3);line-height:1.5;"><strong>5.</strong> The endpoint middleware generates a response such as HTML.</div>
+    </div>
+
+    <!-- Center: the 3 boxes with arrows -->
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:0;">
+
+      <!-- Kestrel -->
+      <div style="background:rgba(207,34,46,0.15);border:2px solid rgba(207,34,46,0.35);border-radius:10px;padding:14px 20px;text-align:center;width:100%;">
+        <div style="font-size:13px;font-weight:600;color:var(--red);">ASP.NET Core</div>
+        <div style="font-size:12px;color:var(--red);opacity:0.8;">web server (Kestrel)</div>
+      </div>
+
+      <!-- Arrow down + up -->
+      <div style="display:flex;gap:16px;padding:6px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:18px;background:var(--text3);"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--text3);"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:7px solid var(--text3);"></div>
+          <div style="width:1.5px;height:18px;background:var(--text3);"></div>
+        </div>
+      </div>
+
+      <!-- Middleware pipeline -->
+      <div style="background:rgba(207,34,46,0.15);border:2px solid rgba(207,34,46,0.35);border-radius:10px;padding:14px 20px;text-align:center;width:100%;">
+        <div style="font-size:13px;font-weight:600;color:var(--red);">Middleware pipeline</div>
+      </div>
+
+      <!-- Arrow down + up -->
+      <div style="display:flex;gap:16px;padding:6px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:18px;background:var(--text3);"></div>
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--text3);"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:7px solid var(--text3);"></div>
+          <div style="width:1.5px;height:18px;background:var(--text3);"></div>
+        </div>
+      </div>
+
+      <!-- Endpoint middleware -->
+      <div style="background:rgba(9,105,218,0.1);border:2px solid rgba(9,105,218,0.3);border-radius:10px;padding:14px 20px;text-align:center;width:100%;">
+        <div style="font-size:13px;font-weight:600;color:var(--blue);">Endpoint middleware</div>
+      </div>
+
+      <!-- Label -->
+      <div style="margin-top:14px;font-size:11px;color:var(--text3);letter-spacing:.04em;">ASP.NET Core application</div>
+
+    </div>
+
+    <!-- Right annotation -->
+    <div style="display:flex;flex-direction:column;justify-content:center;min-width:120px;padding-left:8px;">
+      <div style="font-size:10px;color:var(--text3);line-height:1.5;"><strong>6.</strong> Response passes through middleware back to the web server.</div>
+    </div>
+
+  </div>
+</div>
   </section>
 
   <!-- SECTION 2 -->

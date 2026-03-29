@@ -32,7 +32,10 @@
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
        <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
-</div>
+     <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+
+  </div>
 </nav>
 
 <main class="main" id="mainContent">
@@ -149,94 +152,200 @@
       <div class="quiz-feedback" id="quiz-why1-fb"></div>
     </div>
   </section>
+<section class="section" id="dotnet-platform">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2 class="section-title">.NET 7 / .NET 8 Platform</h2>
+  </div>
 
-  <!-- SECTION 3 -->
-  <section class="section" id="dotnet">
-    <div class="section-header">
-      <div class="section-number">3</div>
-      <h2 class="section-title">.NET 7 / .NET 8 Platform</h2>
-    </div>
+  <p>Every ASP.NET Core app starts life as a <strong>plain .NET console application</strong>. You then add the Kestrel web server library, which turns that console app into a web server. From there, you layer in whatever features your app needs — logging, configuration, HTML generation — each as a separate library.</p>
 
-    <p>ASP.NET Core 8 runs on the <strong>.NET 8 platform</strong>. Understanding how the platform layers are organized helps you understand what each piece adds.</p>
+  <p>Think of it like building with blocks: <strong>you start with the smallest block and stack on top</strong>.</p>
 
-    <div class="callout info">
-      <div class="callout-icon">📋</div>
-      <div class="callout-body">
-        <div class="callout-title"> Note — Application Model</div>
-        <div class="callout-text">
-          The .NET 7/8 platform provides a base <strong>console application model</strong> for running command-line apps. Adding the web server library converts this model to an <strong>ASP.NET Core web app</strong>. You can add other features — such as configuration and logging — using various libraries.
-        </div>
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div class="callout-body">
+      <div class="callout-title">Why start as a console app?</div>
+      <div class="callout-text">
+        Because it keeps things simple and modular. A console app is just a process that starts and runs — adding Kestrel gives it the ability to <strong>listen for HTTP requests</strong>. Adding more libraries gives it more capabilities. You only include what you actually need.
       </div>
     </div>
+  </div>
 
-    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
-      <div class="code-header"><span class="code-lang">Platform Stack</span><span class="code-label">.NET 8 Layer Architecture</span></div>
-      <div style="padding:24px;">
-        <div style="display:flex;flex-direction:column;gap:8px;max-width:500px;margin:0 auto;">
-          <div style="background:rgba(247,140,108,0.12);border:1px solid rgba(247,140,108,0.35);border-radius:8px;padding:12px 20px;text-align:center;">
-            <div style="font-weight:700;color:var(--accent3);font-size:14px;">Your Application</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Business logic, Razor Pages, Minimal APIs, etc.</div>
+  <!-- Diagram matching the image -->
+  <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+    <div class="code-header">
+      <span class="code-lang">Architecture</span>
+      <span class="code-label">.NET 8 Application Model</span>
+    </div>
+    <div style="padding:28px 24px;">
+      <div style="max-width:400px;margin:0 auto;">
+
+        <!-- Outer: .NET console app -->
+        <div style="border:1.5px solid rgba(207,34,46,0.4);border-radius:10px;overflow:hidden;">
+
+          <!-- Red header -->
+          <div style="background:rgba(207,34,46,0.15);padding:11px 20px;text-align:center;border-bottom:1.5px solid rgba(207,34,46,0.3);">
+            <div style="font-size:13px;font-weight:600;color:var(--red);">.NET 8 console application</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">The entry point — every ASP.NET Core app is a console app at its core</div>
           </div>
-          <div style="background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
-            <div style="font-weight:700;color:var(--accent2);font-size:14px;">ASP.NET Core Web App Layer</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Kestrel, Middleware Pipeline, Routing, DI Container</div>
-          </div>
-          <div style="background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
-            <div style="font-weight:700;color:var(--blue);font-size:14px;">Optional Libraries</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:3px;">Configuration, Logging, EF Core, Identity, NuGet packages…</div>
-          </div>
-          <div style="background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px;padding:12px 20px;text-align:center;">
-            <div style="font-weight:700;color:var(--accent);font-size:14px;">.NET Base Console Model</div>
-            <div style="font-size:12px;color:var(--text3);margin-top:3px;">The foundation — every ASP.NET Core app starts as a console app</div>
+
+          <div style="padding:16px;background:rgba(9,105,218,0.05);display:flex;flex-direction:column;gap:12px;">
+
+            <!-- Kestrel -->
+            <div style="background:rgba(9,105,218,0.1);border:1.5px solid rgba(9,105,218,0.3);border-radius:8px;padding:13px 16px;text-align:center;">
+              <div style="font-size:13px;font-weight:600;color:var(--blue);">ASP.NET Core — Kestrel</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:3px;">Cross-platform web server · listens for HTTP requests</div>
+            </div>
+
+            <!-- Arrow -->
+            <div style="display:flex;justify-content:center;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+                <div style="width:1.5px;height:16px;background:var(--text3);"></div>
+                <div style="width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid var(--text3);"></div>
+              </div>
+            </div>
+
+            <!-- Web app logic container -->
+            <div style="background:rgba(9,105,218,0.08);border:1.5px solid rgba(9,105,218,0.25);border-radius:8px;padding:14px;">
+              <div style="font-size:13px;font-weight:600;color:var(--blue);text-align:center;margin-bottom:12px;">Web application logic</div>
+              <div style="font-size:11px;color:var(--text3);text-align:center;margin-bottom:12px;margin-top:-8px;">Your handlers + these optional libraries</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div style="background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:6px;padding:10px;text-align:center;font-size:12px;color:var(--text2);font-family:var(--sans);">Logging</div>
+                <div style="background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:6px;padding:10px;text-align:center;font-size:12px;color:var(--text2);font-family:var(--sans);">Static files</div>
+                <div style="background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:6px;padding:10px;text-align:center;font-size:12px;color:var(--text2);font-family:var(--sans);">Configuration</div>
+                <div style="background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:6px;padding:10px;text-align:center;font-size:12px;color:var(--text2);font-family:var(--sans);">HTML generation</div>
+              </div>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- SECTION 4 -->
+  <div class="callout tip">
+    <div class="callout-icon">🔁</div>
+    <div class="callout-body">
+      <div class="callout-title">How Kestrel and your logic connect</div>
+      <div class="callout-text">
+        Kestrel receives an HTTP request from the client and <strong>calls down into your web application logic</strong>. Your logic processes the request (using logging, configuration, etc.) and returns a response back up to Kestrel, which sends it to the client.
+      </div>
+    </div>
+  </div>
+
+</section>
+  <!-- ══ SECTION 4 — Kestrel ══ -->
   <section class="section" id="kestrel">
     <div class="section-header">
       <div class="section-number">4</div>
-      <h2 class="section-title">Kestrel — The Hosting Model</h2>
+      <h2 class="section-title">Kestrel & Hosting Models</h2>
     </div>
 
-    <p>The hosting model in ASP.NET Core is fundamentally different from the old ASP.NET. Understanding this difference is key to understanding deployment.</p>
+    <p>Unlike classic ASP.NET which required IIS to function, ASP.NET Core ships with its own built-in web server called <strong>Kestrel</strong>. This is a fundamental architectural change.</p>
 
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-card-header bad">Old ASP.NET — Tightly Coupled</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
-          IIS was tightly coupled with the application. IIS processed requests and had deep knowledge of the application internals.
-          <br><br>
-          ❌ Windows / IIS only<br>
-          ❌ Tightly coupled deployment<br>
-          ❌ Hard to run without IIS
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'tab-aspnet-old')">Classic ASP.NET</button>
+        <button class="tab-btn" onclick="tab(this,'tab-aspnet-core')">ASP.NET Core</button>
+        <button class="tab-btn" onclick="tab(this,'tab-iis-windows')">Windows + IIS</button>
+      </div>
+
+      <div id="tab-aspnet-old" class="tab-panel active" style="padding:20px 0">
+        <div class="callout danger">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <div class="callout-title">Classic ASP.NET — Tightly coupled to IIS</div>
+            <div class="callout-text">In the old ASP.NET, <strong>IIS is deeply integrated</strong> into the application. IIS handles the request pipeline directly — it knows about your app's internals, manages the application pool, and is required even in development. You can't run classic ASP.NET without IIS on Windows.</div>
+          </div>
+        </div>
+        <!-- Classic diagram -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;margin:20px 0;font-family:var(--mono);font-size:12px;">
+          <div style="padding:12px 20px;background:rgba(207,34,46,0.1);border:1px solid rgba(207,34,46,0.3);border-radius:8px;text-align:center;color:var(--red);font-weight:600">Client</div>
+          <div style="padding:0 8px;color:var(--text3)">→</div>
+          <div style="padding:12px 20px;background:rgba(207,34,46,0.1);border:1px solid rgba(207,34,46,0.3);border-radius:8px;text-align:center;color:var(--red);font-weight:600">IIS<br><span style="font-size:10px;font-weight:400;color:var(--text3)">tightly coupled</span></div>
+          <div style="padding:0 8px;color:var(--text3)">↔</div>
+          <div style="padding:12px 20px;background:rgba(207,34,46,0.1);border:1px solid rgba(207,34,46,0.3);border-radius:8px;text-align:center;color:var(--red);font-weight:600">ASP.NET App<br><span style="font-size:10px;font-weight:400;color:var(--text3)">no separation</span></div>
         </div>
       </div>
-      <div class="compare-card">
-        <div class="compare-card-header good">ASP.NET Core — Decoupled</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
-          IIS hands off the request to Kestrel (self-hosted web server inside your app) and receives the response, but has <strong>no deeper knowledge</strong> of the application.
-          <br><br>
-          ✅ Cross-platform<br>
-          ✅ Loose coupling<br>
-          ✅ Run standalone or behind a proxy
+
+      <div id="tab-aspnet-core" class="tab-panel" style="padding:20px 0">
+        <div class="callout tip">
+          <div class="callout-icon">✅</div>
+          <div class="callout-body">
+            <div class="callout-title">ASP.NET Core — Kestrel is self-hosted</div>
+            <div class="callout-text">ASP.NET Core apps include <strong>Kestrel</strong>, a self-hosted web server, directly inside the application process. Any external server (like Nginx or IIS) simply acts as a <strong>reverse proxy</strong> — it forwards requests to Kestrel and receives responses, but has <strong>no deeper knowledge of the app</strong>.</div>
+          </div>
+        </div>
+        <!-- Core diagram -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;margin:20px 0;font-family:var(--mono);font-size:12px;flex-wrap:wrap;gap:4px;">
+          <div style="padding:12px 20px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px;text-align:center;color:var(--accent);font-weight:600">Client</div>
+          <div style="padding:0 8px;color:var(--text3)">→</div>
+          <div style="padding:12px 20px;background:rgba(9,105,218,0.1);border:1px solid rgba(9,105,218,0.3);border-radius:8px;text-align:center;color:var(--blue);font-weight:600">Reverse Proxy<br><span style="font-size:10px;font-weight:400;color:var(--text3)">Nginx / IIS (optional)</span></div>
+          <div style="padding:0 8px;color:var(--text3)">→</div>
+          <div style="padding:12px 20px;background:rgba(0,212,170,0.1);border:1px solid rgba(0,212,170,0.3);border-radius:8px;text-align:center;color:var(--accent);font-weight:600">Kestrel<br><span style="font-size:10px;font-weight:400;color:var(--text3)">inside your app</span></div>
+          <div style="padding:0 8px;color:var(--text3)">→</div>
+          <div style="padding:12px 20px;background:rgba(124,106,247,0.1);border:1px solid rgba(124,106,247,0.3);border-radius:8px;text-align:center;color:var(--accent2);font-weight:600">Your App<br><span style="font-size:10px;font-weight:400;color:var(--text3)">handlers + logic</span></div>
+        </div>
+      </div>
+
+      <div id="tab-iis-windows" class="tab-panel" style="padding:20px 0">
+        <div class="callout info">
+          <div class="callout-icon">🪟</div>
+          <div class="callout-body">
+            <div class="callout-title">Running inside IIS on Windows</div>
+            <div class="callout-text">By default on Windows, ASP.NET Core can run <strong>inside IIS</strong> (in-process hosting), which can provide better performance than the reverse-proxy model. IIS still has no deep knowledge of your app — it just hosts the process more efficiently. This is primarily a <strong>deployment detail</strong> and doesn't change how you build your app.</div>
+          </div>
+        </div>
+        <div class="callout warn" style="margin-top:0">
+          <div class="callout-icon">💡</div>
+          <div class="callout-body">
+            <div class="callout-title">Key takeaway</div>
+            <div class="callout-text">Whether you deploy to IIS, Nginx, Docker, or bare-metal Linux — your ASP.NET Core code is <strong>exactly the same</strong>. The hosting model is a deployment concern, not a development concern.</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="callout tip">
-      <div class="callout-icon">💡</div>
-      <div class="callout-body">
-        <div class="callout-title">Windows In-Process Hosting</div>
-        <div class="callout-text">
-          By default, when running on Windows, ASP.NET Core can run <strong>inside IIS</strong> (in-process hosting), which can provide better performance than the reverse-proxy version. This is primarily a deployment detail and doesn't change how you build ASP.NET Core applications — your code is identical either way.
-        </div>
-      </div>
-    </div>
-
-    <div id="quiz-kestrel2" class="quiz-block">
+    <!-- Comparison table -->
+    <table class="data-table" style="margin-top:8px">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Classic ASP.NET</th>
+          <th>ASP.NET Core</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Web server</td>
+          <td><span class="pill red">IIS required</span></td>
+          <td><span class="pill green">Kestrel (built-in)</span></td>
+        </tr>
+        <tr>
+          <td>Platform</td>
+          <td><span class="pill red">Windows only</span></td>
+          <td><span class="pill green">Cross-platform</span></td>
+        </tr>
+        <tr>
+          <td>IIS coupling</td>
+          <td><span class="pill red">Tightly coupled</span></td>
+          <td><span class="pill blue">Reverse proxy only</span></td>
+        </tr>
+        <tr>
+          <td>Deployment</td>
+          <td><span class="pill yellow">IIS app pool</span></td>
+          <td><span class="pill green">Any host / Docker</span></td>
+        </tr>
+        <tr>
+          <td>Development server</td>
+          <td><span class="pill yellow">IIS Express</span></td>
+          <td><span class="pill green">Kestrel directly</span></td>
+        </tr>
+      </tbody>
+    </table>
+        <div id="quiz-kestrel2" class="quiz-block">
       <div class="quiz-question">🧠 What changed in the ASP.NET Core hosting model compared to the old ASP.NET?</div>
       <div class="quiz-options">
         <button class="quiz-option" onclick="answer(this,'quiz-kestrel2',false)">ASP.NET Core no longer uses IIS at all</button>
@@ -246,8 +355,8 @@
       </div>
       <div class="quiz-feedback" id="quiz-kestrel2-fb"></div>
     </div>
-  </section>
 
+  </section>
   <!-- SECTION 5 -->
   <section class="section" id="nuget">
     <div class="section-header">
@@ -296,6 +405,33 @@
         <div class="callout-text">The template chooses a random port for your application's URL, which will be opened in the browser automatically when you run from Visual Studio. You can change this in <strong>launchSettings.json</strong>.</div>
       </div>
     </div>
+<!-- dotnet run — outermost green -->
+<div style="background:rgba(45,164,78,0.12);border:2px solid rgba(45,164,78,0.3);border-radius:20px;padding:24px;margin:20px 0;display:flex;align-items:center;gap:20px;font-family:var(--mono);">
+
+  <!-- dotnet build — middle grey, contains restore -->
+  <div style="background:rgba(200,200,200,0.15);border:1.5px solid var(--border);border-radius:14px;padding:18px;display:flex;align-items:center;gap:16px;">
+
+    <!-- dotnet restore — innermost red -->
+    <div style="background:rgba(207,34,46,0.15);border:2px solid rgba(207,34,46,0.4);border-radius:10px;padding:14px 18px;text-align:center;">
+      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:10px 16px;margin-bottom:10px;font-size:13px;color:var(--text);font-family:var(--sans);font-weight:500;min-width:110px;">Restore<br>packages</div>
+      <div style="font-size:11.5px;color:var(--red);">dotnet restore</div>
+    </div>
+
+    <!-- Compile code — sits inside build, next to restore -->
+    <div style="text-align:center;">
+      <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:10px 16px;margin-bottom:10px;font-size:13px;color:var(--text);font-family:var(--sans);font-weight:500;min-width:100px;">Compile<br>code</div>
+      <div style="font-size:11.5px;color:var(--text2);">dotnet build</div>
+    </div>
+
+  </div>
+
+  <!-- Execute app — sits inside run, outside build -->
+  <div style="text-align:center;">
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:10px 16px;margin-bottom:10px;font-size:13px;color:var(--text);font-family:var(--sans);font-weight:500;min-width:100px;">Execute<br>app</div>
+    <div style="font-size:11.5px;color:var(--text2);">dotnet run</div>
+  </div>
+
+</div>
   </section>
 
 </main>

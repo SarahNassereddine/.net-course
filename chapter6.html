@@ -17,8 +17,8 @@
     <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
   </div>
   <div class="nav-section">
-    <div class="nav-section-title">Sections</div>
-    <button class="nav-link" data-target="what-is-routing" onclick="scrollPageTo('what-is-routing')">
+    <div class="nav-section-title" >Sections</div>
+    <button class="nav-link active" data-target="what-is-routing" onclick="scrollPageTo('what-is-routing')">
       <span class="dot"></span>What is routing?
     </button>
     <button class="nav-link" data-target="endpoint-routing" onclick="scrollPageTo('endpoint-routing')">
@@ -62,6 +62,10 @@
     <a class="nav-link " href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
     <a class="nav-link active" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+       <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+
+  
   </div>
 </nav>
 
@@ -131,25 +135,21 @@
     </div>
 
     <p>Endpoint routing is implemented by <strong>two separate middleware</strong> components. Splitting the work into two steps is intentional — it allows other middleware (like authorization) to run between selection and execution and inspect which endpoint was chosen.</p>
+  <table class="data-table">
+      <tr><th>Middleware</th><th>Its job</th><th>Where it sits</th></tr>
+      <tr>
+        <td><strong>RoutingMiddleware</strong><br><code style="font-size:11px">UseRouting()</code></td>
+        <td>Looks at the URL and HTTP method, finds the matching endpoint, and <strong>saves that decision</strong> in the request context. Does not run your handler yet.</td>
+        <td>Start of the pipeline</td>
+      </tr>
+      <tr>
+        <td><strong>EndpointMiddleware</strong><br><code style="font-size:11px">UseEndpoints()</code></td>
+        <td>Reads the decision that RoutingMiddleware stored and <strong>actually calls</strong> the selected handler. This is where your lambda runs and the response is sent.</td>
+        <td>End of the pipeline</td>
+      </tr>
+    </table>
 
-    <div class="compare-grid">
-      <div class="compare-card">
-        <div class="compare-card-header neutral">🔀 EndpointRoutingMiddleware</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
-          Added via <code style="font-family:var(--mono)">UseRouting()</code>.<br><br>
-          <strong>Selects</strong> the matching endpoint at request time by inspecting the URL and HTTP verb, then stores the result on <code style="font-family:var(--mono)">HttpContext</code>.<br><br>
-          Does <em>not</em> execute the endpoint yet — only selects it.
-        </div>
-      </div>
-      <div class="compare-card">
-        <div class="compare-card-header neutral">⚡ EndpointMiddleware</div>
-        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
-          Added via <code style="font-family:var(--mono)">UseEndpoints()</code> / <code style="font-family:var(--mono)">MapGet()</code> etc.<br><br>
-          At startup: <strong>registers</strong> all routes into a shared dictionary.<br><br>
-          At request time: <strong>executes</strong> the endpoint that RoutingMiddleware selected.
-        </div>
-      </div>
-    </div>
+    <p>All the endpoints you register with <code>app.MapGet()</code> are stored in a <strong>shared dictionary</strong> inside <code>WebApplication</code>. RoutingMiddleware reads it to find a match; EndpointMiddleware reads it to execute the match.</p>
 
     <div class="callout tip">
       <div class="callout-icon">💡</div>
@@ -160,21 +160,53 @@
     </div>
 
     <!-- Pipeline diagram -->
-    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
-      <div style="padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);">Why the split matters — middleware placement in the pipeline</div>
-      <div style="padding:20px;display:flex;flex-direction:column;gap:8px;font-size:13px;font-family:var(--mono);">
-        <div style="padding:10px 16px;background:rgba(9,105,218,0.07);border:1px solid rgba(9,105,218,0.2);border-radius:6px;color:var(--blue);">UseRouting()  ← selects endpoint, stores on HttpContext</div>
-        <div style="padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text3);">UseStaticFiles()  ← placed BEFORE routing → cannot see selected endpoint</div>
-        <div style="padding:10px 16px;background:rgba(45,164,78,0.07);border:1px solid rgba(45,164,78,0.2);border-radius:6px;color:var(--green);">UseAuthorization()  ← ✅ placed AFTER routing → CAN read endpoint metadata (e.g. [Authorize])</div>
-        <div style="padding:10px 16px;background:rgba(0,212,170,0.07);border:1px solid rgba(0,212,170,0.2);border-radius:6px;color:var(--accent);">MapGet() / MapPost() …  ← UseEndpoints() — executes the selected endpoint</div>
-      </div>
-    </div>
+    <div style="margin:28px 0; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
+      <div style="padding:12px 20px; border-bottom:1px solid var(--border); font-size:11px; font-weight:700; color:var(--text3); letter-spacing:.1em; text-transform:uppercase;">Request pipeline — where each middleware must live</div>
+      <div style="padding:24px 20px; display:flex; flex-direction:column; gap:6px;">
 
-    <div class="callout warn">
-      <div class="callout-icon">⚠️</div>
-      <div class="callout-body">
-        <div class="callout-title">Only middleware placed after UseRouting() can detect which endpoint will run</div>
-        <div class="callout-text"><strong>AuthorizationMiddleware</strong> must be placed after <code>UseRouting()</code> and before <code>UseEndpoints()</code> — it needs to know which endpoint is selected so it can check its <code>[Authorize]</code> metadata. <strong>StaticFileMiddleware</strong> should go <em>before</em> routing so static files are served without going through the full routing pipeline.</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent); font-family:var(--mono); background:rgba(0,212,170,.08); border:1px solid rgba(0,212,170,.2); padding:5px 14px; border-radius:20px; width:fit-content; margin-bottom:6px;">→ Incoming request</div>
+
+        <div style="background:rgba(88,166,255,.07); border:1px solid rgba(88,166,255,.2); border-radius:8px; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <span style="font-family:var(--mono); font-size:13px; font-weight:600; color:var(--blue);">StaticFileMiddleware</span>
+            <span style="font-size:12px; color:var(--text3); margin-left:10px;">Serves .css, .js, images directly — no routing needed</span>
+          </div>
+          <span style="font-size:10px; font-weight:600; color:var(--blue); background:rgba(88,166,255,.1); padding:3px 9px; border-radius:4px; white-space:nowrap;">BEFORE routing ✓</span>
+        </div>
+
+        <div style="background:rgba(0,212,170,.07); border:2px solid rgba(0,212,170,.4); border-radius:8px; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <span style="font-family:var(--mono); font-size:13px; font-weight:700; color:var(--accent);">RoutingMiddleware</span>
+            <span style="font-size:12px; color:var(--text3); margin-left:10px;">Selects an endpoint, stores the result in HttpContext</span>
+          </div>
+          <span style="font-size:10px; font-weight:700; color:var(--accent); background:rgba(0,212,170,.1); padding:3px 9px; border-radius:4px; white-space:nowrap;">DECISION POINT</span>
+        </div>
+
+        <div style="background:rgba(247,140,108,.07); border:1px solid rgba(247,140,108,.25); border-radius:8px; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <span style="font-family:var(--mono); font-size:13px; font-weight:600; color:var(--accent3);">AuthorizationMiddleware</span>
+            <span style="font-size:12px; color:var(--text3); margin-left:10px;">Checks permissions — works because the endpoint is already known</span>
+          </div>
+          <span style="font-size:10px; font-weight:600; color:var(--accent3); background:rgba(247,140,108,.07); padding:3px 9px; border-radius:4px; white-space:nowrap;">AFTER routing ✓</span>
+        </div>
+
+        <div style="background:rgba(124,106,247,.06); border:1px solid rgba(124,106,247,.18); border-radius:8px; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <span style="font-family:var(--mono); font-size:13px; font-weight:600; color:var(--accent2);">Your Custom Middleware</span>
+            <span style="font-size:12px; color:var(--text3); margin-left:10px;">Can also inspect the selected endpoint if placed here</span>
+          </div>
+          <span style="font-size:10px; font-weight:600; color:var(--accent2); background:rgba(124,106,247,.06); padding:3px 9px; border-radius:4px; white-space:nowrap;">AFTER routing ✓</span>
+        </div>
+
+        <div style="background:rgba(210,153,34,.07); border:2px solid rgba(210,153,34,.4); border-radius:8px; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div>
+            <span style="font-family:var(--mono); font-size:13px; font-weight:700; color:var(--yellow);">EndpointMiddleware</span>
+            <span style="font-size:12px; color:var(--text3); margin-left:10px;">Executes the selected handler — sends the response</span>
+          </div>
+          <span style="font-size:10px; font-weight:700; color:var(--yellow); background:rgba(210,153,34,.08); padding:3px 9px; border-radius:4px; white-space:nowrap;">EXECUTION</span>
+        </div>
+
+        <div style="font-size:12px; font-weight:700; color:var(--text3); font-family:var(--mono); background:var(--bg3); border:1px solid var(--border); padding:5px 14px; border-radius:20px; width:fit-content; margin-top:6px;">← Response goes back up</div>
       </div>
     </div>
 
@@ -420,73 +452,78 @@ app.<span class="fn">MapGet</span>(<span class="str">"/calendar/{year:int:min(20
     </div>
   </section>
 
-
-  <!-- ══ SECTION 7 ══ -->
-  <section class="section" id="catch-all">
+<!-- ══ SECTION 7 ══ -->
+  <section class="section" id="catchall">
     <div class="section-header">
       <div class="section-number">7</div>
       <h2 class="section-title">Catch-All Parameters</h2>
     </div>
 
-    <p>Normal parameters stop at a <code>/</code> character — they capture exactly one segment. A <strong>catch-all parameter</strong> uses <code>{*name}</code> or <code>{**name}</code> to capture the remainder of the URL including any slashes, enabling variable-depth paths.</p>
+    <p>A normal route parameter matches exactly one segment — the text between two slashes. It can't contain a slash itself. So <code>/product/{name}</code> matches <code>/product/apple</code> but not <code>/product/summer/apple</code>.</p>
 
-    <div class="callout info">
-      <div class="callout-icon">📋</div>
-      <div class="callout-body">
-        <div class="callout-title">The multi-currency problem from the slides</div>
-        <div class="callout-text">
-          Imagine one endpoint for all of these:<br>
-          <code>/USD/convert/GBP</code> &nbsp;—&nbsp; <code>/USD/convert/GBP/EUR</code> &nbsp;—&nbsp; <code>/USD/convert/GBP/EUR/CAD</code><br><br>
-          A normal template <code>/{from}/convert/{to}</code> only captures a single <code>{to}</code>. A catch-all parameter captures everything remaining as a single string value.
-        </div>
-      </div>
+    <p>Sometimes the number of segments is genuinely unknown. The currency converter from the slides is a clear example:</p>
+
+    <div style="font-family:var(--mono); background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; margin:16px 0; font-size:13px; line-height:2.2;">
+      <span style="color:var(--text3)">/USD/convert/</span><span style="color:var(--accent); font-weight:700;">GBP</span><br>
+      <span style="color:var(--text3)">/USD/convert/</span><span style="color:var(--accent); font-weight:700;">GBP/EUR</span><br>
+      <span style="color:var(--text3)">/USD/convert/</span><span style="color:var(--accent); font-weight:700;">GBP/EUR/CAD</span>
+    </div>
+
+    <p>A <strong>catch-all parameter</strong> — written with <code>*</code> or <code>**</code> — captures <em>everything remaining</em> in the URL, including slashes:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Catch-all captures the entire URL tail as one string</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/USD/convert/{**others}"</span>, (<span class="tp">string</span>? others) =>
+{
+    <span class="cm">// /USD/convert/GBP         → others = "GBP"</span>
+    <span class="cm">// /USD/convert/GBP/EUR     → others = "GBP/EUR"</span>
+    <span class="cm">// /USD/convert/GBP/EUR/CAD → others = "GBP/EUR/CAD"</span>
+    <span class="cm">// /USD/convert              → others = ""  ← empty string, still matches</span>
+
+    <span class="kw">var</span> targets = others?.<span class="fn">Split</span>(<span class="str">'/'</span>) ?? [];
+    <span class="kw">return</span> <span class="str">$"Converting USD to: {string.Join(", ", targets)}"</span>;
+});
+<span class="cm">// Catch-all must always be the LAST segment in the template.</span></div>
     </div>
 
     <div class="compare-grid">
       <div class="compare-card">
-        <div class="compare-card-header neutral"><code>{*param}</code> — single asterisk</div>
-        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.9;">
-<span class="cm">// Captures remaining path as-is</span>
-app.<span class="fn">MapGet</span>(<span class="str">"/{from}/convert/{*others}"</span>,
-  (string from, string others) =>
-    <span class="str">$"{from} → {others}"</span>);
-
-<span class="cm">// /USD/convert/GBP/EUR</span>
-<span class="cm">//   from="USD"</span>
-<span class="cm">//   others="GBP/EUR"</span>
-        </div>
+        <div class="compare-card-header neutral"><code>{*others}</code> — single star</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// URL-decodes the captured value.</span>
+<span class="cm">// /convert/a%2Fb  → others = "a/b"</span>
+<span class="cm">// (%2F decoded into an actual /)</span>
+<span class="cm">// Can create ambiguity with real</span>
+<span class="cm">// path separators — avoid.</span></div>
       </div>
       <div class="compare-card">
-        <div class="compare-card-header neutral"><code>{**param}</code> — double asterisk</div>
-        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.9;">
-<span class="cm">// Same but URL-decodes the value too</span>
-app.<span class="fn">MapGet</span>(<span class="str">"/files/{**path}"</span>,
-  (string path) =>
-    <span class="str">$"File: {path}"</span>);
-
-<span class="cm">// /files/docs/2024/report.pdf</span>
-<span class="cm">//   path = "docs/2024/report.pdf"</span>
-        </div>
+        <div class="compare-card-header good"><code>{**others}</code> — double star (use this)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Keeps the raw URL value as-is.</span>
+<span class="cm">// /convert/a%2Fb  → others = "a%2Fb"</span>
+<span class="cm">// (%2F stays encoded — no confusion)</span>
+<span class="cm">// What ASP.NET Core uses internally.</span>
+<span class="cm">// Prefer ** in all cases.</span></div>
       </div>
     </div>
 
     <div class="callout tip">
       <div class="callout-icon">💡</div>
       <div class="callout-body">
-        <div class="callout-title">Catch-all parameters also match empty strings</div>
-        <div class="callout-text">Both <code>{*rest}</code> and <code>{**rest}</code> match an empty string — the segment after the last literal slash can be entirely absent. This makes the catch-all serve as an optional wildcard at the end of any route.</div>
+        <div class="callout-title">Catch-all also matches an empty string</div>
+        <div class="callout-text">
+          Unlike normal parameters, a catch-all matches even when there's nothing left after the prefix. <code>GET /USD/convert</code> matches the template above with <code>others = ""</code>. Handle the empty case in your code.
+        </div>
       </div>
     </div>
 
-    <div id="quiz-r5" class="quiz-block">
-      <div class="quiz-question">🧠 Template: <code>/{from}/convert/{**others}</code>. Request: <code>/USD/convert/GBP/EUR/CAD</code>. What is the value of <code>others</code>?</div>
+    <div id="quiz-routing7" class="quiz-block">
+      <div class="quiz-question">🧠 Template: <code>/files/{**path}</code>. Request: <code>GET /files/docs/2024/report.pdf</code>. What is <code>path</code>?</div>
       <div class="quiz-options">
-        <button class="quiz-option" onclick="answer(this,'quiz-r5',false)">"GBP" — catch-all only captures one extra segment</button>
-        <button class="quiz-option" onclick="answer(this,'quiz-r5',false)">"GBP/EUR" — catch-all captures two extra segments</button>
-        <button class="quiz-option" onclick="answer(this,'quiz-r5',true)">"GBP/EUR/CAD" — catch-all captures all remaining segments including slashes as one single string</button>
-        <button class="quiz-option" onclick="answer(this,'quiz-r5',false)">["GBP","EUR","CAD"] — catch-all returns an array split by slash</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-routing7',false)">"docs" — only the first remaining segment</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-routing7',false)">["docs", "2024", "report.pdf"] — an array</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-routing7',true)">"docs/2024/report.pdf" — the entire remaining path as one string</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-routing7',false)">Route won't match — too many segments</button>
       </div>
-      <div class="quiz-feedback" id="quiz-r5-fb"></div>
+      <div class="quiz-feedback" id="quiz-routing7-fb"></div>
     </div>
   </section>
 
@@ -585,6 +622,33 @@ app.<span class="fn">MapGet</span>(<span class="str">"/test"</span>, (<span clas
                   <span class="kw">new</span> { name = <span class="str">"shoes"</span> });
     <span class="kw">return</span> url;
 });</div>
+    </div>
+
+      <h3 style="font-size:16px; font-weight:700; color:var(--text); margin:28px 0 10px;">GetPathByName vs GetUriByName</h3>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral"><code>GetPathByName()</code> — relative path</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Returns: "/product/big-widget"</span>
+<span class="cm">// No scheme, no host.</span>
+<span class="cm">// Use for: Location headers,</span>
+<span class="cm">// internal redirects, href values.</span>
+
+linkGen.<span class="fn">GetPathByName</span>(<span class="str">"GetProduct"</span>,
+    <span class="kw">new</span> { name = <span class="str">"big-widget"</span> });
+<span class="cm">// → "/product/big-widget"</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral"><code>GetUriByName()</code> — full URL</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8"><span class="cm">// Returns: "https://myapp.com/product/big-widget"</span>
+<span class="cm">// Includes scheme + host.</span>
+<span class="cm">// Use for: emails, webhooks,</span>
+<span class="cm">// external redirects.</span>
+
+linkGen.<span class="fn">GetUriByName</span>(httpContext,
+    <span class="str">"GetProduct"</span>, <span class="kw">new</span> { name = <span class="str">"big-widget"</span> });
+<span class="cm">// → "https://myapp.com/product/big-widget"</span></div>
+      </div>
     </div>
 
     <div id="quiz-r6" class="quiz-block">

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 9 — Registering Services with Dependency Injection</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div class="chapter-label">Chapter 9</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="register-custom" onclick="scrollPageTo('register-custom')"><span class="dot"></span>Registering Custom Services</button>
+    <button class="nav-link" data-target="add-methods" onclick="scrollPageTo('add-methods')"><span class="dot"></span>The Add* Methods</button>
+    <button class="nav-link" data-target="objects-lambdas" onclick="scrollPageTo('objects-lambdas')"><span class="dot"></span>Objects &amp; Lambdas</button>
+    <button class="nav-link" data-target="extension-method" onclick="scrollPageTo('extension-method')"><span class="dot"></span>Extension Method Pattern</button>
+    <button class="nav-link" data-target="multiple-impls" onclick="scrollPageTo('multiple-impls')"><span class="dot"></span>Multiple Implementations</button>
+    <button class="nav-link" data-target="tryadd" onclick="scrollPageTo('tryadd')"><span class="dot"></span>TryAdd — Conditional Registration</button>
+    <button class="nav-link" data-target="lifetimes" onclick="scrollPageTo('lifetimes')"><span class="dot"></span>Understanding Lifetimes</button>
+    <button class="nav-link" data-target="transient" onclick="scrollPageTo('transient')"><span class="dot"></span>Transient</button>
+    <button class="nav-link" data-target="scoped" onclick="scrollPageTo('scoped')"><span class="dot"></span>Scoped</button>
+    <button class="nav-link" data-target="singleton" onclick="scrollPageTo('singleton')"><span class="dot"></span>Singleton</button>
+    <button class="nav-link" data-target="captive" onclick="scrollPageTo('captive')"><span class="dot"></span>Captive Dependencies</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+      <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+     <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link active" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 9</div>
+    <h1 class="chapter-title">Registering Services with Dependency Injection</h1>
+    <p class="chapter-subtitle">How to tell the DI container which classes to create, how to create them, and how long to keep them alive — covering all three lifetimes and the captive dependency trap.</p>
+  </div>
+
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="register-custom">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Registering Your Own Custom Services</h2>
+    </div>
+
+    <p>From Chapter 8 you know that the DI container needs to be told which implementation to use for each interface. If you forget to register a service and then try to inject it, the minimal API framework gets confused — it sees a parameter it doesn't recognize as a model-binding source and tries to bind it from the JSON request body instead, causing a runtime exception.</p>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-body">
+        <div class="callout-title">What happens if you forget to register a service</div>
+        <div class="callout-text">When <code>IEmailSender</code> isn't registered, the minimal API infrastructure doesn't know it's a service — so it treats the parameter as a model-binding target and tries to deserialize it from the HTTP request body. You'll get an exception like: <strong>"Failed to bind parameter 'IEmailSender emailSender' from body."</strong><br><br>The fix is always the same: register the service in <code>builder.Services</code>.</div>
+      </div>
+    </div>
+
+    <p>Configuring DI means making a series of statements like these:</p>
+
+    <div style="display:flex;flex-direction:column;gap:6px;margin:20px 0;font-size:13px;font-family:var(--mono);">
+      <div style="padding:10px 16px;background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:6px;">When a service requires <span style="color:var(--accent);">IEmailSender</span> → use an instance of <span style="color:var(--accent);">EmailSender</span></div>
+      <div style="padding:10px 16px;background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.2);border-radius:6px;">When a service requires <span style="color:var(--accent2);">NetworkClient</span> → use an instance of <span style="color:var(--accent2);">NetworkClient</span></div>
+      <div style="padding:10px 16px;background:rgba(9,105,218,.07);border:1px solid rgba(9,105,218,.2);border-radius:6px;">When a service requires <span style="color:var(--blue);">MessageFactory</span> → use an instance of <span style="color:var(--blue);">MessageFactory</span></div>
+    </div>
+
+    <p>You make these statements by calling <code>Add*</code> methods on <code>builder.Services</code>.</p>
+  </section>
+
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="add-methods">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">The Add* Methods — Three Pieces of Information</h2>
+    </div>
+
+    <p>Every registration call provides three things to the DI container:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:20px 0;">
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(0,212,170,.15);border:1px solid rgba(0,212,170,.3);color:var(--accent);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Service Type <span style="font-family:var(--mono);font-weight:400;font-size:12px;color:var(--text3);">(TService)</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">The type that will be <em>requested</em> as a dependency. Usually an interface like <code>IEmailSender</code>, but can be a concrete type like <code>NetworkClient</code>.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(124,106,247,.15);border:1px solid rgba(124,106,247,.3);color:var(--accent2);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Implementation Type <span style="font-family:var(--mono);font-weight:400;font-size:12px;color:var(--text3);">(TImplementation)</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">The <strong>concrete class</strong> the container will actually create. Must be a real class (not an interface). Can be the same as the service type if you're registering a concrete type directly.</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;">
+        <div style="width:28px;height:28px;border-radius:6px;background:rgba(247,140,108,.15);border:1px solid rgba(247,140,108,.3);color:var(--accent3);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">Lifetime</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:3px;">Controls how long an instance lives. The method name encodes the lifetime: <code>AddTransient</code>, <code>AddScoped</code>, or <code>AddSingleton</code>. We'll cover these in detail in Section 7.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Registering the full EmailSender dependency graph</span></div>
+      <div class="code-body"><span class="kw">var</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// ❶ Service type = IEmailSender, Implementation = EmailSender</span>
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">EmailSender</span>&gt;();
+
+<span class="cm">// ❷ Service type = NetworkClient, Implementation = NetworkClient (same)</span>
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">NetworkClient</span>&gt;();
+
+<span class="cm">// ❸ Service type = MessageFactory, Implementation = MessageFactory (same)</span>
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">MessageFactory</span>&gt;();
+
+<span class="kw">var</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Now this just works — the container builds the whole graph</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/register"</span>, (<span class="tp">UserDto</span> user, <span class="tp">IEmailSender</span> sender) =>
+{
+    sender.<span class="fn">SendWelcomeEmail</span>(user.Email);
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Important: EmailSender is only accessible via IEmailSender</div>
+        <div class="callout-text">Because you registered <code>EmailSender</code> under the service type <code>IEmailSender</code>, you can only resolve it by requesting <code>IEmailSender</code> — not by requesting <code>EmailSender</code> directly. Asking for the concrete type would throw an exception, because the container only knows the interface key.</div>
+      </div>
+    </div>
+
+    <div id="quiz-r1" class="quiz-block">
+      <div class="quiz-question">🧠 You call <code>builder.Services.AddTransient&lt;IEmailSender, EmailSender&gt;()</code>. A handler asks for <code>EmailSender</code> directly as a parameter. What happens?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-r1',false)">The container resolves EmailSender because it knows the implementation type from the registration</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r1',true)">The container can't find EmailSender — it was registered under the key IEmailSender, so you must request IEmailSender. The framework falls back to model binding and throws an exception.</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r1',false)">It works automatically — the container always makes both the interface and the class available</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r1',false)">A compile-time error is thrown</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-r1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="objects-lambdas">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Registering with Objects &amp; Lambdas</h2>
+    </div>
+
+    <p>The generic <code>Add*&lt;TService, TImplementation&gt;()</code> methods work great for most classes, but the container makes assumptions that not every class can satisfy:</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin:20px 0;font-size:13px;color:var(--text2);">
+      The container assumes the class:<br>
+      <span style="color:var(--text);font-weight:600;">① Is a concrete type</span> (not an interface or abstract class)<br>
+      <span style="color:var(--text);font-weight:600;">② Has a single usable constructor</span><br>
+      <span style="color:var(--text);font-weight:600;">③ All constructor arguments are either registered services or have default values</span>
+    </div>
+
+    <p>Take <code>EmailServerSettings</code> — it requires a <code>Host</code> (string) and <code>Port</code> (int) in its constructor. These are plain values, not registered services. The generic method can't create it because the container doesn't know where to get those values.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📦 Register a pre-built object (Singleton)</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// Create the object yourself, pass it to the container</span>
+<span class="cm">// The container will ALWAYS return this same instance</span>
+<span class="cm">// → This is always a singleton (one shared instance)</span>
+
+builder.Services.<span class="fn">AddSingleton</span>(
+    <span class="kw">new</span> <span class="tp">EmailServerSettings</span>(<span class="str">"smtp.example.com"</span>, <span class="nm">587</span>)
+);
+<br><br><br><br><br><br></div>
+
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">🔧 Register a factory lambda (any lifetime)</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// Provide a function; container calls it when it needs one</span>
+<span class="cm">// ❶ Not restricted to singleton — can use any lifetime</span>
+<span class="cm">// ❷ Given an IServiceProvider to resolve other deps</span>
+<span class="cm">// ❸ Called every time a new instance is needed</span>
+
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">EmailServerSettings</span>&gt;(provider =>
+{
+    <span class="kw">var</span> config = provider.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IConfiguration</span>&gt;();
+    <span class="kw">return new</span> <span class="tp">EmailServerSettings</span>(
+        config[<span class="str">"Email:Host"</span>], //or directly :Host: "smtp.example.com"
+        <span class="kw">int</span>.<span class="fn">Parse</span>(config[<span class="str">"Email:Port"</span>]) //or directly put the Port: ...
+    ); 
+});</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">When to use a lambda registration</div>
+        <div class="callout-text">Use a lambda when:<br>• The class constructor takes plain values (strings, ints) that must come from config<br>• You want to run initialization logic before returning the object<br>• You need to reach into the container (<code>provider.GetRequiredService&lt;T&gt;()</code>) to get other services to build this one<br><br>Avoid over-using it — if your class's constructor only depends on registered services, the generic method works fine and is cleaner.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="extension-method">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">The Extension Method Pattern — Keeping Program.cs Clean</h2>
+    </div>
+
+    <p>As your app grows, <code>Program.cs</code> can become cluttered with dozens of registration calls. The standard convention is to group related registrations into a static <strong>extension method</strong> on <code>IServiceCollection</code>, then call it from <code>Program.cs</code> with a single <code>Add*()</code> call — exactly the same pattern used by ASP.NET Core framework libraries.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">EmailServices extension method — keeping registrations organized</span></div>
+      <div class="code-body"><span class="cm">// In a separate file, e.g. EmailServiceExtensions.cs</span>
+<span class="kw">public static class</span> <span class="tp">EmailServiceExtensions</span>
+{
+    <span class="kw">public static</span> <span class="tp">IServiceCollection</span> <span class="fn">AddEmailServices</span>(
+        <span class="kw">this</span> <span class="tp">IServiceCollection</span> services)
+    {
+        services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">EmailSender</span>&gt;();
+        services.<span class="fn">AddTransient</span>&lt;<span class="tp">NetworkClient</span>&gt;();
+        services.<span class="fn">AddTransient</span>&lt;<span class="tp">MessageFactory</span>&gt;();
+        services.<span class="fn">AddSingleton</span>(<span class="kw">new</span> <span class="tp">EmailServerSettings</span>(<span class="str">"smtp.example.com"</span>, <span class="nm">587</span>));
+
+        <span class="kw">return</span> services; <span class="cm">// return services for chaining</span>
+    }
+}
+
+<span class="cm">// In Program.cs — one clean call instead of four</span>
+builder.Services.<span class="fn">AddEmailServices</span>();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">This is exactly how AddRazorPages(), AddAuthentication() etc. work</div>
+        <div class="callout-text">The framework libraries you call in Program.cs are all just extension methods on IServiceCollection. They group their internal registrations behind a single clean method. When you create your own feature modules, follow the same pattern: one <code>AddMyFeature()</code> method per cohesive group of services.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="multiple-impls">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Multiple Implementations of the Same Interface</h2>
+    </div>
+
+    <p>One of the advantages of coding to interfaces is that you can have <strong>multiple implementations</strong>. For example, you might want to notify users via email, SMS, or Facebook — all behind a single <code>IMessageSender</code> interface.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Registering multiple implementations of IMessageSender</span></div>
+      <div class="code-body"><span class="kw">public interface</span> <span class="tp">IMessageSender</span>
+{
+    <span class="kw">void</span> <span class="fn">SendMessage</span>(<span class="kw">string</span> message);
+}
+
+<span class="cm">// Three different implementations</span>
+<span class="kw">public class</span> <span class="tp">EmailSender</span>    : <span class="tp">IMessageSender</span> { ... }
+<span class="kw">public class</span> <span class="tp">SmsSender</span>      : <span class="tp">IMessageSender</span> { ... }
+<span class="kw">public class</span> <span class="tp">FacebookSender</span> : <span class="tp">IMessageSender</span> { ... }
+
+<span class="cm">// Register all three under the same interface</span>
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IMessageSender</span>, <span class="tp">EmailSender</span>&gt;();
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IMessageSender</span>, <span class="tp">SmsSender</span>&gt;();
+builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IMessageSender</span>, <span class="tp">FacebookSender</span>&gt;();</div>
+    </div>
+
+    <p>To inject <strong>all</strong> registered implementations, use <code>IEnumerable&lt;T&gt;</code> as the parameter type:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Injecting all implementations with IEnumerable&lt;T&gt;</span></div>
+      <div class="code-body"><span class="cm">// ❶ Use IEnumerable&lt;IMessageSender&gt; to get ALL three</span>
+<span class="cm">// ❷ Even though the container provides a T[] array,</span>
+<span class="cm">//    you MUST declare the parameter as IEnumerable&lt;T&gt;,</span>
+<span class="cm">//    not ICollection&lt;T&gt; or T[]</span>
+app.<span class="fn">MapPost</span>(<span class="str">"/notify"</span>, (<span class="tp">NotifyRequest</span> req,
+    <span class="tp">IEnumerable</span>&lt;<span class="tp">IMessageSender</span>&gt; senders) =>
+{
+    <span class="kw">foreach</span> (<span class="kw">var</span> sender <span class="kw">in</span> senders)
+        sender.<span class="fn">SendMessage</span>(req.Message); <span class="cm">// sends via email, SMS, and Facebook</span>
+
+    <span class="kw">return</span> <span class="tp">Results</span>.<span class="fn">Ok</span>();
+});</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">When you request a single instance with multiple registrations</div>
+        <div class="callout-text">If you inject <code>IMessageSender</code> (not <code>IEnumerable&lt;IMessageSender&gt;</code>), the DI container gives you <strong>the last registered implementation</strong> — in the example above, that would be <code>FacebookSender</code>. The order of <code>Add*</code> calls matters for single-instance resolution.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="tryadd">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">TryAdd — Conditional Registration</h2>
+    </div>
+
+    <p><code>TryAdd*()</code> methods register a service <strong>only if it hasn't already been registered</strong>. This is the safe way to provide a default implementation that can be overridden by a consumer who registers their own version first.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">⚠️ AddTransient (always adds)</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// Adds a NEW registration every time,</span>
+<span class="cm">// even if IEmailSender was already registered.</span>
+<span class="cm">// Result: multiple registrations exist.</span>
+builder.Services
+    .<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">SmtpSender</span>&gt;();
+builder.Services
+    .<span class="fn">AddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">SendGridSender</span>&gt;();</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ TryAddTransient (skips if exists)</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// Registers SmtpSender as the default.</span>
+<span class="cm">// If someone already registered IEmailSender,</span>
+<span class="cm">// TryAdd does nothing — their version wins.</span>
+builder.Services
+    .<span class="fn">TryAddTransient</span>&lt;<span class="tp">IEmailSender</span>, <span class="tp">SmtpSender</span>&gt;();  <br><br> </div>
+   </div> 
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">When is TryAdd useful?</div>
+        <div class="callout-text">Framework libraries use <code>TryAdd*()</code> internally when registering default services. This lets you override a default behavior by registering your own implementation <em>before</em> calling the framework's <code>Add*()</code> method. Your registration wins because TryAdd won't overwrite it.</div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="lifetimes">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Understanding Lifetimes — How Long Do Services Live?</h2>
+    </div>
+
+    <p>Whenever the DI container is asked for a service, it has a choice: create a brand new instance, or reuse an existing one. The <strong>lifetime</strong> of a service controls this behavior.</p>
+
+    <p>ASP.NET Core has three lifetimes:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:20px 0;">
+      <div style="background:rgba(207,34,46,.06);border:2px solid rgba(207,34,46,.3);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🆕</div>
+        <div style="font-weight:700;color:var(--red);font-size:14px;">Transient</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;">New instance <strong>every time</strong> one is requested</div>
+      </div>
+      <div style="background:rgba(9,105,218,.06);border:2px solid rgba(9,105,218,.3);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">🔄</div>
+        <div style="font-weight:700;color:var(--blue);font-size:14px;">Scoped</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;">Same instance within one request; new instance per request</div>
+      </div>
+      <div style="background:rgba(45,164,78,.06);border:2px solid rgba(45,164,78,.3);border-radius:var(--radius);padding:16px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:8px;">♾️</div>
+        <div style="font-weight:700;color:var(--green);font-size:14px;">Singleton</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;">Same instance for the entire lifetime of the application</div>
+      </div>
+    </div>
+
+    <div id="quiz-r2" class="quiz-block">
+      <div class="quiz-question">🧠 A service is registered as Scoped. Two different classes inside the same HTTP request both need this service. How many instances of the service are created for that request?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-r2',false)">Two — each class gets its own instance regardless of lifetime</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r2',true)">One — within a single scope (a single request), all requests for a scoped service return the same instance</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r2',false)">Zero — scoped services are lazy and only created the first time a request arrives</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r2',false)">It depends on which class requests the service first</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-r2-fb"></div>
+    </div>
+  </section>
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="transient">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Transient — Everyone Gets Their Own</h2>
+    </div>
+ 
+    <p>With transient, every request for a service creates a new instance — even within the same HTTP request and even if the same service is needed multiple times in the same dependency graph.</p>
+ 
+    <p>The example uses two classes that both depend on <code>DataContext</code>: a <code>Repository</code> that receives it via constructor injection, and a <code>RowCounts</code> handler that also receives it directly:</p>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">The classes used in this example</span>
+      </div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">Repository</span>
+{
+    <span class="kw">private readonly</span> <span class="tp">DataContext</span> _dataContext;
+    <span class="kw">public</span> <span class="fn">Repository</span>(<span class="tp">DataContext</span> dataContext)  <span class="cm">// ❶</span>
+    {
+        _dataContext = dataContext;              <span class="cm">// ❶</span>
+    }
+    <span class="kw">public int</span> RowCount => _dataContext.RowCount; <span class="cm">// ❷</span>
+}
+ 
+<span class="cm">// ❶ An instance of DataContext is provided using DI.</span>
+<span class="cm">// ❷ RowCount returns the same value as the current instance of DataContext.</span>
+ 
+app.MapGet(<span class="str">"/rowcounts"</span>, (<span class="tp">Repository</span> repo, <span class="tp">DataContext</span> ctx) =>
+    Results.Ok(<span class="kw">new</span> { repo.RowCount, ctx.RowCount }));
+<span class="cm">// Both repo and ctx depend on DataContext — how many instances are created?</span></div>
+    </div>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">Transient registration</span>
+      </div>
+      <div class="code-body">builder.Services.AddTransient&lt;<span class="tp">DataContext</span>&gt;();
+builder.Services.AddTransient&lt;<span class="tp">Repository</span>&gt;();</div>
+    </div>
+ 
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;font-size:13px;">
+      <div style="font-weight:700;color:var(--text);margin-bottom:12px;">Transient — what happens across two requests:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="color:var(--accent);font-weight:600;margin-bottom:6px;">Request #1</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--red);">DataContext A</code><br>RowCounts gets → <code style="color:var(--accent3);">DataContext B</code><br><em>Two different instances</em></div>
+        </div>
+        <div>
+          <div style="color:var(--accent2);font-weight:600;margin-bottom:6px;">Request #2</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--green);">DataContext C</code><br>RowCounts gets → <code style="color:var(--blue);">DataContext D</code><br><em>Two more new instances</em></div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Transient = "new" every time — think about cost</div>
+        <div class="callout-text">Using transient is equivalent to calling <code>new T()</code> each time. If the service is cheap to create and stateless, transient is fine. If it's expensive (opens DB connections, reads config), use scoped or singleton instead to reuse instances.</div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="scoped">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Scoped — One Per Request</h2>
+    </div>
+ 
+    <p>A scoped service creates <strong>one instance per scope</strong>. In ASP.NET Core, each HTTP request automatically gets its own scope. Within that request, every place that asks for the same scoped service gets the <em>same object</em>. A new request = a new scope = a new instance.</p>
+ 
+    <p>Using the same <code>Repository</code> and <code>RowCounts</code> handler from before — both depend on <code>DataContext</code>. With scoped, they share the same instance within one request:</p>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">The classes used in this example</span>
+      </div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">Repository</span>
+{
+    <span class="kw">private readonly</span> <span class="tp">DataContext</span> _dataContext;
+    <span class="kw">public</span> <span class="fn">Repository</span>(<span class="tp">DataContext</span> dataContext)  <span class="cm">// ❶</span>
+    {
+        _dataContext = dataContext;              <span class="cm">// ❶</span>
+    }
+    <span class="kw">public int</span> RowCount => _dataContext.RowCount; <span class="cm">// ❷</span>
+}
+ 
+<span class="cm">// ❶ An instance of DataContext is provided using DI.</span>
+<span class="cm">// ❷ RowCount returns the same value as the current instance of DataContext.</span>
+ 
+app.MapGet(<span class="str">"/rowcounts"</span>, (<span class="tp">Repository</span> repo, <span class="tp">DataContext</span> ctx) =>
+    Results.Ok(<span class="kw">new</span> { repo.RowCount, ctx.RowCount }));
+<span class="cm">// Within one request: repo._dataContext and ctx are THE SAME instance.</span></div>
+    </div>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">Scoped registration — ideal for DbContext</span>
+      </div>
+      <div class="code-body">builder.Services.AddScoped&lt;<span class="tp">DataContext</span>&gt;();
+builder.Services.AddScoped&lt;<span class="tp">Repository</span>&gt;();</div>
+    </div>
+ 
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;font-size:13px;">
+      <div style="font-weight:700;color:var(--text);margin-bottom:12px;">Scoped — one instance shared within a request:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="color:var(--accent);font-weight:600;margin-bottom:6px;">Request #1 (one scope)</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--red);">DataContext A</code><br>RowCounts gets → <code style="color:var(--red);">DataContext A</code><br><em>Same instance — shared</em></div>
+        </div>
+        <div>
+          <div style="color:var(--accent2);font-weight:600;margin-bottom:6px;">Request #2 (new scope)</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--green);">DataContext B</code><br>RowCounts gets → <code style="color:var(--green);">DataContext B</code><br><em>New instance for the new scope</em></div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="callout tip">
+      <div class="callout-icon">🗄️</div>
+      <div class="callout-body">
+        <div class="callout-title">Scoped is ideal for database contexts</div>
+        <div class="callout-text">Entity Framework Core's <code>DbContext</code> should be registered as scoped. This way, all operations within a single HTTP request share the same context — which means the same in-memory change tracker and the same transaction. A new request gets a fresh context, avoiding cross-request data leaks.</div>
+      </div>
+    </div>
+  </section>
+ 
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="singleton">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Singleton — There Can Be Only One</h2>
+    </div>
+ 
+    <p>A singleton service is created once when first requested, and that <strong>same instance</strong> is returned for every subsequent request — across all scopes and all HTTP requests, for the entire application lifetime.</p>
+ 
+    <p>Same example: <code>Repository</code> and the <code>RowCounts</code> handler both ask for <code>DataContext</code>. With singleton, they always get the exact same object — every request, forever:</p>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">The classes used in this example</span>
+      </div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">Repository</span>
+{
+    <span class="kw">private readonly</span> <span class="tp">DataContext</span> _dataContext;
+    <span class="kw">public</span> <span class="fn">Repository</span>(<span class="tp">DataContext</span> dataContext)  <span class="cm">// ❶</span>
+    {
+        _dataContext = dataContext;              <span class="cm">// ❶</span>
+    }
+    <span class="kw">public int</span> RowCount => _dataContext.RowCount; <span class="cm">// ❷</span>
+}
+ 
+<span class="cm">// ❶ An instance of DataContext is provided using DI.</span>
+<span class="cm">// ❷ RowCount returns the same value as the current instance of DataContext.</span>
+ 
+app.MapGet(<span class="str">"/rowcounts"</span>, (<span class="tp">Repository</span> repo, <span class="tp">DataContext</span> ctx) =>
+    Results.Ok(<span class="kw">new</span> { repo.RowCount, ctx.RowCount }));
+<span class="cm">// All requests: repo._dataContext and ctx are always DataContext #A — forever.</span></div>
+    </div>
+ 
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header">
+        <span class="code-lang">C#</span>
+        <span class="code-label">Singleton registration</span>
+      </div>
+      <div class="code-body">builder.Services.AddSingleton&lt;<span class="tp">DataContext</span>&gt;();
+builder.Services.AddSingleton&lt;<span class="tp">Repository</span>&gt;();</div>
+    </div>
+ 
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;font-size:13px;">
+      <div style="font-weight:700;color:var(--text);margin-bottom:12px;">Singleton — one instance shared across ALL requests forever:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="color:var(--accent);font-weight:600;margin-bottom:6px;">Request #1</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--accent2);">DataContext #A</code><br>Handler ctx gets → <code style="color:var(--accent2);">DataContext #A</code><br><em>Same instance — shared</em></div>
+        </div>
+        <div>
+          <div style="color:var(--accent2);font-weight:600;margin-bottom:6px;">Request #2</div>
+          <div style="color:var(--text2);">Repository gets → <code style="color:var(--accent2);">DataContext #A</code><br>Handler ctx gets → <code style="color:var(--accent2);">DataContext #A</code><br><em>Still the exact same #A!</em></div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="callout danger">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body">
+        <div class="callout-title">Singleton services must be thread-safe</div>
+        <div class="callout-text">In a web application, many requests run concurrently — potentially hundreds of threads using your singleton simultaneously. If your singleton holds mutable state without proper locking, you have a race condition. Use singletons only for stateless services or truly shared, thread-safe state (like configuration, caches with concurrent collections, etc.).</div>
+      </div>
+    </div>
+  </section>
+ 
+
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="captive">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Captive Dependencies — The Classic DI Bug</h2>
+    </div>
+
+    <p>A <strong>captive dependency</strong> happens when a service with a <em>longer</em> lifetime holds a reference to a service with a <em>shorter</em> lifetime. The shorter-lived service gets "captured" by the longer-lived one and never released or refreshed — causing subtle, hard-to-diagnose bugs.</p>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-body">
+        <div class="callout-title">The golden rule of lifetimes</div>
+        <div class="callout-text">A service should only depend on services that have a <strong>lifetime equal to or longer</strong> than its own.<br><br>
+        <strong>Singleton</strong> → can only use <span style="color:var(--green)">Singleton</span><br>
+        <strong>Scoped</strong> → can use <span style="color:var(--blue)">Scoped</span> or <span style="color:var(--green)">Singleton</span><br>
+        <strong>Transient</strong> → can use <span style="color:var(--red)">Transient</span>, <span style="color:var(--blue)">Scoped</span>, or <span style="color:var(--green)">Singleton</span>
+        </div>
+      </div>
+    </div>
+
+    <p>Here's the classic example: <code>DataContext</code> is registered as Scoped (a new one per request), but <code>Repository</code> is registered as Singleton (one for the entire app). The Singleton <code>Repository</code> captures the <code>DataContext</code> from the very first request, and all future requests reuse that stale, wrong <code>DataContext</code>.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Captive Dependency Bug</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// DataContext is scoped — new per request</span>
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="tp">DataContext</span>&gt;();
+
+<span class="cm">// Repository is singleton — lives forever</span>
+<span class="cm">// BUT it depends on DataContext (scoped)!</span>
+<span class="cm">// → DataContext gets "captured" inside Repository</span>
+<span class="cm">// → All requests share the SAME stale DataContext</span>
+builder.Services.<span class="fn">AddSingleton</span>&lt;<span class="tp">Repository</span>&gt;();</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Correct Fix</div>
+        <div class="code-body" style="font-size:12px;padding:14px 16px;"><span class="cm">// DataContext is scoped</span>
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="tp">DataContext</span>&gt;();
+
+<span class="cm">// Repository must also be scoped or transient</span>
+<span class="cm">// (same or shorter lifetime than its dependency)</span>
+builder.Services.<span class="fn">AddScoped</span>&lt;<span class="tp">Repository</span>&gt;(); <br><br><br></div>
+      </div>
+    </div>
+
+    <p>ASP.NET Core can detect captive dependencies for you. The <code>ValidateScopes</code> option throws an exception when a singleton tries to consume a scoped service:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Enabling scope validation to catch captive dependency bugs</span></div>
+      <div class="code-body"><span class="cm">// ValidateScopes: throws an exception at runtime if a singleton</span>
+<span class="cm">// depends on a scoped service (captive dependency)</span>
+<span class="cm">// Enabled by default in Development environment</span>
+builder.Host.<span class="fn">UseDefaultServiceProvider</span>(options =>
+{
+    options.ValidateScopes = <span class="kw">true</span>;
+
+    <span class="cm">// ValidateOnBuild: checks at startup that ALL registered services</span>
+    <span class="cm">// can actually be constructed — fails fast before any request arrives</span>
+    options.ValidateOnBuild = <span class="kw">true</span>;
+});</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">ValidateScopes vs ValidateOnBuild</div>
+        <div class="callout-text">
+          <code>ValidateScopes</code> — detects captive dependencies (short-lived service captured by long-lived one). Throws when the container creates the offending service.<br><br>
+          <code>ValidateOnBuild</code> — checks on <em>startup</em> that the container can construct every registered service. Catches missing registrations before your app even starts handling requests. Both are enabled by default in the Development environment.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-r4" class="quiz-block">
+      <div class="quiz-question">🧠 A Scoped service depends on a Singleton service. Is this a captive dependency?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-r4',true)">No — a Scoped service can safely use a Singleton because the Singleton lives longer than (or equal to) the Scoped service. The rule only breaks when a longer-lived service holds a shorter-lived one.</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r4',false)">Yes — any mixing of lifetimes causes a captive dependency</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r4',false)">Yes — a Scoped service can only depend on other Scoped services</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-r4',false)">It depends on whether ValidateScopes is enabled</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-r4-fb"></div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+const feedbackOk = {
+  'quiz-r1': "Correct! The container's registry key is IEmailSender — that's what you registered it under. When a handler requests the concrete type EmailSender directly, the container finds nothing registered under that key, the framework treats the parameter as a model-binding target, and the request fails.",
+  'quiz-r2': "Correct! Scoped means one instance per scope. In ASP.NET Core, one scope = one HTTP request. So both classes in the same request get the exact same instance. The next request gets a fresh one.",
+  'quiz-r3': "Correct! An in-memory cache is a great singleton candidate — it's expensive to set up, naturally shared across requests, and designed to be thread-safe. DbContext is the classic example of what NOT to make singleton (not thread-safe, tracks per-request state).",
+  'quiz-r4': "Correct! A captive dependency only happens when a LONGER-lived service holds a SHORTER-lived one. Scoped (per-request) using Singleton (forever) is fine — the Singleton outlives the Scoped service, so the Scoped service always has a valid reference. The dangerous direction is Singleton → Scoped, where the Singleton captures and freezes a Scoped instance."
+};
+const feedbackErr = {
+  'quiz-r1': "Not quite. The container's internal map uses the service type as the key. You registered IEmailSender → EmailSender, so the key is IEmailSender. Requesting EmailSender directly is a different key — one with no registration — so the container can't provide it.",
+  'quiz-r2': "Not quite. Scoped means exactly one instance per scope. A scope in ASP.NET Core corresponds to one HTTP request. Two services asking for the same scoped dependency within one request share the same instance — that's the whole point of Scoped vs Transient.",
+  'quiz-r3': "Not quite. DbContext is the classic Scoped service — it holds a database connection and change tracker that are per-request concerns. A service that reads the logged-in user per-request is also Scoped. Per-user error state is also Scoped. Only thread-safe, shared, app-wide resources like caches belong as Singletons.",
+  'quiz-r4': "Not quite. Captive dependency is a directional problem. The rule is: a service's dependencies must live at least as long as the service itself. Singleton (infinite) → Scoped (per-request) is the dangerous direction: the Scoped service's lifetime is shorter, so it gets trapped. Scoped → Singleton is safe: the Singleton outlives the Scoped service."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal'); });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+function scrollPageTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+</script>
+</body>
+</html>
