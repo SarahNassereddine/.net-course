@@ -459,37 +459,73 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
 /* ── Responsive ── */
 @media (max-width: 900px) {
-  .sidebar { display: none; }
-  .main { padding: 32px 20px; }
-  .compare-grid { grid-template-columns: 1fr; }
-}
 
-@media (max-width: 900px) {
+  .menu-toggle { display: none !important; }
+  .sidebar-overlay { display: none !important; }
+
+  .course-wrap { flex-direction: column; }
+
   .sidebar {
-    display: block;
-    position: fixed;
-    top: 0; left: 0;
-    width: 260px;
-    height: 100vh;
-    z-index: 999;
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
+    width: 100%;
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
   }
-  .sidebar.open {
-    transform: translateX(0);
-  }
-}
-@media (min-width: 901px) {
-  .menu-toggle { display: none; }
-}
 
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 998;
-}
-.sidebar-overlay.show {
-  display: block;
+  .sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+  .sidebar-logo .course-title { font-size: 10px; margin-bottom: 0; }
+  .sidebar-logo .chapter-label { font-size: 14px; margin-top: 0; }
+  .progress-bar { display: none; }
+
+  .nav-section:last-child { display: none; }
+
+  .nav-section:first-of-type {
+    padding: 8px 12px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .nav-section:first-of-type::-webkit-scrollbar { display: none; }
+
+  .nav-section-title { display: none; }
+
+  .nav-link {
+    display: inline-flex;
+    width: auto;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-right: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg3);
+    white-space: nowrap;
+  }
+  .nav-link .dot { display: none; }
+  .nav-link.active {
+    background: rgba(0,212,170,.15);
+    border-color: rgba(0,212,170,.4);
+    color: var(--accent);
+  }
+
+  .main { max-width: 100%; padding: 24px 16px; }
+  .chapter-title { font-size: 24px; }
+  .chapter-subtitle { font-size: 14px; }
+  .compare-grid { grid-template-columns: 1fr; }
+  .code-body { font-size: 12px; }
+  .data-table { display: block; overflow-x: auto; }
 }
