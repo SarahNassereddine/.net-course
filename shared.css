@@ -461,7 +461,7 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
 /* Hamburger & overlay — hidden by default everywhere */
 .menu-toggle     { display: none !important; }
-.sidebar-overlay { display: none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:299; pointer-events:none; transition:background .28s ease; }
+.sidebar-overlay { display: none; position:fixed; inset:0; z-index:299; pointer-events:none; transition:background .28s ease; }
 .sidebar-overlay.show { display:block; pointer-events:all; }
 
 /* FAB + panel — hidden on desktop */
