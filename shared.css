@@ -458,11 +458,21 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 }
 
 /* ── Responsive ── */
+
+/* hamburger hidden by default on all screen sizes */
+.menu-toggle { display: none; }
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+}
+.sidebar-overlay.show { display: block; }
+
 @media (max-width: 900px) {
 
-  .menu-toggle { display: none !important; }
-  .sidebar-overlay { display: none !important; }
-
+  /* ── Layout: sidebar becomes sticky top bar ── */
   .course-wrap { flex-direction: column; }
 
   .sidebar {
@@ -472,60 +482,97 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     top: 0;
     z-index: 100;
     border-right: none;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
     padding: 0;
     overflow: visible;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
   }
 
+  /* ── Top strip: course title + chapter label ── */
   .sidebar-logo {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 10px 16px;
     border-bottom: 1px solid var(--border);
     margin-bottom: 0;
   }
-  .sidebar-logo .course-title { font-size: 10px; margin-bottom: 0; }
-  .sidebar-logo .chapter-label { font-size: 14px; margin-top: 0; }
-  .progress-bar { display: none; }
+  .sidebar-logo .course-title {
+    font-size: 10px;
+    letter-spacing: .1em;
+  }
+  .sidebar-logo .chapter-label {
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 0;
+  }
+  .progress-bar {
+    height: 2px;
+    margin: 0;
+    border-radius: 0;
+  }
 
+  /* ── Sections nav: horizontal scrollable pill row ── */
+  .nav-section {
+    padding: 8px 12px;
+    margin-bottom: 0;
+  }
   .nav-section:last-child { display: none; }
+  .nav-section-title { display: none; }
 
   .nav-section:first-of-type {
-    padding: 8px 12px;
     overflow-x: auto;
     white-space: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
   }
   .nav-section:first-of-type::-webkit-scrollbar { display: none; }
-
-  .nav-section-title { display: none; }
 
   .nav-link {
     display: inline-flex;
     width: auto;
-    padding: 5px 12px;
+    flex-shrink: 0;
+    padding: 5px 13px;
     border-radius: 20px;
     font-size: 12px;
-    margin-right: 6px;
     border: 1px solid var(--border);
     background: var(--bg3);
     white-space: nowrap;
   }
   .nav-link .dot { display: none; }
   .nav-link.active {
-    background: rgba(0,212,170,.15);
-    border-color: rgba(0,212,170,.4);
+    background: rgba(0,212,170,.12);
+    border-color: rgba(0,212,170,.45);
     color: var(--accent);
+    font-weight: 600;
   }
 
-  .main { max-width: 100%; padding: 24px 16px; }
-  .chapter-title { font-size: 24px; }
+  /* ── Main content ── */
+  .main {
+    max-width: 100%;
+    padding: 24px 16px 48px;
+  }
+
+  /* ── Typography ── */
+  .chapter-title { font-size: 22px; }
   .chapter-subtitle { font-size: 14px; }
+  .section-title { font-size: 17px; }
+
+  /* ── Grids ── */
   .compare-grid { grid-template-columns: 1fr; }
+
+  /* ── Code ── */
   .code-body { font-size: 12px; }
-  .data-table { display: block; overflow-x: auto; }
+
+  /* ── Tables ── */
+  .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+
+  /* ── Chapter header ── */
+  .chapter-header { margin-bottom: 32px; padding-bottom: 24px; }
 }
