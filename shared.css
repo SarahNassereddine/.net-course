@@ -482,3 +482,14 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 @media (min-width: 901px) {
   .menu-toggle { display: none; }
 }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 998;
+}
+.sidebar-overlay.show {
+  display: block;
+}
