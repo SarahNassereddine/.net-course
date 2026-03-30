@@ -47,6 +47,7 @@
     <button class="nav-link" onclick="scrollPageTo('error-handling')"><span class="dot"></span>Error handling</button>
     <button class="nav-link" onclick="scrollPageTo('dev-exception')"><span class="dot"></span>Dev exception page</button>
     <button class="nav-link" onclick="scrollPageTo('prod-exception')"><span class="dot"></span>Production exceptions</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
     <div class="nav-section-title">Chapters</div>
@@ -719,6 +720,7 @@ app.<span class="fn">UseExceptionHandler</span>(errApp =>
       <div class="quiz-feedback" id="quiz-err1-fb"></div>
     </div>
   </section>
+  <section id="github" class="section">
 <div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
   <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter04" target="_blank" 
      style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
@@ -732,7 +734,7 @@ app.<span class="fn">UseExceptionHandler</span>(errApp =>
       Visit this link to run and test the code for this chapter.
     </div>
   </a>
-</div>
+</div></section>
 </main>
 </div>
 <script>
@@ -763,7 +765,7 @@ window.addEventListener('scroll', () => {
 
 const observerOptions = {
   root: null,
-  rootMargin: '-20% 0px -70% 0px',
+  rootMargin: '-20% 0px -20% 0px',
   threshold: 0
 };
 const observer = new IntersectionObserver((entries) => {
@@ -803,38 +805,6 @@ document.querySelectorAll('.nav-link').forEach(link => {
   overlay.addEventListener('click', closeDrawer);
   document.querySelectorAll('.nav-link').forEach(function(l){
     l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
-  });
-})();
-
-// ── FAB ──
-(function(){
-  var btn   = document.getElementById('fabSections');
-  var panel = document.getElementById('fabPanel');
-  if(!btn||!panel) return;
-  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
-  document.addEventListener('click',function(){panel.classList.remove('open');});
-  panel.addEventListener('click',function(e){e.stopPropagation();});
-  // sync active
-  var fabLinks = panel.querySelectorAll('[data-target]');
-  if(fabLinks.length){
-    var fo = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){
-          fabLinks.forEach(function(l){l.classList.remove('active');});
-          var l=panel.querySelector('[data-target="'+e.target.id+'"]');
-          if(l) l.classList.add('active');
-        }
-      });
-    },{rootMargin:'-20% 0px -70% 0px'});
-    document.querySelectorAll('.section').forEach(function(s){fo.observe(s);});
-  }
-  fabLinks.forEach(function(l){
-    l.addEventListener('click',function(){
-      var id=l.getAttribute('data-target');
-      var el=document.getElementById(id);
-      if(el) el.scrollIntoView({behavior:'smooth'});
-      panel.classList.remove('open');
-    });
   });
 })();
 

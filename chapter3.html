@@ -45,7 +45,7 @@
       <button class="nav-link" data-target="csproj" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
     <button class="nav-link" data-target="adding-features" onclick="scrollPageTo('adding-features')"><span class="dot"></span>Adding functionality</button>
     <button class="nav-link" data-target="services" onclick="scrollPageTo('services')"><span class="dot"></span>Services</button>
-    <button class="nav-link" onclick="scrollPageTo('middleware')"><span class="dot"></span>Middleware &amp; endpoints</button>
+    <button class="nav-link" data-target="middleware" onclick="scrollPageTo('middleware')"><span class="dot"></span>Middleware &amp; endpoints</button>
    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
   </div>
   <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
@@ -767,7 +767,7 @@ builder.Services.<span class="fn">AddSingleton</span>&lt;<span class="tp">ICache
       <div class="quiz-feedback" id="quiz-mw1-fb"></div>
     </div>
   </section>
-<section id="github">
+<section id="github" class="section">
   
 <div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
   <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter03" target="_blank" 
@@ -808,7 +808,7 @@ window.addEventListener('scroll', () => {
 });
 const observerOptions = {
   root: null,
-  rootMargin: '-20% 0px -70% 0px',
+  rootMargin: '-20% 0px -20% 0px',
   threshold: 0
 };
 

@@ -95,6 +95,7 @@
     <button class="nav-link" data-target="full-example" onclick="scrollPageTo('full-example')">
       <span class="dot"></span>Complete example
     </button>
+       <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
 
   </div>
 
@@ -109,7 +110,6 @@
     <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
       <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
     <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
-     <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
 
  
   </div>
@@ -1432,7 +1432,7 @@ app.<span class="fn">Run</span>();
   </section>
 
    </section>
-   <section id="github">
+   <section id="github" class="section">
 <div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
   <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter05" target="_blank" 
      style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
@@ -1543,7 +1543,7 @@ const observer = new IntersectionObserver(entries => {
       if (link) link.classList.add('active');
     }
   });
-}, { rootMargin: '-20% 0px -70% 0px' });
+}, { rootMargin: '-20% 0px -20% 0px' });
 sections.forEach(s => observer.observe(s));
 
 // ── Read progress ──
