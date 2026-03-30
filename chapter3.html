@@ -30,8 +30,9 @@
     <button class="nav-link" data-target="creating-app" onclick="scrollPageTo('creating-app')"><span class="dot"></span>Creating your first app</button>
     <button class="nav-link" data-target="running-app" onclick="scrollPageTo('running-app')"><span class="dot"></span>Running the application</button>
     <button class="nav-link" data-target="project-layout" onclick="scrollPageTo('project-layout')"><span class="dot"></span>Project layout</button>
-    <button class="nav-link" data-target="csproj" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
-    <button class="nav-link" data-target="program-cs" onclick="scrollPageTo('program-cs')"><span class="dot"></span>Program.cs</button>
+      <button class="nav-link" data-target="top-level-statements" onclick="scrollPageTo('top-level-statements')"><span class="dot"></span>Top-level statements &amp; Program.cs</button>
+      <button class="nav-link" data-target="program-cs" onclick="scrollPageTo('program-cs')"><span class="dot"></span>Program.cs</button>
+      <button class="nav-link" data-target="csproj" onclick="scrollPageTo('csproj')"><span class="dot"></span>.csproj file</button>
     <button class="nav-link" data-target="adding-features" onclick="scrollPageTo('adding-features')"><span class="dot"></span>Adding functionality</button>
     <button class="nav-link" data-target="services" onclick="scrollPageTo('services')"><span class="dot"></span>Services</button>
     <button class="nav-link" onclick="scrollPageTo('middleware')"><span class="dot"></span>Middleware &amp; endpoints</button>
@@ -41,6 +42,7 @@
     <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
     <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
     <a class="nav-link active" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    
     <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
     <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
        <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
@@ -379,44 +381,102 @@ dotnet run
       <tr><td><strong>wwwroot/</strong></td><td>Only folder served as static files. Deployed as-is to production</td></tr>
     </table>
   </section>
+<!--SECTION 5-->
 
-  <!-- SECTION 5 -->
-  <section class="section" id="csproj">
+  <section class="section" id="top-level-statements">
     <div class="section-header">
       <div class="section-number">5</div>
-      <h2 class="section-title">.csproj — Declaring Your Dependencies</h2>
+      <h2 class="section-title">Top-Level Statements &amp; Program.cs Deep Dive</h2>
     </div>
 
-    <p>The <strong>.csproj file</strong> is the project file for .NET applications. It contains all the information the .NET tooling needs to build the project.</p>
+    <p>All ASP.NET Core applications start as a .NET console application. As of .NET 6, that means using <strong>top-level statements</strong> — startup code written directly in the file without a <code>static void Main</code> function.</p>
 
-    <table class="data-table">
-      <tr><th>Section</th><th>What It Declares</th></tr>
-      <tr><td><strong>Project Type</strong></td><td>Is this a web app (<code>Sdk.Web</code>), console app (<code>Sdk</code>), or library (<code>Sdk</code>)?</td></tr>
-      <tr><td><strong>Target Framework</strong></td><td>Which .NET version to compile for: <code>net8.0</code>, <code>net7.0</code>, etc.</td></tr>
-      <tr><td><strong>PackageReference</strong></td><td>NuGet packages this project depends on — name and version pinned</td></tr>
-    </table>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">Before C# 9 — Explicit Main</div>
+        <div class="code-body"><span class="kw">namespace</span> MyApp
+{
+  <span class="kw">public class</span> <span class="tp">Program</span>
+  {
+    <span class="kw">public static void</span> <span class="fn">Main</span>(<span class="tp">string</span>[] args)
+    {
+      Console.WriteLine(<span class="str">"Hello World!"</span>);
+    }
+  }
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">C# 9+ — Top-Level Statements</div>
+        <div class="code-body"><span class="cm">// The compiler generates Main() for you</span>
+Console.WriteLine(<span class="str">"Hello World!"</span>);
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">Typical .csproj for an ASP.NET Core 8 app</span></div>
-      <div class="code-body"><span class="op">&lt;</span><span class="fn">Project</span> <span class="tp">Sdk</span><span class="op">="</span><span class="str">Microsoft.NET.Sdk.Web</span><span class="op">"&gt;</span>  <span class="cm">&lt;!-- Web SDK: adds ASP.NET Core --&gt;</span>
+<span class="cm">// 'args' is still available as string[]</span>
+<span class="kw">foreach</span>(<span class="tp">string</span> arg <span class="kw">in</span> args)
+  Console.WriteLine(arg);</div>
+      </div>
+    </div>
 
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">WebApplicationBuilder — what it auto-configures</div>
+        <div class="callout-text">
+          When you call <code>WebApplication.CreateBuilder(args)</code>, the builder automatically sets up these four things before you even touch it:<br><br>
+          <strong>Configuration</strong> — Loads values from <code>appsettings.json</code>, environment variables, and command-line args.<br>
+          <strong>Logging</strong> — Sets up an extensible logging system for debugging and observability.<br>
+          <strong>Services</strong> — Registers the minimal set of DI services needed for an ASP.NET Core app.<br>
+          <strong>Hosting</strong> — Configures Kestrel as the default web server.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Listing 3.3 — The full default Program.cs annotated</span></div>
+      <div class="code-body"><span class="cm">// ❶ Creates a WebApplicationBuilder with default config, logging, DI, and Kestrel</span>
+<span class="tp">WebApplicationBuilder</span> builder = WebApplication.CreateBuilder(args);
+
+<span class="cm">// Here you can add services: builder.Services.AddX()</span>
+<span class="cm">// Here you can change config:  builder.Configuration.AddX()</span>
+
+<span class="cm">// ❷ Locks the configuration and builds the WebApplication</span>
+<span class="tp">WebApplication</span> app = builder.Build();
+
+<span class="cm">// ❸ Defines an endpoint: GET / → "Hello World!"</span>
+app.MapGet(<span class="str">"/"</span>, () => <span class="str">"Hello World!"</span>);
+
+<span class="cm">// ❹ Starts Kestrel, begins accepting HTTP requests</span>
+app.Run();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">📦</div>
+      <div class="callout-body">
+        <div class="callout-title">dotnet add package — adding NuGet packages from CLI</div>
+        <div class="callout-text">To add a NuGet package to your project from the command line, use <code>dotnet add package &lt;packagename&gt;</code>. This updates your <code>.csproj</code> with a <code>&lt;PackageReference&gt;</code> node and restores the package.<br>Example: <code>dotnet add package Newtonsoft.Json</code></div>
+      </div>
+    </div>
+
+    <div class="code-block" style="border-radius:var(--radius);">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">.csproj improvements in ASP.NET Core</span></div>
+      <div class="code-body"><span class="op">&lt;</span><span class="fn">Project</span> <span class="tp">Sdk</span><span class="op">="Microsoft.NET.Sdk.Web"&gt;</span>
   <span class="op">&lt;</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
-    <span class="op">&lt;</span><span class="fn">TargetFramework</span><span class="op">&gt;</span><span class="str">net8.0</span><span class="op">&lt;/</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>
-    <span class="op">&lt;</span><span class="fn">Nullable</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">Nullable</span><span class="op">&gt;</span>
-    <span class="op">&lt;</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>net8.0<span class="op">&lt;/</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">Nullable</span><span class="op">&gt;</span>enable<span class="op">&lt;/</span><span class="fn">Nullable</span><span class="op">&gt;</span>           <span class="cm">&lt;!-- C# 8 nullable reference types --&gt;</span>
+    <span class="op">&lt;</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span>enable<span class="op">&lt;/</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span>  <span class="cm">&lt;!-- C# 10 implicit using statements --&gt;</span>
   <span class="op">&lt;/</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
-
   <span class="op">&lt;</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
-    <span class="cm">&lt;!-- NuGet package dependencies --&gt;</span>
-    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="</span><span class="str">Microsoft.EntityFrameworkCore.SqlServer</span><span class="op">"</span>
-                       <span class="tp">Version</span><span class="op">="</span><span class="str">8.0.0</span><span class="op">" /&gt;</span>
+    <span class="cm">&lt;!-- Added via: dotnet add package Serilog.AspNetCore --&gt;</span>
+    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="Serilog.AspNetCore"</span> <span class="tp">Version</span><span class="op">="8.0.0"</span> <span class="op">/&gt;</span>
   <span class="op">&lt;/</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+<span class="op">&lt;/</span><span class="fn">Project</span><span class="op">&gt;</span>
 
-<span class="op">&lt;/</span><span class="fn">Project</span><span class="op">&gt;</span></div>
+<span class="cm">// Improvements over old .NET Framework .csproj:</span>
+<span class="cm">// ✓ No GUIDs</span>
+<span class="cm">// ✓ Implicit file includes — no need to list every .cs file</span>
+<span class="cm">// ✓ No paths to NuGet .dll files — just reference the package by name</span></div>
     </div>
   </section>
-
-  <!-- SECTION 6 -->
+<!-- SECTION 6 — Program.cs deep dive (book 3.5) -->
   <section class="section" id="program-cs">
     <div class="section-header">
       <div class="section-number">6</div>
@@ -425,13 +485,6 @@ dotnet run
 
     <p>Every ASP.NET Core application begins as a <strong>.NET Console application</strong>. In .NET 6+, the startup code is written directly in <code>Program.cs</code> using <strong>top-level statements</strong> — no class, no <code>static void Main()</code>.</p>
 
-    <div class="callout tip">
-      <div class="callout-icon">💡</div>
-      <div class="callout-body">
-        <div class="callout-title">Top-Level Statements</div>
-        <div class="callout-text">In .NET 6+, you can write the body of the Main method directly in a file. The compiler generates the <code>Main</code> method for you. This reduces boilerplate and makes Program.cs clean and readable.</div>
-      </div>
-    </div>
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — minimal ASP.NET Core app</span></div>
@@ -489,11 +542,47 @@ app.<span class="fn">Run</span>();</div>
       <div class="quiz-feedback" id="quiz-program1-fb"></div>
     </div>
   </section>
-
   <!-- SECTION 7 -->
-  <section class="section" id="adding-features">
+  <section class="section" id="csproj">
     <div class="section-header">
       <div class="section-number">7</div>
+      <h2 class="section-title">.csproj — Declaring Your Dependencies</h2>
+    </div>
+
+    <p>The <strong>.csproj file</strong> is the project file for .NET applications. It contains all the information the .NET tooling needs to build the project.</p>
+
+    <table class="data-table">
+      <tr><th>Section</th><th>What It Declares</th></tr>
+      <tr><td><strong>Project Type</strong></td><td>Is this a web app (<code>Sdk.Web</code>), console app (<code>Sdk</code>), or library (<code>Sdk</code>)?</td></tr>
+      <tr><td><strong>Target Framework</strong></td><td>Which .NET version to compile for: <code>net8.0</code>, <code>net7.0</code>, etc.</td></tr>
+      <tr><td><strong>PackageReference</strong></td><td>NuGet packages this project depends on — name and version pinned</td></tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">Typical .csproj for an ASP.NET Core 8 app</span></div>
+      <div class="code-body"><span class="op">&lt;</span><span class="fn">Project</span> <span class="tp">Sdk</span><span class="op">="</span><span class="str">Microsoft.NET.Sdk.Web</span><span class="op">"&gt;</span>  <span class="cm">&lt;!-- Web SDK: adds ASP.NET Core --&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">TargetFramework</span><span class="op">&gt;</span><span class="str">net8.0</span><span class="op">&lt;/</span><span class="fn">TargetFramework</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">Nullable</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">Nullable</span><span class="op">&gt;</span>
+    <span class="op">&lt;</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span><span class="str">enable</span><span class="op">&lt;/</span><span class="fn">ImplicitUsings</span><span class="op">&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">PropertyGroup</span><span class="op">&gt;</span>
+
+  <span class="op">&lt;</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+    <span class="cm">&lt;!-- NuGet package dependencies --&gt;</span>
+    <span class="op">&lt;</span><span class="fn">PackageReference</span> <span class="tp">Include</span><span class="op">="</span><span class="str">Microsoft.EntityFrameworkCore.SqlServer</span><span class="op">"</span>
+                       <span class="tp">Version</span><span class="op">="</span><span class="str">8.0.0</span><span class="op">" /&gt;</span>
+  <span class="op">&lt;/</span><span class="fn">ItemGroup</span><span class="op">&gt;</span>
+
+<span class="op">&lt;/</span><span class="fn">Project</span><span class="op">&gt;</span></div>
+    </div>
+  </section>
+
+  
+  <!-- SECTION 8 -->
+  <section class="section" id="adding-features">
+    <div class="section-header">
+      <div class="section-number">8</div>
       <h2 class="section-title">Adding Functionality to Your Application</h2>
     </div>
 
@@ -546,10 +635,10 @@ app.<span class="fn">Run</span>();
     </div>
   </section>
 
-  <!-- SECTION 8 -->
+  <!-- SECTION 9 -->
   <section class="section" id="services">
     <div class="section-header">
-      <div class="section-number">8</div>
+      <div class="section-number">9</div>
       <h2 class="section-title">Adding and Configuring Services</h2>
     </div>
 
@@ -583,10 +672,10 @@ builder.Services.<span class="fn">AddSingleton</span>&lt;<span class="tp">ICache
     </div>
   </section>
 
-  <!-- SECTION 9 -->
+  <!-- SECTION 10 -->
   <section class="section" id="middleware">
     <div class="section-header">
-      <div class="section-number">9</div>
+      <div class="section-number">10</div>
       <h2 class="section-title">Middleware and Endpoints</h2>
     </div>
 

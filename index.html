@@ -30,6 +30,7 @@
     <button class="nav-link active" data-target="what-is" onclick="scrollPageTo('what-is')"><span class="dot"></span>What is ASP.NET Core?</button>
     <button class="nav-link" data-target="app-types" onclick="scrollPageTo('app-types')"><span class="dot"></span>Application types</button>
     <button class="nav-link" data-target="choosing" onclick="scrollPageTo('choosing')"><span class="dot"></span>Choosing ASP.NET Core</button>
+    <button class="nav-link" data-target="http-primer" onclick="scrollPageTo('http-primer')"><span class="dot"></span>HTTP primer</button>
     <button class="nav-link" data-target="how-it-works" onclick="scrollPageTo('how-it-works')"><span class="dot"></span>How it works</button>
     <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel & request flow</button>
        <button class="nav-link" data-target="summary" onclick="scrollPageTo('summary')"><span class="dot"></span>What You'll Learn</button>
@@ -322,11 +323,68 @@
       </div>
     </div>
   </section>
+ <!-- SECTION 4 -->
 
-  <!-- SECTION 4 -->
-  <section class="section" id="how-it-works">
+  <section class="section" id="http-primer">
     <div class="section-header">
       <div class="section-number">4</div>
+      <h2 class="section-title">A Brief Primer on HTTP</h2>
+    </div>
+    <p><strong>HTTP (Hypertext Transfer Protocol)</strong> is the application-level protocol that powers the web. It is a <strong>stateless request-response protocol</strong> — a client sends a request to a server, the server sends a response, and that's it. The server has no memory of the client between requests.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📤 HTTP Request</div>
+        <div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;">
+          <strong style="color:var(--text)">Verb</strong> — indicates the type of request (GET, POST, PUT, DELETE…)<br>
+          <strong style="color:var(--text)">Path</strong> — the resource to interact with (e.g. <code>/account/manage</code>)<br>
+          <strong style="color:var(--text)">Headers</strong> — key-value pairs with metadata (e.g. Content-Type, Authorization)<br>
+          <strong style="color:var(--text)">Body</strong> (optional) — data sent to the server, e.g. form contents or JSON
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📥 HTTP Response</div>
+        <div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;">
+          <strong style="color:var(--text)">Status code</strong> — indicates success or failure (200, 404, 500…)<br>
+          <strong style="color:var(--text)">Headers</strong> — key-value pairs with metadata (e.g. Content-Type, Cache-Control)<br>
+          <strong style="color:var(--text)">Body</strong> (optional) — the content: HTML, JSON, image bytes, etc.
+        <br><br><br></div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🌐</div>
+      <div class="callout-body">
+        <div class="callout-title">Hostname and DNS</div>
+        <div class="callout-text">The <strong>hostname</strong> of a website uniquely identifies its location on the internet by mapping via the <strong>Domain Name Service (DNS)</strong> to an IP address. Examples: <code>microsoft.com</code>, <code>www.google.co.uk</code>, <code>facebook.com</code>. When you type a URL in your browser, DNS resolves the hostname to an IP address, and the request travels across the internet to that server.</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">📦</div>
+      <div class="callout-body">
+        <div class="callout-title">One page = many requests</div>
+        <div class="callout-text">A basic web page may require only a few requests to render, but a modern page may take hundreds. The Amazon home page makes <strong>410 requests</strong> when loading — including 4 CSS files, 12 JavaScript files, and 299 image files. HTML, images, CSS, and JavaScript are all fetched using the exact same HTTP request process.</div>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead><tr><th>HTTP Verb</th><th>Typical Use</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GET</strong></td><td>Fetch a resource — no side effects</td><td><code>GET /products/42</code></td></tr>
+        <tr><td><strong>POST</strong></td><td>Create a new resource / submit data</td><td><code>POST /orders</code></td></tr>
+        <tr><td><strong>PUT</strong></td><td>Create or fully replace a resource</td><td><code>PUT /products/42</code></td></tr>
+        <tr><td><strong>DELETE</strong></td><td>Delete a resource</td><td><code>DELETE /products/42</code></td></tr>
+        <tr><td><strong>PATCH</strong></td><td>Partially modify a resource</td><td><code>PATCH /products/42</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+ 
+  <!-- SECTION 5  -->
+  <section class="section" id="how-it-works">
+    <div class="section-header">
+      <div class="section-number">5</div>
       <h2 class="section-title">How Does ASP.NET Core Work?</h2>
     </div>
 
@@ -355,10 +413,10 @@
     </div>
   </section>
 
-  <!-- SECTION 5 -->
+  <!-- SECTION 6 -->
   <section class="section" id="kestrel">
     <div class="section-header">
-      <div class="section-number">5</div>
+      <div class="section-number">6</div>
       <h2 class="section-title">Kestrel and the Request Pipeline</h2>
     </div>
 
@@ -420,7 +478,7 @@
           <strong>Kestrel</strong> is concerned with generating HTTP responses — it is tightly integrated with your application code.<br>
           The <strong>reverse proxy</strong> (IIS, Nginx, Apache) is concerned with handling the raw connection to the internet — TLS termination, load balancing, and security.<br><br>
           This separation means your ASP.NET Core code is the same whether deployed behind IIS on Windows, Nginx on Linux, or directly in a container.
-        </div>
+       </div>
       </div>
     </div>
 

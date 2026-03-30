@@ -329,7 +329,7 @@ app.<span class="fn">MapPost</span>(<span class="str">"/notify"</span>, (<span c
   <!-- Open Generics — from book 9.2 -->
   <section class="section" id="open-generics">
     <div class="section-header">
-      <div class="section-number">4</div>
+      <div class="section-number">6</div>
       <h2 class="section-title">Open Generics Registration</h2>
     </div>
     <p>You cannot use the generic <code>Add&lt;T&gt;()</code> methods to register <strong>open generic types</strong> — types that contain an unresolved generic type parameter, such as <code>IRepository&lt;T&gt;</code>. For those, you must use a special overload that takes <code>Type</code> objects:</p>
@@ -370,7 +370,7 @@ builder.Services.AddScoped(
 
   <section class="section" id="tryadd">
     <div class="section-header">
-      <div class="section-number">6</div>
+      <div class="section-number">7</div>
       <h2 class="section-title">TryAdd — Conditional Registration</h2>
     </div>
 
@@ -407,10 +407,10 @@ builder.Services
   </section>
 
 
-  <!-- ══ SECTION 7 ══ -->
+  <!-- ══ SECTION 8 ══ -->
   <section class="section" id="lifetimes">
     <div class="section-header">
-      <div class="section-number">7</div>
+      <div class="section-number">8</div>
       <h2 class="section-title">Understanding Lifetimes — How Long Do Services Live?</h2>
     </div>
 
@@ -447,10 +447,10 @@ builder.Services
       <div class="quiz-feedback" id="quiz-r2-fb"></div>
     </div>
   </section>
-  <!-- ══ SECTION 8 ══ -->
+  <!-- ══ SECTION 9 ══ -->
   <section class="section" id="transient">
     <div class="section-header">
-      <div class="section-number">8</div>
+      <div class="section-number">9</div>
       <h2 class="section-title">Transient — Everyone Gets Their Own</h2>
     </div>
  
@@ -513,10 +513,10 @@ builder.Services.AddTransient&lt;<span class="tp">Repository</span>&gt;();</div>
     </div>
   </section>
  
-  <!-- ══ SECTION 9 ══ -->
+  <!-- ══ SECTION 10 ══ -->
   <section class="section" id="scoped">
     <div class="section-header">
-      <div class="section-number">9</div>
+      <div class="section-number">10</div>
       <h2 class="section-title">Scoped — One Per Request</h2>
     </div>
  
@@ -579,10 +579,10 @@ builder.Services.AddScoped&lt;<span class="tp">Repository</span>&gt;();</div>
     </div>
   </section>
  
-  <!-- ══ SECTION 10 ══ -->
+  <!-- ══ SECTION 11 ══ -->
   <section class="section" id="singleton">
     <div class="section-header">
-      <div class="section-number">10</div>
+      <div class="section-number">11</div>
       <h2 class="section-title">Singleton — There Can Be Only One</h2>
     </div>
  
@@ -647,10 +647,10 @@ builder.Services.AddSingleton&lt;<span class="tp">Repository</span>&gt;();</div>
  
 
 
-  <!-- ══ SECTION 11 ══ -->
+  <!-- ══ SECTION 12 ══ -->
   <section class="section" id="captive">
     <div class="section-header">
-      <div class="section-number">11</div>
+      <div class="section-number">12</div>
       <h2 class="section-title">Captive Dependencies — The Classic DI Bug</h2>
     </div>
 

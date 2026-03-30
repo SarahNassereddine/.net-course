@@ -27,6 +27,8 @@
   <div class="nav-section">
     <div class="nav-section-title">Sections</div>
     <button class="nav-link active" data-target="web-framework" onclick="scrollPageTo('web-framework')"><span class="dot"></span>Using a web framework</button>
+   <button class="nav-link" data-target="aspnet-history" onclick="scrollPageTo('aspnet-history')"><span class="dot"></span>History of ASP.NET</button>
+    <button class="nav-link" data-target="paradigms-detail" onclick="scrollPageTo('paradigms-detail')"><span class="dot"></span>The seven paradigms</button>
     <button class="nav-link" data-target="why-created" onclick="scrollPageTo('why-created')"><span class="dot"></span>Why ASP.NET Core was created</button>
     <button class="nav-link" data-target="dotnet-platform" onclick="scrollPageTo('dotnet-platform')"><span class="dot"></span>.NET 7 / .NET 8 platform</button>
     <button class="nav-link" data-target="kestrel" onclick="scrollPageTo('kestrel')"><span class="dot"></span>Kestrel hosting model</button>
@@ -93,11 +95,111 @@
       </div>
     </div>
   </section>
+  <!-- SECTION 2 & 3-->
+   <!--section 2 & 3-->
+<!-- SECTION — History of ASP.NET -->
+<section class="section" id="aspnet-history">
+  <div class="section-header">
+    <div class="section-number">2</div>
+    <h2 class="section-title">History of ASP.NET and Why Core Was Born</h2>
+  </div>
+  <p>To understand why ASP.NET Core exists, you need to understand the limitations of what came before it.</p>
 
-  <!-- SECTION 2 -->
+  <div style="display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+    <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;background:rgba(207,34,46,.04);border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--mono);font-weight:700;color:var(--red);font-size:13px;flex-shrink:0;width:52px;">2002</div>
+      <div><div style="font-weight:600;color:var(--text);font-size:13px;">ASP.NET Web Forms released</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Rapid development using a graphical designer and event model mimicking desktop apps. Problems emerged in larger apps: lack of testability, complex stateful model, limited HTML control making client-side development hard.</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;background:rgba(191,135,0,.04);border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--mono);font-weight:700;color:var(--yellow);font-size:13px;flex-shrink:0;width:52px;">2009</div>
+      <div><div style="font-weight:600;color:var(--text);font-size:13px;">ASP.NET MVC released</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Based on the Model-View-Controller pattern (used by Ruby on Rails, Django, Java Spring). Better testability, separation of UI from logic, tighter HTML control. But still built on <code>System.Web.dll</code> — part of .NET Framework, Windows-only.</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;background:rgba(9,105,218,.04);border-bottom:1px solid var(--border);">
+      <div style="font-family:var(--mono);font-weight:700;color:var(--blue);font-size:13px;flex-shrink:0;width:52px;">2016</div>
+      <div><div style="font-weight:600;color:var(--text);font-size:13px;">ASP.NET Core released</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Complete rewrite. No longer tied to <code>System.Web.dll</code>, IIS, or Windows. Cross-platform from the ground up, running on the new lightweight .NET Core runtime.</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:14px;padding:14px 20px;background:rgba(0,212,170,.04);">
+      <div style="font-family:var(--mono);font-weight:700;color:var(--accent);font-size:13px;flex-shrink:0;width:52px;">2020+</div>
+      <div><div style="font-weight:600;color:var(--text);font-size:13px;">.NET Framework declared "done"</div><div style="font-size:13px;color:var(--text2);margin-top:3px;">Microsoft declared .NET Framework will receive no new features — only security fixes. ASP.NET based on <code>System.Web.dll</code> will also receive no new features. The future is ASP.NET Core on .NET 5+.</div></div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">📌</div>
+    <div class="callout-body">
+      <div class="callout-title">.NET Core → .NET 5+ naming clarification</div>
+      <div class="callout-text">
+        <strong>.NET Core</strong> (versions 1.x–3.1) was the cross-platform rewrite of .NET Framework.<br>
+        <strong>.NET 5</strong> (2020) was the next version after .NET Core 3.1 — Microsoft dropped "Core" to signal unification of all .NET platforms.<br>
+        <strong>.NET 6, 7, 8</strong> continue this unified platform. When the book says ".NET 5+" it means .NET 5, 6, 7, 8, etc.<br>
+        <strong>.NET Framework</strong> (the old Windows-only one) is separate and will never become ASP.NET Core.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">⚠️</div>
+    <div class="callout-body">
+      <div class="callout-title">The System.Web.dll problem</div>
+      <div class="callout-text"><code>System.Web.dll</code> is the heart of old ASP.NET. It is part of .NET Framework — preinstalled on all Windows machines. Changes to it are far-reaching and slow (release cycles every few years). It has an explicit coupling with IIS, which prevents use on non-Windows platforms. ASP.NET Core eliminates this dependency entirely.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3 — The Seven Paradigms -->
+<section class="section" id="paradigms-detail">
+  <div class="section-header">
+    <div class="section-number">3</div>
+    <h2 class="section-title">The Seven Paradigms of ASP.NET Core</h2>
+  </div>
+  <p>ASP.NET Core supports seven distinct application paradigms. All share the same core foundation — configuration, logging, DI, and the middleware pipeline — but each serves a different style of application.</p>
+
+  <table class="data-table">
+    <thead><tr><th>Paradigm</th><th>Style</th><th>Best For</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Minimal APIs</strong></td><td>HTTP API — low ceremony, no controllers</td><td>Mobile backends, SPAs, microservices, getting started</td></tr>
+      <tr><td><strong>Web APIs</strong></td><td>HTTP API — controller-based, more structured</td><td>Complex enterprise APIs needing full MVC conventions</td></tr>
+      <tr><td><strong>gRPC APIs</strong></td><td>Binary RPC — efficient, contract-based</td><td>High-performance server-to-server communication</td></tr>
+      <tr><td><strong>Razor Pages</strong></td><td>Server-rendered HTML — page-based</td><td>Form-driven websites, CMSes, e-commerce</td></tr>
+      <tr><td><strong>MVC Controllers</strong></td><td>Server-rendered HTML — controller-based</td><td>Complex HTML apps with explicit separation of concerns</td></tr>
+      <tr><td><strong>Blazor WebAssembly</strong></td><td>Client-side SPA — C# in browser via WASM</td><td>Rich interactive client-side apps without JavaScript</td></tr>
+      <tr><td><strong>Blazor Server</strong></td><td>Server-rendered with real-time UI via WebSockets</td><td>Stateful interactive apps with server-side simplicity</td></tr>
+    </tbody>
+  </table>
+
+  <div class="compare-grid">
+    <div class="compare-card">
+      <div class="compare-card-header neutral">📖 REST Definition</div>
+      <div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">
+        <strong style="color:var(--text)">REST</strong> = Representational State Transfer. RESTful apps use lightweight, stateless HTTP calls to read (GET), create/update (POST/PUT), and delete (DELETE) data. Both Minimal APIs and Web APIs support building RESTful services.
+      </div>
+    </div>
+    <div class="compare-card">
+      <div class="compare-card-header neutral">⚡ gRPC Definition</div>
+      <div class="code-body" style="background:var(--bg2);color:var(--text2);font-family:var(--sans);font-size:13px;padding:14px 16px;">
+        <strong style="color:var(--text)">gRPC</strong> = modern open-source, high-performance RPC framework. Uses binary Protocol Buffers instead of JSON. Ideal for server-to-server communication where performance is critical. Similar to WCF but modern and cross-platform.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">🔄</div>
+    <div class="callout-body">
+      <div class="callout-title">Minimal APIs vs Web APIs — what's the difference?</div>
+      <div class="callout-text">
+        <strong>Minimal APIs</strong> (introduced in .NET 6) are the new low-ceremony approach. Define endpoints as simple lambda functions directly in <code>Program.cs</code>. Less boilerplate, faster to get started.<br><br>
+        <strong>Web APIs</strong> use the traditional controller-based approach. More structure and features (action filters, model state, content negotiation), but more boilerplate. Best for large, complex APIs.<br><br>
+        For new projects, <strong>start with Minimal APIs</strong> — you can always add structure as the app grows.
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  <!-- SECTION 4 -->
   <section class="section" id="why-created">
     <div class="section-header">
-      <div class="section-number">2</div>
+      <div class="section-number">4</div>
       <h2 class="section-title">Why ASP.NET Core Was Created</h2>
     </div>
 
@@ -162,9 +264,10 @@
       <div class="quiz-feedback" id="quiz-why1-fb"></div>
     </div>
   </section>
+  <!-- SECTION 5 -->
 <section class="section" id="dotnet-platform">
   <div class="section-header">
-    <div class="section-number">3</div>
+    <div class="section-number">5</div>
     <h2 class="section-title">.NET 7 / .NET 8 Platform</h2>
   </div>
 
@@ -246,10 +349,10 @@
   </div>
 
 </section>
-  <!-- ══ SECTION 4 — Kestrel ══ -->
+  <!-- ══ SECTION 6 — Kestrel ══ -->
   <section class="section" id="kestrel">
     <div class="section-header">
-      <div class="section-number">4</div>
+      <div class="section-number">6</div>
       <h2 class="section-title">Kestrel & Hosting Models</h2>
     </div>
 
@@ -368,10 +471,10 @@
 
   </section>
 
-  <!-- SECTION 5 — When to choose (book 2.4) -->
+  <!-- SECTION 7 — When to choose (book 2.4) -->
   <section class="section" id="when-to-choose">
     <div class="section-header">
-      <div class="section-number">5</div>
+      <div class="section-number">7</div>
       <h2 class="section-title">When to Choose ASP.NET Core</h2>
     </div>
     <p>When deciding whether to use ASP.NET Core, you have two primary dimensions: whether you're already a .NET developer, and whether you're creating a new application or converting an existing one.</p>
@@ -418,10 +521,10 @@
     </div>
   </section>
 
-  <!-- SECTION 6 -->
+  <!-- SECTION 8 -->
   <section class="section" id="nuget">
     <div class="section-header">
-      <div class="section-number">6</div>
+      <div class="section-number">8</div>
       <h2 class="section-title">NuGet — The .NET Package Manager</h2>
     </div>
 
