@@ -149,14 +149,33 @@
 }</div>
     </div>
 
-    <div class="callout tip">
-      <div class="callout-icon">💾</div>
-      <div class="callout-body">
-        <div class="callout-title">Sample Collections</div>
-        <div class="callout-text">
-          Initialize three in-memory collections with sample data as shown in the homework document. These will serve as your data store for testing endpoints.
-        </div>
-      </div>
+    <p>Initialize three in-memory collections with sample data. These will serve as your data store for testing endpoints:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — Sample Collections</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="cm">// Collection of Person objects</span>
+<span class="tp">List</span>&lt;<span class="tp">Person</span>&gt; people = <span class="kw">new</span> <span class="tp">List</span>&lt;<span class="tp">Person</span>&gt;
+{
+    <span class="kw">new</span> <span class="tp">Person</span> { Id = <span class="nm">1</span>, Name = <span class="str">"Alice"</span>, DateOfBirth = <span class="kw">new</span> <span class="tp">DateTime</span>(<span class="nm">1990</span>, <span class="nm">5</span>, <span class="nm">15</span>) },
+    <span class="kw">new</span> <span class="tp">Person</span> { Id = <span class="nm">2</span>, Name = <span class="str">"Bob"</span>, DateOfBirth = <span class="kw">new</span> <span class="tp">DateTime</span>(<span class="nm">1985</span>, <span class="nm">10</span>, <span class="nm">25</span>) },
+    <span class="kw">new</span> <span class="tp">Person</span> { Id = <span class="nm">3</span>, Name = <span class="str">"Charlie"</span>, DateOfBirth = <span class="kw">new</span> <span class="tp">DateTime</span>(<span class="nm">1988</span>, <span class="nm">3</span>, <span class="nm">8</span>) }
+};
+
+<span class="cm">// Collection of User objects</span>
+<span class="tp">List</span>&lt;<span class="tp">User</span>&gt; users = <span class="kw">new</span> <span class="tp">List</span>&lt;<span class="tp">User</span>&gt;
+{
+    <span class="kw">new</span> <span class="tp">User</span> { Username = <span class="str">"user1"</span>, Email = <span class="str">"user1@gmail.com"</span>, Age = <span class="nm">30</span> },
+    <span class="kw">new</span> <span class="tp">User</span> { Username = <span class="str">"user2"</span>, Email = <span class="str">"user2@ul.edu.lb"</span>, Age = <span class="nm">25</span> },
+    <span class="kw">new</span> <span class="tp">User</span> { Username = <span class="str">"user3"</span>, Email = <span class="str">"user3@gmail.com"</span>, Age = <span class="nm">35</span> }
+};
+
+<span class="cm">// Collection of Product objects</span>
+<span class="tp">List</span>&lt;<span class="tp">Product</span>&gt; products = <span class="kw">new</span> <span class="tp">List</span>&lt;<span class="tp">Product</span>&gt;
+{
+    <span class="kw">new</span> <span class="tp">Product</span> { Title = <span class="str">"Product 1"</span>, Description = <span class="str">"Description of Product 1"</span>, Price = <span class="nm">99.99m</span> },
+    <span class="kw">new</span> <span class="tp">Product</span> { Title = <span class="str">"Product 2"</span>, Description = <span class="str">"Description of Product 2"</span>, Price = <span class="nm">149.99m</span> },
+    <span class="kw">new</span> <span class="tp">Product</span> { Title = <span class="str">"Product 3"</span>, Description = <span class="str">"Description of Product 3"</span>, Price = <span class="nm">199.99m</span> }
+};</div>
     </div>
   </section>
 
