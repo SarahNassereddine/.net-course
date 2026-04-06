@@ -1359,6 +1359,7 @@ window.addEventListener('scroll', () => {
   window.openDrawer = function(){ sidebar.classList.add('open'); overlay.classList.add('show'); };
   window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
   overlay.addEventListener('click', closeDrawer);
+   document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 900) closeDrawer(); }));
 })();
 </script>
 </body>
