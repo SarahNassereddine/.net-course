@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 13 — Creating a Website with Razor Pages</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Definition boxes ── */
+.definition {
+  background: rgba(124,106,247,.06);
+  border: 1px solid rgba(124,106,247,.22);
+  border-left: 3px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.definition-term {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.definition-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+/* ── code blocks ── */
+.code-block {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 20px 0;
+}
+.code-block pre {
+  background: #282c34;
+  margin: 0;
+  padding: 20px;
+  overflow-x: auto;
+}
+.code-block pre code {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: #abb2bf;
+  white-space: pre;
+}
+:root { --orange: #e8720c; }
+
+/* ── Diagram shared styles ── */
+.diagram-wrap {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  margin: 20px 0;
+  font-family: var(--sans);
+}
+.diagram-title {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ── Arrow utility ── */
+.arrow-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.arrow-h {
+  width: 32px; height: 2px;
+  background: var(--border);
+  position: relative;
+  flex-shrink: 0;
+}
+.arrow-h::after {
+  content: '';
+  position: absolute;
+  right: -1px; top: -4px;
+  border: 5px solid transparent;
+  border-left-color: var(--border);
+}
+.arrow-v-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.arrow-v {
+  width: 2px; height: 18px;
+  background: var(--border);
+  position: relative;
+}
+.arrow-v::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: -4px;
+  border: 5px solid transparent;
+  border-top-color: var(--border);
+}
+
+/* ── Box styles ── */
+.box {
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.4;
+}
+.box-accent2 { background: rgba(124,106,247,0.12); border: 1.5px solid rgba(124,106,247,0.4); color: var(--accent2); }
+.box-accent  { background: rgba(0,212,170,0.10);   border: 1.5px solid rgba(0,212,170,0.35);  color: #009e80; }
+.box-blue    { background: rgba(9,105,218,0.10);   border: 1.5px solid rgba(9,105,218,0.35);  color: var(--blue); }
+.box-green   { background: rgba(45,164,78,0.10);   border: 1.5px solid rgba(45,164,78,0.35);  color: var(--green); }
+.box-orange  { background: rgba(232,114,12,0.10);  border: 1.5px solid rgba(232,114,12,0.35); color: var(--orange); }
+.box-red     { background: rgba(207,34,46,0.10);   border: 1.5px solid rgba(207,34,46,0.35);  color: var(--red); }
+.box-neutral { background: var(--bg); border: 1.5px solid var(--border); color: var(--text2); }
+</style>
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 13 — Razor Pages</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;"><span style="opacity: 0.7;">Prepared by</span> <span style="color: var(--text2); font-weight: 500;">Sarah N.</span></div>
+      <div><span style="opacity: 0.7;">Supervised by</span> <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span></div>
+    </div>
+    <div class="chapter-label">Chapter 13</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="first-app" onclick="scrollPageTo('first-app')"><span class="dot"></span>Your first Razor Pages app</button>
+    <button class="nav-link" data-target="web-template" onclick="scrollPageTo('web-template')"><span class="dot"></span>Web Application template</button>
+    <button class="nav-link" data-target="services-config" onclick="scrollPageTo('services-config')"><span class="dot"></span>Adding and configuring services</button>
+    <button class="nav-link" data-target="generating-html" onclick="scrollPageTo('generating-html')"><span class="dot"></span>Generating HTML</button>
+    <button class="nav-link" data-target="page-handlers" onclick="scrollPageTo('page-handlers')"><span class="dot"></span>Page models and handlers</button>
+    <button class="nav-link" data-target="typical-page" onclick="scrollPageTo('typical-page')"><span class="dot"></span>Exploring a typical page</button>
+    <button class="nav-link" data-target="mvc-pattern" onclick="scrollPageTo('mvc-pattern')"><span class="dot"></span>MVC design pattern</button>
+    <button class="nav-link" data-target="mvc-razor" onclick="scrollPageTo('mvc-razor')"><span class="dot"></span>Applying MVC to Razor Pages</button>
+    <button class="nav-link" data-target="mvvm-vs-mvc" onclick="scrollPageTo('mvvm-vs-mvc')"><span class="dot"></span>MVC vs MVVM</button>
+    <button class="nav-link" data-target="binding-model" onclick="scrollPageTo('binding-model')"><span class="dot"></span>Routing &amp; binding model</button>
+    <button class="nav-link" data-target="view-model-concept" onclick="scrollPageTo('view-model-concept')"><span class="dot"></span>Building HTML with view model</button>
+    <button class="nav-link" data-target="request-flow" onclick="scrollPageTo('request-flow')"><span class="dot"></span>Complete request flow</button>
+    <button class="nav-link" data-target="separation-concerns" onclick="scrollPageTo('separation-concerns')"><span class="dot"></span>Separation of concerns</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Entity Framework Core</a>
+    <a class="nav-link active" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 13</div>
+    <h1 class="chapter-title">Creating a Website with Razor Pages</h1>
+    <p class="chapter-subtitle">Learn how to build server-rendered, page-based web applications using Razor Pages in ASP.NET Core. Understand the MVC pattern and how requests flow through Razor Pages applications.</p>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="first-app">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Your First Razor Pages Application</h2>
+    </div>
+
+    <p>So far in this course you've built one type of ASP.NET Core application: <strong>minimal API apps that return JSON</strong>. In this chapter, you'll learn how to build <strong>server-rendered, page-based applications</strong> using Razor Pages.</p>
+
+    <h3>Types of ASP.NET Core Applications</h3>
+    <p>Most ASP.NET Core apps fall into one of three categories:</p>
+
+    <!-- DIAGRAM: Three app types as a visual comparison -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">ASP.NET Core Application Types</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;">
+        <div style="text-align:center;">
+          <div class="box box-blue" style="padding:14px 10px;">
+            <div style="font-size:22px;margin-bottom:6px;">🔌</div>
+            <div style="font-size:12px;font-weight:700;">API for Machine Consumption</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.5;">Returns <strong>JSON / XML</strong> to backend processes, mobile apps, SPAs</div>
+        </div>
+        <div style="text-align:center;">
+          <div class="box box-accent2" style="padding:14px 10px;outline:2px solid var(--accent2);outline-offset:3px;">
+            <div style="font-size:22px;margin-bottom:6px;">🌐</div>
+            <div style="font-size:12px;font-weight:700;">HTML Web App (Razor Pages)</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.5;">Handles form requests, generates <strong>HTML</strong> directly for users <span style="color:var(--accent2);">← this chapter</span></div>
+        </div>
+        <div style="text-align:center;">
+          <div class="box box-accent" style="padding:14px 10px;">
+            <div style="font-size:22px;margin-bottom:6px;">🔄</div>
+            <div style="font-size:12px;font-weight:700;">Both HTML and API</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text3);line-height:1.5;">Serves both needs, shares logic across different clients</div>
+        </div>
+      </div>
+    </div>
+
+    <p>In this chapter we'll focus on the second option: <strong>creating server-side rendered HTML pages</strong> using Razor Pages.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📄</div>
+      <div class="callout-body">
+        <div class="callout-title">Server-Rendered vs. Client-Side Frameworks</div>
+        <div class="callout-text">
+          With server-rendering, your application generates the HTML on the server and the browser displays this HTML directly. No extra client-side framework is required. You can still add dynamic client-side behavior using JavaScript, but fundamentally each page in your app is a standalone request and response, creating a simpler developer experience.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="web-template">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Using the Web Application Template</h2>
+    </div>
+
+    <p>Using a template is a quick way to get an application running. Let's create a Razor Pages application using the <strong>ASP.NET Core Web App template</strong>.</p>
+
+    <div class="tab-group" style="margin: 20px 0;">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this, 'vs-create')">Visual Studio</button>
+        <button class="tab-btn" onclick="tab(this, 'cli-create')">.NET CLI</button>
+      </div>
+      <div class="tab-panel active" id="vs-create">
+        <div style="padding: 16px; font-size: 13px; line-height: 1.8;">
+          <strong>To create a Razor Pages application in Visual Studio:</strong><br><br>
+          <strong>1.</strong> Choose <strong>Create a New Project</strong> from the splash screen<br>
+          <strong>2.</strong> Select <strong>ASP.NET Core Web App</strong> (C# template)<br>
+          <strong>3.</strong> Enter project name, location, and solution name<br>
+          <strong>4.</strong> On the additional information screen:<br>
+          <div style="margin-left: 20px; margin-top: 8px;">
+            • Select <strong>.NET 8.0</strong><br>
+            • Ensure <strong>Configure for HTTPS</strong> is checked<br>
+            • Ensure <strong>Enable Docker</strong> is unchecked<br>
+            • Ensure <strong>Authentication Type</strong> is set to <strong>None</strong><br>
+          </div>
+          <strong>5.</strong> Click <strong>Create</strong>
+        </div>
+      </div>
+      <div class="tab-panel" id="cli-create">
+        <div class="code-block" style="margin: 0;">
+          <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Creating Razor Pages App</span></div>
+          <pre><code># Create solution file
+dotnet new sln -n WebApplication1
+
+# Create Razor Pages project
+dotnet new razor -o WebApplication1
+
+# Add project to solution
+dotnet sln add WebApplication1</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <h3>Project Structure</h3>
+    <p>The Razor Pages app has much the same structure as minimal API applications, with two important additions:</p>
+
+    <!-- DIAGRAM: Project folder structure -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Razor Pages Project Structure</div>
+      <div style="font-family:var(--mono);font-size:12px;color:var(--text2);line-height:2;padding:0 8px;">
+        <div>📁 <strong style="color:var(--text);">WebApplication1/</strong></div>
+        <div style="padding-left:20px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            📁 <span style="background:rgba(124,106,247,0.12);border:1px solid rgba(124,106,247,0.3);border-radius:4px;padding:1px 8px;color:var(--accent2);font-weight:600;">Pages/</span>
+            <span style="font-family:var(--sans);font-size:11px;color:var(--accent2);">← Razor Pages (.cshtml files) live here</span>
+          </div>
+          <div style="padding-left:24px;color:var(--text3);">
+            <div>📄 Index.cshtml <span style="font-family:var(--sans);font-size:11px;">→ serves <code>/</code> and <code>/Index</code></span></div>
+            <div>📄 Index.cshtml.cs <span style="font-family:var(--sans);font-size:11px;color:var(--text3);">(code-behind / PageModel)</span></div>
+            <div>📄 Privacy.cshtml <span style="font-family:var(--sans);font-size:11px;">→ serves <code>/Privacy</code></span></div>
+            <div>📄 Privacy.cshtml.cs</div>
+            <div>📄 Error.cshtml</div>
+            <div>📁 Shared/ <span style="font-family:var(--sans);font-size:11px;color:var(--text3);">(layouts, partials)</span></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            📁 <span style="background:rgba(0,212,170,0.10);border:1px solid rgba(0,212,170,0.3);border-radius:4px;padding:1px 8px;color:#009e80;font-weight:600;">wwwroot/</span>
+            <span style="font-family:var(--sans);font-size:11px;color:#009e80;">← only folder browsers can access directly</span>
+          </div>
+          <div style="padding-left:24px;color:var(--text3);">
+            <div>📁 css/ &nbsp;📁 js/ &nbsp;📁 lib/</div>
+          </div>
+          <div style="margin-top:4px;">📄 Program.cs</div>
+          <div>📄 appsettings.json</div>
+          <div>📄 WebApplication1.csproj</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🎨</div>
+      <div class="callout-body">
+        <div class="callout-title">wwwroot Organization</div>
+        <div class="callout-text">
+          The template creates subfolders inside wwwroot (css, js, lib), but you don't have to use them. You can structure your static files however you want inside wwwroot.
+        </div>
+      </div>
+    </div>
+
+    <h3>Running the Application</h3>
+    <p>Build and run your application by pressing <strong>F5</strong> in Visual Studio, or use <code>dotnet run</code> in the project folder. The browser will open and display a Welcome page with navigation links to <strong>Home</strong> and <strong>Privacy</strong> pages.</p>
+  </section>
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="services-config">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Adding and Configuring Services</h2>
+    </div>
+
+    <p>The setup code for a Razor Pages application follows the same basic structure you've seen with minimal APIs. Your <code>Program.cs</code> contains the same six steps:</p>
+
+    <!-- DIAGRAM: 6-step Program.cs pipeline (visual) -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Program.cs — 6 Steps</div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <!-- Step boxes connected with arrows -->
+        <div style="display:flex;align-items:stretch;gap:0;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0;flex:1;">
+            <!-- 1 -->
+            <div style="width:100%;background:rgba(124,106,247,0.10);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:var(--accent2);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">1</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:var(--accent2);">Create WebApplicationBuilder</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">WebApplication.CreateBuilder(args)</div>
+              </div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- 2 -->
+            <div style="width:100%;background:rgba(124,106,247,0.10);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:var(--accent2);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">2</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:var(--accent2);">Register Services</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">builder.Services.AddRazorPages()</div>
+              </div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- 3 -->
+            <div style="width:100%;background:rgba(0,212,170,0.08);border:1.5px solid rgba(0,212,170,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:#009e80;color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">3</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:#009e80;">Build WebApplication</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">builder.Build()</div>
+              </div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- 4 -->
+            <div style="width:100%;background:rgba(9,105,218,0.08);border:1.5px solid rgba(9,105,218,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:var(--blue);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">4</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:var(--blue);">Add Middleware</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">app.UseStaticFiles(), app.UseRouting() …</div>
+              </div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- 5 -->
+            <div style="width:100%;background:rgba(45,164,78,0.08);border:1.5px solid rgba(45,164,78,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">5</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:var(--green);">Map Endpoints</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">app.MapRazorPages()</div>
+              </div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- 6 -->
+            <div style="width:100%;background:rgba(207,34,46,0.08);border:1.5px solid rgba(207,34,46,0.3);border-radius:8px;padding:10px 14px;display:flex;gap:10px;align-items:center;">
+              <div style="background:var(--red);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">6</div>
+              <div style="flex:1;">
+                <div style="font-size:12px;font-weight:700;color:var(--red);">Start Handling Requests</div>
+                <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">app.Run()</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs for Razor Pages App</span></div>
+      <pre><code>WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();  // Register Razor Pages services
+
+WebApplication app = builder.Build();
+
+// These two are only added outside Development:
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");  // friendly error page
+    app.UseHsts();                      // security headers
+}
+
+app.UseHttpsRedirection();  // ensure HTTPS only
+app.UseStaticFiles();       // serve files from wwwroot
+app.UseRouting();           // select the right endpoint
+app.UseAuthorization();     // check if endpoint is allowed to run
+
+app.MapRazorPages();  // register Razor Page endpoints
+
+app.Run();</code></pre>
+    </div>
+
+    <h3>Middleware Pipeline Overview</h3>
+
+    <!-- DIAGRAM: Middleware pipeline — request flows down, response flows up -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Middleware Pipeline — Request ↓ / Response ↑</div>
+
+      <!-- Request enters -->
+      <div style="display:flex;justify-content:center;margin-bottom:6px;">
+        <div style="text-align:center;">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">HTTP Request</div>
+          <div style="font-size:18px;">🌐</div>
+        </div>
+      </div>
+      <div class="arrow-v-wrap" style="align-self:center;margin:0 auto;"><div class="arrow-v" style="height:12px;"></div></div>
+
+      <div style="display:flex;flex-direction:column;gap:0;max-width:520px;margin:0 auto;">
+
+        <!-- only in !Development label -->
+        <div style="border:1px dashed var(--border);border-radius:6px;padding:6px 10px;margin-bottom:6px;font-size:11px;color:var(--text3);text-align:center;">Only added when <strong>not</strong> in Development environment:</div>
+
+        <!-- ExceptionHandler -->
+        <div style="background:rgba(207,34,46,0.08);border-left:4px solid rgba(207,34,46,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--red);font-size:12px;">ExceptionHandlerMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Catches exceptions from later middleware → friendly error page</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v"></div></div>
+
+        <!-- HSTS -->
+        <div style="background:rgba(45,164,78,0.08);border-left:4px solid rgba(45,164,78,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--green);font-size:12px;">HstsMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Adds security headers (HSTS) in line with industry best practices</div>
+        </div>
+
+        <div style="border:1px dashed var(--border);border-radius:6px;padding:4px 10px;margin:6px 0;font-size:11px;color:var(--text3);text-align:center;">Always added:</div>
+
+        <!-- HTTPS Redirect -->
+        <div style="background:rgba(9,105,218,0.08);border-left:4px solid rgba(9,105,218,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--blue);font-size:12px;">HttpsRedirectionMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Redirects HTTP requests to HTTPS — ensures secure connections only</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v"></div></div>
+
+        <!-- Static Files -->
+        <div style="background:rgba(124,106,247,0.08);border-left:4px solid rgba(124,106,247,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--accent2);font-size:12px;">StaticFileMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Serves .css, .js, images from <code>wwwroot/</code> — short-circuits here if file found</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v"></div></div>
+
+        <!-- Routing -->
+        <div style="background:rgba(0,212,170,0.08);border-left:4px solid rgba(0,212,170,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:#009e80;font-size:12px;">RoutingMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Selects which endpoint to invoke for the request. Runs <em>after</em> StaticFiles so static files are not routed</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v"></div></div>
+
+        <!-- Authorization -->
+        <div style="background:rgba(232,114,12,0.08);border-left:4px solid rgba(232,114,12,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--orange);font-size:12px;">AuthorizationMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Controls whether the selected endpoint is allowed to run for the requesting user</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v"></div></div>
+
+        <!-- Endpoint -->
+        <div style="background:rgba(207,34,46,0.08);border-left:4px solid rgba(207,34,46,0.5);border-radius:6px;padding:10px 14px;">
+          <div style="font-weight:700;color:var(--red);font-size:12px;">EndpointMiddleware</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:3px;">Auto-added at the end of the pipeline. Executes the selected Razor Page handler to generate the response</div>
+        </div>
+      </div>
+
+      <div class="arrow-v-wrap" style="margin:6px auto 0;"><div class="arrow-v" style="height:12px;"></div></div>
+      <div style="text-align:center;">
+        <div style="font-size:18px;">🌐</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px;">HTML Response</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-body">
+        <div class="callout-title">Request Flow</div>
+        <div class="callout-text">
+          As with minimal APIs, the <strong>RoutingMiddleware</strong> selects which endpoint handler to execute, and the <strong>EndpointMiddleware</strong> executes the handler to generate a response. The request flows through all middleware in order, and the response flows back through them in reverse.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="generating-html">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Generating HTML with Razor Pages</h2>
+    </div>
+
+    <p>Razor Pages are stored in <strong>.cshtml files</strong> (a hybrid of .cs and .xhtml) within the <strong>Pages</strong> folder of your project. The routing middleware maps request URL paths to a Razor Page by looking in the Pages folder for a Razor Page with the same path.</p>
+
+    <!-- DIAGRAM: URL → File mapping -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">URL Path → Razor Page File Mapping</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="box box-neutral" style="min-width:130px;text-align:right;font-family:var(--mono);font-size:12px;">GET /</div>
+          <div class="arrow-h" style="flex:1;min-width:30px;"></div>
+          <div class="box box-accent2" style="min-width:180px;font-family:var(--mono);font-size:12px;">Pages/Index.cshtml</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="box box-neutral" style="min-width:130px;text-align:right;font-family:var(--mono);font-size:12px;">GET /Index</div>
+          <div class="arrow-h" style="flex:1;min-width:30px;"></div>
+          <div class="box box-accent2" style="min-width:180px;font-family:var(--mono);font-size:12px;">Pages/Index.cshtml</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="box box-neutral" style="min-width:130px;text-align:right;font-family:var(--mono);font-size:12px;">GET /Privacy</div>
+          <div class="arrow-h" style="flex:1;min-width:30px;"></div>
+          <div class="box box-accent2" style="min-width:180px;font-family:var(--mono);font-size:12px;">Pages/Privacy.cshtml</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0;">
+          <div class="box box-neutral" style="min-width:130px;text-align:right;font-family:var(--mono);font-size:12px;">GET /Admin/Users</div>
+          <div class="arrow-h" style="flex:1;min-width:30px;"></div>
+          <div class="box box-accent2" style="min-width:180px;font-family:var(--mono);font-size:12px;">Pages/Admin/Users.cshtml</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center;">Routing is based on <strong>file path</strong> within the Pages folder — no explicit route registration needed</div>
+    </div>
+
+    <h3>Anatomy of a Razor Page</h3>
+    <p>Let's look at the <code>Privacy.cshtml</code> Razor Page:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Privacy.cshtml</span></div>
+      <pre><code>@page                          // ← marks this file as a Razor Page (MUST be first line)
+@model PrivacyModel            // ← links to the PageModel class
+@{
+    ViewData["Title"] = "Privacy Policy";   // ← C# code block (no output)
+}
+&amp;lt;h1&amp;gt;@ViewData["Title"]&amp;lt;/h1&amp;gt;   // ← @ writes C# value into the HTML
+&lt;p&gt;Use this page to detail your site's privacy policy.&lt;/p&gt;</code></pre>
+    </div>
+
+    <!-- DIAGRAM: Razor syntax annotated -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Razor Page Directives &amp; Syntax</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:rgba(207,34,46,0.12);border:1.5px solid rgba(207,34,46,0.35);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--red);min-width:90px;text-align:center;">@page</div>
+          <div style="font-size:13px;color:var(--text2);">Marks the file as a Razor Page. <strong>Must be on the very first line.</strong> Without it the page won't be routable.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:rgba(9,105,218,0.10);border:1.5px solid rgba(9,105,218,0.35);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--blue);min-width:90px;text-align:center;">@model</div>
+          <div style="font-size:13px;color:var(--text2);">Links the Razor Page to a specific PageModel class (the code-behind). Enables <code>Model.Property</code> access in the view.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:rgba(124,106,247,0.10);border:1.5px solid rgba(124,106,247,0.35);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:90px;text-align:center;">@{ }</div>
+          <div style="font-size:13px;color:var(--text2);">A C# code block that executes but writes <strong>nothing</strong> to the response output (used for setting variables, ViewData, etc.)</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:rgba(0,212,170,0.10);border:1.5px solid rgba(0,212,170,0.35);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:#009e80;min-width:90px;text-align:center;">@value</div>
+          <div style="font-size:13px;color:var(--text2);">Dynamically writes a C# expression/variable into the HTML output. Values are <strong>HTML-encoded</strong> automatically.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="background:rgba(45,164,78,0.10);border:1.5px solid rgba(45,164,78,0.35);border-radius:6px;padding:6px 12px;font-family:var(--mono);font-size:12px;color:var(--green);min-width:90px;text-align:center;">&lt;html&gt;</div>
+          <div style="font-size:13px;color:var(--text2);">Static HTML rendered as-is in the response without any transformation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Critical: @page Directive</div>
+        <div class="callout-text">
+          The <code>@page</code> directive must always be placed on the first line of the file, as it tells ASP.NET Core that the .cshtml file is a Razor Page. Without it, you won't be able to view your page correctly.
+        </div>
+      </div>
+    </div>
+
+    <h3>Layouts</h3>
+    <p>Razor Pages have the concept of <strong>layouts</strong>, which are base templates that define the common elements of your application, such as headers and footers. The HTML of the layout combines with the Razor Page template to produce the final HTML sent to the browser.</p>
+
+    <!-- DIAGRAM: Layout composition -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">How Layouts Compose the Final HTML</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;">
+        <div style="text-align:center;">
+          <div style="background:rgba(9,105,218,0.08);border:1.5px solid rgba(9,105,218,0.3);border-radius:8px;padding:14px 18px;min-width:130px;">
+            <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:8px;">_Layout.cshtml</div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.8;font-family:var(--mono);">
+              &lt;html&gt;<br>
+              &lt;head&gt;…&lt;/head&gt;<br>
+              &lt;header&gt; NAV &lt;/header&gt;<br>
+              <span style="color:var(--accent2);font-weight:600;">@RenderBody()</span><br>
+              &lt;footer&gt; … &lt;/footer&gt;<br>
+              &lt;/html&gt;
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Shared across all pages</div>
+        </div>
+
+        <div style="font-size:22px;color:var(--text3);">+</div>
+
+        <div style="text-align:center;">
+          <div style="background:rgba(124,106,247,0.08);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:14px 18px;min-width:130px;">
+            <div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:8px;">Privacy.cshtml</div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.8;font-family:var(--mono);">
+              @page<br>
+              @model PrivacyModel<br>
+              &lt;h1&gt;Privacy&lt;/h1&gt;<br>
+              &lt;p&gt;…&lt;/p&gt;
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Page-specific content</div>
+        </div>
+
+        <div style="font-size:22px;color:var(--text3);">=</div>
+
+        <div style="text-align:center;">
+          <div style="background:rgba(45,164,78,0.08);border:1.5px solid rgba(45,164,78,0.3);border-radius:8px;padding:14px 18px;min-width:130px;">
+            <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;">Final HTML</div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.8;font-family:var(--mono);">
+              &lt;html&gt;<br>
+              &lt;header&gt; NAV &lt;/header&gt;<br>
+              <span style="color:var(--accent2);">&lt;h1&gt;Privacy&lt;/h1&gt;</span><br>
+              <span style="color:var(--accent2);">&lt;p&gt;…&lt;/p&gt;</span><br>
+              &lt;footer&gt; … &lt;/footer&gt;<br>
+              &lt;/html&gt;
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Sent to the browser</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text3);text-align:center;">Layouts avoid duplicating the header/footer in every page. Shared folder: <code>Pages/Shared/_Layout.cshtml</code></div>
+    </div>
+
+    <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; margin: 20px 0;">
+      <div style="font-weight: 600; color: var(--green); margin-bottom: 6px;">✨ Benefits of Layouts</div>
+      <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">
+        Layouts prevent you from having to duplicate code for the header and footer in every page. If you need to tweak something, you only need to do it in one place. You can find layouts in the <strong>Pages/Shared</strong> folder of your project.
+      </div>
+    </div>
+
+    <div class="quiz-block" id="quiz1">
+      <div class="quiz-question">🧠 Where are Razor Pages stored in an ASP.NET Core project?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">wwwroot folder</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', true)">Pages folder</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">Views folder</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">Controllers folder</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="page-handlers">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Handling Request Logic with Page Models and Handlers</h2>
+    </div>
+
+    <p>The <code>@page</code> directive marks a file as a Razor Page, but most Razor Pages also have an <strong>associated page model</strong>. By convention, this page model is placed in a <strong>code-behind file</strong> that has a .cs extension.</p>
+
+    <div class="definition">
+      <div class="definition-term">Page Model</div>
+      <div class="definition-desc">A class that derives from the <code>PageModel</code> base class and typically contains one or more methods called <strong>page handlers</strong> that define how to handle requests to the Razor Page.</div>
+    </div>
+
+    <h3>File Naming Convention</h3>
+
+    <!-- DIAGRAM: cshtml / cshtml.cs pairing -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Page File Pairing Convention</div>
+      <div style="display:flex;gap:16px;justify-content:center;align-items:center;flex-wrap:wrap;">
+        <div style="text-align:center;">
+          <div style="background:rgba(124,106,247,0.10);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:14px 20px;">
+            <div style="font-size:22px;margin-bottom:6px;">📄</div>
+            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent2);">Privacy.cshtml</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Razor Page — the <strong>View</strong></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);text-align:center;">nested under<br>in Solution Explorer</div>
+        <div style="text-align:center;">
+          <div style="background:rgba(45,164,78,0.10);border:1.5px solid rgba(45,164,78,0.3);border-radius:8px;padding:14px 20px;">
+            <div style="font-size:22px;margin-bottom:6px;">📄</div>
+            <div style="font-family:var(--mono);font-size:13px;font-weight:700;color:var(--green);">Privacy.cshtml.cs</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">Page Model — the <strong>Controller</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <p>Visual Studio nests these files underneath the Razor Page .cshtml files in Solution Explorer, making the relationship clear.</p>
+
+    <h3>Example Page Model</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Pages/Privacy.cshtml.cs</span></div>
+      <pre><code>using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace WebApplication1.Pages
+{
+    public class PrivacyModel : PageModel   // ← derives from PageModel
+    {
+        private readonly ILogger&lt;PrivacyModel&gt; _logger;
+
+        public PrivacyModel(ILogger&lt;PrivacyModel&gt; logger)
+        {
+            _logger = logger;   // ← injected via constructor DI
+        }
+
+        public void OnGet()     // ← page handler for GET requests
+        {
+            // Handler for GET requests — load data here
+        }
+    }
+}</code></pre>
+    </div>
+
+    <h3>Page Handlers</h3>
+    <p>Page handlers are methods on the PageModel that handle different HTTP methods:</p>
+
+    <!-- DIAGRAM: Handler naming convention -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Page Handler Naming Convention</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:12px;color:#009e80;font-weight:700;margin-bottom:4px;">OnGet() / OnGetAsync()</div>
+          <div style="font-size:12px;color:var(--text2);">HTTP <strong>GET</strong> — called when a user navigates to the page in their browser</div>
+        </div>
+        <div style="background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.25);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);font-weight:700;margin-bottom:4px;">OnPost() / OnPostAsync()</div>
+          <div style="font-size:12px;color:var(--text2);">HTTP <strong>POST</strong> — called when a user submits an HTML form</div>
+        </div>
+        <div style="background:rgba(9,105,218,0.08);border:1px solid rgba(9,105,218,0.25);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:12px;color:var(--blue);font-weight:700;margin-bottom:4px;">OnPut() / OnPutAsync()</div>
+          <div style="font-size:12px;color:var(--text2);">HTTP <strong>PUT</strong> — update a resource</div>
+        </div>
+        <div style="background:rgba(207,34,46,0.08);border:1px solid rgba(207,34,46,0.25);border-radius:6px;padding:12px;">
+          <div style="font-family:var(--mono);font-size:12px;color:var(--red);font-weight:700;margin-bottom:4px;">OnDelete() / OnDeleteAsync()</div>
+          <div style="font-size:12px;color:var(--text2);">HTTP <strong>DELETE</strong> — delete a resource</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text3);text-align:center;">Pattern: <code>On{HttpVerb}()</code> — ASP.NET Core automatically matches the method by HTTP verb</div>
+    </div>
+       <div class="callout info" style="margin-bottom: 16px;">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Page Handler Return Types</div>
+        <div class="callout-text">
+          Page handlers are typically named by convention, based on the HTTP verb they respond to. They return either <code>void</code>, indicating that the Razor Page's template should be rendered, or an <code>IActionResult</code> that contains other instructions for generating the response, such as redirecting the user to a different page.<br><br>
+          Razor Pages are focused on building page-based apps, so you typically want to return HTML rather than JSON or XML. You can also use an <code>IActionResult</code> to return any sort of data, to redirect users to a new page, or to send an error.
+        </div>
+      </div>
+    </div>
+
+
+    <div class="callout info">
+      <div class="callout-icon">📝</div>
+      <div class="callout-body">
+        <div class="callout-title">Separation of Concerns</div>
+        <div class="callout-text">
+          You can include C# code in your Razor Pages using <code>@{ }</code>, but generally speaking, you'll want to limit the code in your .cshtml file to <strong>presentational concerns only</strong>. Complex logic, code to access services such as a database, and data manipulation should be handled in the <strong>PageModel</strong> instead.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="typical-page">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Exploring a Typical Razor Page</h2>
+    </div>
+<p>Let's look at a more complete example that shows how all the pieces fit together. Consider a product listing page that displays products from a database.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Products.cshtml — the View</span></div>
+      <pre><code>@page
+@model ProductsModel          // ← binds this view to ProductsModel
+
+&amp;lt;h1&amp;gt;Our Products&amp;lt;/h1&amp;gt;
+
+@if (Model.Products.Count == 0)   // ← access PageModel properties via Model
+{
+    &amp;lt;p&amp;gt;No products found.&amp;lt;/p&amp;gt;
+}
+else
+{
+    &amp;lt;div class="product-grid"&amp;gt;
+        @foreach (var product in Model.Products)   // ← iterate over list from PageModel
+        {
+            &amp;lt;div class="product-card"&amp;gt;
+                &amp;lt;h3&amp;gt;@product.Name&amp;lt;/h3&amp;gt;
+                &amp;lt;p&amp;gt;@product.Price.ToString("C")&amp;lt;/p&amp;gt;
+            &amp;lt;/div&amp;gt;
+        }
+    &amp;lt;/div&amp;gt;
+}</code></pre>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Pages/Products.cshtml.cs — the PageModel</span></div>
+      <pre><code>public class ProductsModel : PageModel
+{
+    private readonly IProductService _productService;
+
+    public ProductsModel(IProductService productService)
+    {
+        _productService = productService;   // ← injected from DI container
+    }
+
+    // View model property — data exposed to the Razor view
+    public List&lt;Product&gt; Products { get; set; } = new();
+
+    public async Task OnGetAsync()   // ← handles GET /Products
+    {
+        // Load from service and populate the view model property
+        Products = await _productService.GetAllProductsAsync();
+    }
+}</code></pre>
+    </div>
+
+    <!-- DIAGRAM: Step-by-step how it works (numbered flow) -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">How a Razor Page Request Works — Step by Step</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">1</div>
+          <div style="font-size:13px;color:var(--text2);">User navigates to <code>/Products</code> — browser sends GET request</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">2</div>
+          <div style="font-size:13px;color:var(--text2);">Routing middleware matches URL → selects <code>Pages/Products.cshtml</code></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">3</div>
+          <div style="font-size:13px;color:var(--text2);"><code>OnGetAsync()</code> handler is called — it fetches data from the service</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">4</div>
+          <div style="font-size:13px;color:var(--text2);">Products list is stored in the <code>Products</code> property on the PageModel</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">5</div>
+          <div style="font-size:13px;color:var(--text2);">Razor view reads <code>@Model.Products</code> and generates HTML for each product</div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">6</div>
+          <div style="font-size:13px;color:var(--text2);">Final HTML is sent back to the browser and displayed to the user</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="mvc-pattern">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Understanding the MVC Design Pattern</h2>
+    </div>
+
+    <p>Razor Pages is built on top of the <strong>Model-View-Controller (MVC)</strong> design pattern. Understanding this pattern helps you understand how Razor Pages applications are structured.</p>
+
+    <div class="definition">
+      <div class="definition-term">MVC Design Pattern</div>
+      <div class="definition-desc">A design pattern that separates an application into three main components: <strong>Model</strong> (data and business logic), <strong>View</strong> (UI presentation), and <strong>Controller</strong> (handles user input and coordinates between model and view).</div>
+    </div>
+
+    <!-- DIAGRAM: MVC Triangle -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">The MVC Pattern</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+        <div style="background:rgba(124,106,247,0.08);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:16px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">📊</div>
+          <div style="font-weight:700;color:var(--accent2);font-size:13px;margin-bottom:6px;">Model</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;">Data &amp; business logic. Domain entities, services, repositories. <strong>Independent of the UI.</strong></div>
+        </div>
+        <div style="background:rgba(45,164,78,0.08);border:1.5px solid rgba(45,164,78,0.3);border-radius:8px;padding:16px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">👁️</div>
+          <div style="font-weight:700;color:var(--green);font-size:13px;margin-bottom:6px;">View</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;">UI presentation. Receives data from the model and formats it into HTML for the user.</div>
+        </div>
+        <div style="background:rgba(232,114,12,0.08);border:1.5px solid rgba(232,114,12,0.3);border-radius:8px;padding:16px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:6px;">🎮</div>
+          <div style="font-weight:700;color:var(--orange);font-size:13px;margin-bottom:6px;">Controller</div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.5;">Handles user input. Coordinates between model and view. Validates input, selects response.</div>
+        </div>
+      </div>
+
+      <!-- Interaction arrows -->
+      <div style="display:flex;justify-content:center;gap:10px;align-items:center;font-size:11px;flex-wrap:wrap;">
+        <div class="box box-orange" style="font-size:11px;padding:6px 10px;">Controller</div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+          <span style="font-size:10px;color:var(--text3);">calls</span>
+          <span style="color:var(--border);">→</span>
+        </div>
+        <div class="box box-accent2" style="font-size:11px;padding:6px 10px;">Model</div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+          <span style="font-size:10px;color:var(--text3);">returns data</span>
+          <span style="color:var(--border);">→</span>
+        </div>
+        <div class="box box-orange" style="font-size:11px;padding:6px 10px;">Controller</div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+          <span style="font-size:10px;color:var(--text3);">passes to</span>
+          <span style="color:var(--border);">→</span>
+        </div>
+        <div class="box box-green" style="font-size:11px;padding:6px 10px;">View</div>
+      </div>
+    </div>
+
+    <h3>Benefits of MVC Pattern</h3>
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li><strong>Separation of concerns</strong> — UI, business logic, and data access are separate</li>
+      <li><strong>Testability</strong> — Each component can be tested independently</li>
+      <li><strong>Maintainability</strong> — Changes to one component don't necessarily affect others</li>
+      <li><strong>Reusability</strong> — Business logic can be shared across different views</li>
+    </ul>
+  </section>
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="mvc-razor">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Applying the MVC Design Pattern to Razor Pages</h2>
+    </div>
+
+    <p>Razor Pages implements the MVC pattern in a slightly different way than traditional MVC applications. Let's see how the three components map:</p>
+
+    <!-- DIAGRAM: MVC → Razor Pages mapping -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">MVC Components → Razor Pages Mapping</div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <!-- Row 1 -->
+        <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:10px;">
+          <div style="background:rgba(124,106,247,0.12);border:1.5px solid rgba(124,106,247,0.35);border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;width:100px;flex-shrink:0;">
+            <div style="text-align:center;">
+              <div style="background:var(--accent2);color:white;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 4px;">M</div>
+              <div style="font-size:11px;font-weight:700;color:var(--accent2);">Model</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;font-size:18px;color:var(--text3);">→</div>
+          <div style="flex:1;background:rgba(124,106,247,0.06);border:1px solid rgba(124,106,247,0.2);border-radius:8px;padding:12px 16px;">
+            <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:4px;">Application Model (Services, Entities)</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Your business logic and domain entities — <code>IProductService</code>, EF Core DbContext, etc. Injected into the PageModel constructor via DI.</div>
+          </div>
+        </div>
+        <!-- Row 2 -->
+        <div style="display:flex;gap:12px;align-items:stretch;margin-bottom:10px;">
+          <div style="background:rgba(45,164,78,0.12);border:1.5px solid rgba(45,164,78,0.35);border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;width:100px;flex-shrink:0;">
+            <div style="text-align:center;">
+              <div style="background:var(--green);color:white;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 4px;">V</div>
+              <div style="font-size:11px;font-weight:700;color:var(--green);">View</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;font-size:18px;color:var(--text3);">→</div>
+          <div style="flex:1;background:rgba(45,164,78,0.06);border:1px solid rgba(45,164,78,0.2);border-radius:8px;padding:12px 16px;">
+            <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:4px;">The .cshtml Razor Page</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Generates HTML by reading data from the PageModel (via the <code>Model</code> property). Focuses purely on presentation — no business logic here.</div>
+          </div>
+        </div>
+        <!-- Row 3 -->
+        <div style="display:flex;gap:12px;align-items:stretch;">
+          <div style="background:rgba(232,114,12,0.12);border:1.5px solid rgba(232,114,12,0.35);border-radius:8px;padding:12px 16px;display:flex;align-items:center;justify-content:center;width:100px;flex-shrink:0;">
+            <div style="text-align:center;">
+              <div style="background:var(--orange);color:white;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 4px;">C</div>
+              <div style="font-size:11px;font-weight:700;color:var(--orange);">Controller</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;font-size:18px;color:var(--text3);">→</div>
+          <div style="flex:1;background:rgba(232,114,12,0.06);border:1px solid rgba(232,114,12,0.2);border-radius:8px;padding:12px 16px;">
+            <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:4px;">PageModel class + Page Handlers (OnGet, OnPost…)</div>
+            <div style="font-size:12px;color:var(--text2);line-height:1.5;">Coordinates between the application model and the view. Validates input, calls services, populates PageModel properties, and selects the response.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>The Role of Page Handlers</h3>
+    <p>Page handlers in the PageModel should perform a limited number of actions:</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">✓</div>
+          <div>
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Validate data</div>
+            <div style="font-size: 13px; color: var(--text2);">Check that data in the binding model is valid for the request</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">✓</div>
+          <div>
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Invoke application model</div>
+            <div style="font-size: 13px; color: var(--text2);">Call the appropriate actions on the application model using services</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">✓</div>
+          <div>
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Select response</div>
+            <div style="font-size: 13px; color: var(--text2);">Choose an appropriate response based on the result from the application model</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Building the View Model</h3>
+    <p>When the page handler has called out to the application model (business logic), it's time to generate a response. A <strong>view model</strong> captures the details necessary for the Razor view to generate a response.</p>
+    <p>Razor Pages use the <strong>PageModel class itself as the view model</strong> for the Razor view by exposing the required data as properties. The Razor view uses the data exposed in the PageModel to generate the final HTML response.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">PageModel as View Model</span></div>
+      <pre><code>public class ProductsModel : PageModel
+{
+    // These public properties serve as the view model —
+    // the Razor view reads them via @Model.Products etc.
+    public List&lt;Product&gt; Products { get; set; }
+    public int TotalProducts { get; set; }
+    public string CategoryName { get; set; }
+
+    public async Task OnGetAsync(int categoryId)
+    {
+        // Load data from the application model (services)
+        // and populate the view model properties
+        Products = await _productService.GetByCategoryAsync(categoryId);
+        TotalProducts = Products.Count;
+        CategoryName = await _productService.GetCategoryNameAsync(categoryId);
+    }
+}</code></pre>
+    </div>
+
+    <div class="quiz-block" id="quiz2">
+      <div class="quiz-question">🧠 In Razor Pages, what serves as both the Controller and View Model?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">The .cshtml file</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', true)">The PageModel class</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">The wwwroot folder</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">The Program.cs file</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="mvvm-vs-mvc">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Do Razor Pages Use MVC or MVVM?</h2>
+    </div>
+
+    <p>You may occasionally see Razor Pages described as using the <strong>Model-View-View Model (MVVM)</strong> design pattern rather than MVC. It is worth understanding the difference.
+</p>
+
+    <!-- DIAGRAM: MVC vs MVVM side-by-side comparison -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">MVC vs MVVM — Key Difference</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <!-- MVC -->
+        <div style="background:rgba(124,106,247,0.06);border:1.5px solid rgba(124,106,247,0.25);border-radius:8px;padding:16px;">
+          <div style="font-weight:700;color:var(--accent2);font-size:13px;margin-bottom:12px;text-align:center;">MVC (Razor Pages)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <div class="box box-orange" style="font-size:11px;padding:6px 14px;width:100%;text-align:center;">Controller / PageModel</div>
+            <div style="display:flex;gap:20px;width:100%;justify-content:center;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--text3);">
+                <span>calls ↓</span>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--text3);">
+                <span>passes to ↓</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;width:100%;">
+              <div class="box box-accent2" style="font-size:11px;padding:6px 8px;flex:1;text-align:center;">Model</div>
+              <div class="box box-green" style="font-size:11px;padding:6px 8px;flex:1;text-align:center;">View</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.5;">
+            <strong>One-directional.</strong> The controller drives both the model and the view. No two-way binding.
+          </div>
+        </div>
+
+        <!-- MVVM -->
+        <div style="background:rgba(0,212,170,0.05);border:1.5px solid rgba(0,212,170,0.2);border-radius:8px;padding:16px;">
+          <div style="font-weight:700;color:#009e80;font-size:13px;margin-bottom:12px;text-align:center;">MVVM (WPF, MAUI)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <div class="box box-accent2" style="font-size:11px;padding:6px 14px;width:100%;text-align:center;">Model</div>
+            <div style="font-size:10px;color:var(--text3);">↕ data flows both ways</div>
+            <div class="box box-accent" style="font-size:11px;padding:6px 14px;width:100%;text-align:center;">ViewModel</div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;background:rgba(0,212,170,0.08);border:1px dashed rgba(0,212,170,0.3);border-radius:4px;padding:4px 12px;color:#009e80;font-weight:600;">
+              ⇄ two-way binding
+            </div>
+            <div class="box box-green" style="font-size:11px;padding:6px 14px;width:100%;text-align:center;">View</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:10px;line-height:1.5;">
+            <strong>Two-way binding.</strong> The View and ViewModel synchronize automatically (e.g. WPF data binding).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <div class="callout-title">The Verdict</div>
+        <div class="callout-text">
+          While the Razor Pages <code>PageModel</code> class superficially resembles a ViewModel, Razor Pages does <strong>not</strong> use two-way data binding. It is firmly MVC — it is built directly on the ASP.NET Core MVC framework infrastructure. The PageModel fulfils the roles of both Controller and ViewModel within the MVC pattern, but that does not make it MVVM.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="binding-model">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Routing a Request and Building a Binding Model</h2>
+    </div>
+
+    <p>The first step when your app receives a request is <strong>routing</strong> it to the correct Razor Page handler inside the routing middleware. Once a handler is selected, the endpoint middleware builds the <strong>binding model</strong> before the handler executes.</p>
+
+    <div class="definition">
+      <div class="definition-term">Binding Model</div>
+      <div class="definition-desc">One or more objects that act as a container for data provided in a request — data required by a page handler. Values are extracted from the route template, query string, and request body and automatically populated into method parameters or properties marked with <code>[BindProperty]</code> on the PageModel.</div>
+    </div>
+
+    <h3>Example: /category/Simple</h3>
+    <p>Consider a <code>CategoryModel</code> Razor Page that displays to-do items for a given category. A request to <code>/category/Simple</code> triggers the following sequence:</p>
+
+    <!-- DIAGRAM: Binding model flow -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Request → Binding Model → Handler Execution</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;gap:8px;">
+
+        <div style="text-align:center;">
+          <div class="box box-neutral" style="padding:12px 16px;min-width:110px;">
+            <div style="font-size:18px;margin-bottom:4px;">🌐</div>
+            <div style="font-size:11px;">GET /category/<strong>Simple</strong></div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--text3);">→</div>
+
+        <div style="text-align:center;">
+          <div class="box box-accent" style="padding:12px 16px;min-width:110px;">
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;">Routing Middleware</div>
+            <div style="font-size:11px;">Maps to<br><code>CategoryModel.OnGet</code></div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--text3);">→</div>
+
+        <div style="text-align:center;">
+          <div class="box box-blue" style="padding:12px 16px;min-width:110px;">
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;">Binding Model Built</div>
+            <div style="font-size:11px;font-family:var(--mono);">category = "Simple"</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px;">extracted from URL path</div>
+          </div>
+        </div>
+        <div style="font-size:18px;color:var(--text3);">→</div>
+
+        <div style="text-align:center;">
+          <div class="box box-accent2" style="padding:12px 16px;min-width:110px;">
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;">Handler Executes</div>
+            <div style="font-size:11px;font-family:var(--mono);">OnGet("Simple")</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">CategoryModel — binding model via method parameter</span></div>
+      <pre><code>public class CategoryModel : PageModel
+{
+    private readonly ToDoService _service;
+
+    public CategoryModel(ToDoService service)
+    {
+        _service = service;   // ← injected via DI
+    }
+
+    // `category` is the binding model — auto-populated from the URL path segment
+    public ActionResult OnGet(string category)
+    {
+        Items = _service.GetItemsForCategory(category);
+        return Page();   // ← renders the associated Razor view (.cshtml)
+    }
+
+    // View model property — read by the Razor view via @Model.Items
+    public List&lt;ToDoListModel&gt; Items { get; set; }
+}</code></pre>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Binding Model vs Minimal API Parameters</div>
+        <div class="callout-text">
+          The binding model for Razor Pages is conceptually the same as the parameters you pass into a minimal API endpoint handler. Simple types (<code>string</code>, <code>int</code>) bind from route values or the query string. Complex types bind from the JSON request body or can use <code>[BindProperty]</code> on the PageModel. You will learn more about this in chapter 16.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">PageModel ≠ The Model in MVC</div>
+        <div class="callout-text">
+          Naming in ASP.NET Core can be confusing. The <code>PageModel</code> class is <strong>not</strong> the "Model" in the MVC pattern — that role belongs to your business logic layer (services, domain classes). The PageModel acts as the <strong>Controller</strong> (through handlers) and the <strong>View Model</strong> (through its public properties). The actual application model is accessed via injected services.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="view-model-concept">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Building HTML Using the View Model</h2>
+    </div>
+
+    <p>When the page handler has called out to the application model, it's time to generate a response. A <strong>view model</strong> captures the details necessary for the view to generate a response.</p>
+
+    <div class="definition">
+      <div class="definition-term">Definition: View Model</div>
+      <div class="definition-desc">A view model in the MVC pattern is all the data required by the view to render a UI. It's typically some transformation of the data contained in the application model, plus extra information required to render the page (such as the page's title).</div>
+    </div>
+
+    <h3>View Model in Razor Pages vs MVC</h3>
+
+    <!-- DIAGRAM: Comparison of view model approaches -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">How the View Model is Passed to the View</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div style="font-weight:600;color:var(--accent2);font-size:12px;margin-bottom:8px;text-align:center;">📦 ASP.NET Core MVC (Controllers)</div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <div class="box box-orange" style="font-size:11px;width:100%;text-align:center;">Controller Action</div>
+            <div style="font-size:10px;color:var(--text3);">creates separate object ↓</div>
+            <div class="box box-accent2" style="font-size:11px;width:100%;text-align:center;">ViewModel class</div>
+            <div style="font-size:10px;color:var(--text3);">passed to ↓</div>
+            <div class="box box-green" style="font-size:11px;width:100%;text-align:center;">Razor View (.cshtml)</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:8px;line-height:1.4;text-align:center;">View model is a <strong>separate dedicated class</strong> passed to <code>View(model)</code></div>
+        </div>
+        <div>
+          <div style="font-weight:600;color:var(--accent);font-size:12px;margin-bottom:8px;text-align:center;">📄 Razor Pages</div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center;">
+            <div class="box box-accent2" style="font-size:11px;width:100%;text-align:center;">PageModel (Controller + ViewModel)</div>
+            <div style="font-size:10px;color:var(--text3);">exposes properties ↓</div>
+            <div style="background:rgba(0,212,170,0.08);border:1px dashed rgba(0,212,170,0.3);border-radius:4px;padding:6px 10px;font-size:10px;color:#009e80;text-align:center;width:100%;font-family:var(--mono);">@Model.Products<br>@Model.CategoryName</div>
+            <div style="font-size:10px;color:var(--text3);">read by ↓</div>
+            <div class="box box-green" style="font-size:11px;width:100%;text-align:center;">Razor View (.cshtml)</div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-top:8px;line-height:1.4;text-align:center;">The <strong>PageModel itself is the view model</strong> — properties are exposed directly</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Important Distinction</div>
+        <div class="callout-text">
+          Razor Pages use the <strong>PageModel class itself</strong> as the view model for the Razor view by exposing the required data as properties. This is different from MVC controllers where you typically create a separate view model class.
+        </div>
+      </div>
+    </div>
+
+    <h3>How the Razor View Uses the View Model</h3>
+
+    <div style="display:flex;flex-direction:column;gap:12px;margin:24px 0;">
+      <div style="display:flex;gap:16px;">
+        <div style="background:linear-gradient(135deg, var(--accent2), var(--accent));color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:14px;">1</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px;">Page Handler Sets Properties</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            The page handler (e.g., <code>OnGet</code>) sets properties on the PageModel: <code>Items = _service.GetItemsForCategory(category);</code>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;">
+        <div style="background:linear-gradient(135deg, var(--accent2), var(--accent));color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:14px;">2</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px;">Handler Returns Page()</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            The handler signals that the Razor view should be rendered by returning <code>Page()</code>. Returning <code>void</code> implicitly does the same.
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;">
+        <div style="background:linear-gradient(135deg, var(--accent2), var(--accent));color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:14px;">3</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px;">View Accesses PageModel Properties</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            The Razor view (.cshtml) accesses the PageModel through the <code>Model</code> property: <code>@Model.Items</code>, <code>@Model.CategoryName</code>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;">
+        <div style="background:linear-gradient(135deg, var(--accent2), var(--accent));color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:600;flex-shrink:0;font-size:14px;">4</div>
+        <div style="flex:1;">
+          <div style="font-weight:600;color:var(--text);margin-bottom:6px;">HTML Response Generated</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            The view generates HTML using the data and sends it back through the middleware pipeline to the user's browser. The page handler doesn't control what HTML is generated — the <strong>view itself decides</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="request-flow">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Putting It All Together: A Complete Razor Page Request</h2>
+    </div>
+
+    <p>Let's walk through a complete request to a Razor Page to see how all the pieces fit together:</p>
+
+    <!-- DIAGRAM: Complete end-to-end flow -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Complete Razor Page Request Flow</div>
+
+      <div style="display:flex;flex-direction:column;gap:0;max-width:580px;margin:0 auto;">
+
+        <!-- Browser -->
+        <div style="text-align:center;margin-bottom:4px;">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;">
+            <span style="font-size:16px;">🌐</span>
+            <span style="font-size:12px;font-weight:600;color:var(--text2);">Browser — User navigates to /Products</span>
+          </div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Middleware Pipeline -->
+        <div style="background:rgba(9,105,218,0.06);border:1.5px solid rgba(9,105,218,0.25);border-radius:8px;padding:14px 16px;margin-bottom:0;">
+          <div style="font-weight:700;font-size:11px;color:var(--blue);margin-bottom:10px;letter-spacing:.04em;">MIDDLEWARE PIPELINE</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:7px 12px;font-size:11px;color:var(--text2);">
+              StaticFiles, HTTPS redirect, HSTS, Exception handler…
+            </div>
+            <div style="background:rgba(0,212,170,0.10);border:1px solid rgba(0,212,170,0.3);border-radius:5px;padding:7px 12px;font-size:12px;font-weight:600;color:#009e80;">
+              RoutingMiddleware → matches /Products → selects Pages/Products.cshtml
+            </div>
+            <div style="background:rgba(232,114,12,0.10);border:1px solid rgba(232,114,12,0.3);border-radius:5px;padding:7px 12px;font-size:12px;font-weight:600;color:var(--orange);">
+              AuthorizationMiddleware → checks if endpoint is allowed
+            </div>
+          </div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Model Binding -->
+        <div style="background:rgba(124,106,247,0.07);border:1.5px solid rgba(124,106,247,0.3);border-radius:8px;padding:14px 16px;">
+          <div style="font-weight:700;font-size:11px;color:var(--accent2);margin-bottom:6px;">② MODEL BINDING</div>
+          <div style="font-size:12px;color:var(--text2);">ASP.NET Core reads route values, query string, form data, request body → builds binding model → passes to handler parameters or <code>[BindProperty]</code> properties</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Page Handler -->
+        <div style="background:rgba(232,114,12,0.07);border:1.5px solid rgba(232,114,12,0.3);border-radius:8px;padding:14px 16px;">
+          <div style="font-weight:700;font-size:11px;color:var(--orange);margin-bottom:6px;">③ PAGE HANDLER EXECUTION — OnGetAsync()</div>
+          <div style="font-size:12px;color:var(--text2);">Validates the binding model → calls application services → populates PageModel properties (view model)</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Application Model -->
+        <div style="background:rgba(45,164,78,0.07);border:1.5px solid rgba(45,164,78,0.3);border-radius:8px;padding:14px 16px;">
+          <div style="font-weight:700;font-size:11px;color:var(--green);margin-bottom:6px;">④ APPLICATION MODEL (Services / DB)</div>
+          <div style="font-size:12px;color:var(--text2);">Business logic executes, data is fetched (e.g., from the database), results returned to handler</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Razor View -->
+        <div style="background:rgba(9,105,218,0.07);border:1.5px solid rgba(9,105,218,0.3);border-radius:8px;padding:14px 16px;">
+          <div style="font-weight:700;font-size:11px;color:var(--blue);margin-bottom:6px;">⑤ RAZOR VIEW EXECUTION — Products.cshtml</div>
+          <div style="font-size:12px;color:var(--text2);">Reads PageModel properties via <code>@Model</code> → combines with Layout → generates complete HTML</div>
+        </div>
+        <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:14px;"></div></div>
+
+        <!-- Response -->
+        <div style="text-align:center;margin-top:4px;">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;">
+            <span style="font-size:16px;">🌐</span>
+            <span style="font-size:12px;font-weight:600;color:var(--text2);">Browser — receives &amp; renders complete HTML page</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-weight: 600; color: var(--text); margin-bottom: 20px; font-size: 15px;">Detailed Step Walk-through</div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">User Makes Request</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">User navigates to <code>/Products</code> in their browser. The request enters the middleware pipeline.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">Routing Middleware Selects Endpoint</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">The <strong>RoutingMiddleware</strong> examines the URL path and maps it to <code>Pages/Products.cshtml</code>. It also extracts any route parameters from the URL.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">Model Binding</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">ASP.NET Core creates a <strong>binding model</strong> by reading data from the request (route values, query string, form data, request body) and binding it to parameters of the page handler method or properties on the PageModel.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">4</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">Page Handler Execution</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">The appropriate page handler is called (e.g., <code>OnGetAsync()</code> for a GET request). The handler:
+              <div style="margin-top: 8px; padding-left: 16px; border-left: 2px solid var(--border);">
+                • Validates the binding model<br>
+                • Calls application services to perform business logic<br>
+                • Populates properties on the PageModel for the view
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">5</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">Razor View Execution</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">The <strong>Razor view (.cshtml file)</strong> executes, using the data exposed by the PageModel (<code>Model</code> property) to generate HTML. The view combines with any layouts to produce the final HTML.</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px;">
+          <div style="background: linear-gradient(135deg, var(--accent2), var(--accent)); color: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0; font-size: 14px;">6</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 6px;">Response Sent to User</div>
+            <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">The complete HTML is sent back through the middleware pipeline to the user's browser, which renders the page.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 13 ══ -->
+  <section class="section" id="separation-concerns">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Why Separation of Concerns Matters</h2>
+    </div>
+
+    <p>You might be thinking: "This whole MVC process seems rather convoluted. So many steps to display some HTML! Why not allow the application model to create the view directly?"</p>
+
+    <h3>The Key Benefits</h3>
+    <p>The key benefit throughout this process is the <strong>separation of concerns</strong>. Each component has a single, well-defined responsibility:</p>
+
+    <!-- DIAGRAM: Responsibility boundaries -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Separation of Concerns — What Each Layer Is Responsible For</div>
+      <div style="display:grid;gap:10px;">
+        <div style="background:rgba(45,164,78,0.06);border-left:4px solid var(--accent);padding:14px 16px;border-radius:6px;">
+          <div style="font-weight:600;color:var(--accent);margin-bottom:6px;">🎨 The View (.cshtml)</div>
+          <div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap;">
+            <div><span style="color:var(--green);font-weight:600;">✓ Responsible for:</span><br><span style="color:var(--text2);">Taking data and generating HTML</span></div>
+            <div><span style="color:var(--red);font-weight:600;">✗ Not responsible for:</span><br><span style="color:var(--text2);">Business logic, database access, or deciding what data to show</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(124,106,247,0.06);border-left:4px solid var(--accent2);padding:14px 16px;border-radius:6px;">
+          <div style="font-weight:600;color:var(--accent2);margin-bottom:6px;">🧠 The Application Model (Services)</div>
+          <div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap;">
+            <div><span style="color:var(--green);font-weight:600;">✓ Responsible for:</span><br><span style="color:var(--text2);">Executing business logic and providing/updating data</span></div>
+            <div><span style="color:var(--red);font-weight:600;">✗ Not responsible for:</span><br><span style="color:var(--text2);">HTML generation or any UI concerns</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(0,212,170,0.06);border-left:4px solid #00d4aa;padding:14px 16px;border-radius:6px;">
+          <div style="font-weight:600;color:#00d4aa;margin-bottom:6px;">🎯 The Controller (Page Handler)</div>
+          <div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap;">
+            <div><span style="color:var(--green);font-weight:600;">✓ Responsible for:</span><br><span style="color:var(--text2);">Validating requests and coordinating between model and view</span></div>
+            <div><span style="color:var(--red);font-weight:600;">✗ Not responsible for:</span><br><span style="color:var(--text2);">Business logic or HTML generation</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Real-World Example: The Dangers of Tight Coupling</h3>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Story from the Trenches</div>
+        <div class="callout-text">
+          A few years ago while working on a small web app, the team hadn't decoupled their business logic from HTML generation properly. Initially there were no obvious problems — the code worked, so they shipped it!<br><br>
+          A few months later, someone new started working on the app and immediately "helped" by renaming an innocuous spelling error in a class in the business layer.<br><br>
+          <strong>Unfortunately, the names of those classes had been used to generate their HTML code</strong>, so renaming the class caused the whole website to break in users' browsers!<br><br>
+          Needless to say, they made a concerted effort to apply the MVC pattern thereafter and ensure proper separation of concerns.
+        </div>
+      </div>
+    </div>
+
+    <h3>Benefits of Clear Boundaries</h3>
+    <ul style="margin:16px 0;padding-left:24px;line-height:1.8;">
+      <li><strong>Easier to update:</strong> UI logic changes won't necessarily require modifying business logic classes</li>
+      <li><strong>Less likely to introduce errors:</strong> Changes in one area don't affect unrelated areas</li>
+      <li><strong>Better testability:</strong> The model remains easily testable without UI dependencies</li>
+      <li><strong>Team collaboration:</strong> Different developers can work on view, model, and controller simultaneously</li>
+    </ul>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Testing Advantage</div>
+        <div class="callout-text">
+          UI code is classically hard to test, dependent on the environment. By keeping the model independent of the view, you ensure that the model (which often contains your application's <strong>business logic</strong>) stays easily testable without any dependencies on UI constructs.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ Chapter Summary ══ -->
+  <div style="background: linear-gradient(135deg, rgba(124,106,247,0.1) 0%, rgba(45,164,78,0.1) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 32px 0;">
+    <div style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 20px;">🎯</span> Chapter Summary
+    </div>
+    <div style="font-size: 13px; color: var(--text2); line-height: 1.8;">
+      <strong>Razor Pages</strong> provides a page-based approach for building server-rendered web applications in ASP.NET Core.<br><br>
+      <strong>Razor Pages are stored in .cshtml files</strong> in the Pages folder. The <code>@page</code> directive (must be on the first line) marks a file as a Razor Page.<br><br>
+      <strong>Page Models</strong> are code-behind classes that derive from PageModel and handle request logic through page handlers like OnGet() and OnPost().<br><br>
+      <strong>The MVC pattern</strong> separates applications into Model (business logic), View (UI), and Controller (request handling). In Razor Pages, the PageModel serves as both Controller and View Model. Note: Razor Pages uses MVC — not MVVM — because there is no two-way binding between the view and the PageModel.<br><br>
+      <strong>Binding models</strong> are built automatically from the incoming request (route values, query string, form data). They are passed as method parameters to the page handler or via <code>[BindProperty]</code> properties on the PageModel — exactly like parameters in minimal API endpoint handlers.<br><br>
+      <strong>Layouts</strong> are base templates that define common elements (headers, footers) shared across pages, preventing code duplication.<br><br>
+      <strong>Request flow</strong>: User request → Routing middleware selects page → Binding model built → Page handler execution → Razor view generates HTML → Response sent to browser.
+    </div>
+  </div>
+
+  <!-- ══ GitHub ══ -->
+  <section id="github" class="section">
+    <div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+      <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter13" target="_blank"
+         style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+          Visit this link to run and test the code for this chapter.
+        </div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+const feedbackOk = {
+  'quiz1': "Correct! Razor Pages are stored in the Pages folder by convention. The routing middleware maps incoming URL paths to .cshtml files in that folder — /Privacy maps to Pages/Privacy.cshtml.",
+  'quiz2': "Correct! The PageModel class acts as both the Controller (page handlers like OnGet/OnPost orchestrate the response) and the View Model (it exposes properties that the Razor view reads to generate HTML)."
+};
+const feedbackErr = {
+  'quiz1': "Not quite. The wwwroot folder is for static assets (CSS, JS, images). The Views folder is used by MVC controllers, not Razor Pages. The Pages folder is where Razor Pages (.cshtml files) live.",
+  'quiz2': "Not quite. The .cshtml file is the View — it generates HTML. Program.cs configures the app. The PageModel is the key class: its handlers act as the Controller, and its properties act as the View Model."
+};
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal');
+    });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('mobileProgressFill').style.width = Math.min(pct, 100) + '%';
+});
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -20% 0px',
+  threshold: 0
+};
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
+        link.classList.remove('active');
+      });
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+
+// Mobile drawer
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// Syntax highlighter
+(function(){
+  function esc(s){ return s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+  document.querySelectorAll('.code-block pre code').forEach(el => {
+    let raw = el.innerHTML;
+    if (raw.includes('<span class="kw"')) return;
+    let t = raw.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+    const lines = t.split('\n');
+    const result = lines.map(line => {
+      let lcm = line.match(/^(.*?)(\/\/.*)$/);
+      if (lcm) return highlight(lcm[1]) + '<span class="cm">' + esc(lcm[2]) + '</span>';
+      return highlight(line);
+    });
+    el.innerHTML = result.join('\n');
+  });
+  function highlight(s) {
+    s = s.replace(/"([^"\\]|\\.)*"/g, m => '<span class="str">' + esc(m) + '</span>');
+    s = s.replace(/\b(public|private|protected|internal|static|async|await|new|return|var|using|class|void|bool|string|int|if|else|foreach|throw|null|true|false|is|not|in)\b/g, '<span class="kw">$1</span>');
+    s = s.replace(/\b(PageModel|IActionResult|ILogger|Task|List|ActionResult|ToDoService|ToDoListModel|WebApplicationBuilder|WebApplication|IProductService)\b/g, '<span class="tp">$1</span>');
+    s = s.replace(/\b([A-Z][a-zA-Z]+)(?=\s*\()/g, m => '<span class="fn">' + m + '</span>');
+    return s;
+  }
+})();
+</script>
+</body>
+</html>

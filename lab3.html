@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 3 — EF Core E-Commerce API</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Lab 3 — EF Core E-Commerce</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span>
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span>
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Lab 3</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="objective" onclick="scrollPageTo('objective')"><span class="dot"></span>Objective</button>
+    <button class="nav-link" data-target="tools" onclick="scrollPageTo('tools')"><span class="dot"></span>Tools Required</button>
+    <button class="nav-link" data-target="model" onclick="scrollPageTo('model')"><span class="dot"></span>Database Model</button>
+    <button class="nav-link" data-target="packages" onclick="scrollPageTo('packages')"><span class="dot"></span>EF Core Packages</button>
+    <button class="nav-link" data-target="tasks" onclick="scrollPageTo('tasks')"><span class="dot"></span>Tasks</button>
+    <button class="nav-link" data-target="bonus" onclick="scrollPageTo('bonus')"><span class="dot"></span>Bonus Tasks</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Solution</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link active" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Lab 3</div>
+    <h1 class="chapter-title">EF Core E-Commerce API</h1>
+    <p class="chapter-subtitle">Build a database-backed RESTful API using Minimal APIs and Entity Framework Core, with a clean service layer managing Product and Category entities.</p>
+  </div>
+
+  <!-- OBJECTIVE -->
+  <section class="section" id="objective">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Objective</h2>
+    </div>
+
+    <p>Develop a RESTful API using ASP.NET Core 8's Minimal APIs that interfaces with a database through Entity Framework Core. The API will manage an e-commerce system with <strong>Product</strong> and <strong>Category</strong> entities. CRUD operations should be handled by a separate service layer to demonstrate good practices in code organization and separation of concerns.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">What You'll Practice</div>
+        <div class="callout-text">
+          Setting up Entity Framework Core with Code-First migrations<br>
+          Implementing a clean service layer with interfaces<br>
+          Registering DbContext and services with dependency injection<br>
+          Building full CRUD endpoints using Minimal APIs<br>
+          Validation, error handling, and proper HTTP status codes
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOLS -->
+  <section class="section" id="tools">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Tools Required</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; margin: 20px 0;">
+      <div style="display: flex; align-items: center; gap: 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;">
+        <div style="font-size: 22px; flex-shrink: 0;">🛠️</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text);">Visual Studio 2022 or later</div>
+          <div style="font-size: 13px; color: var(--text3);">Or Visual Studio Code with the C# extension</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;">
+        <div style="font-size: 22px; flex-shrink: 0;">⚙️</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text);">.NET 8 SDK</div>
+          <div style="font-size: 13px; color: var(--text3);">Required to target <code>net8.0</code></div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;">
+        <div style="font-size: 22px; flex-shrink: 0;">🗄️</div>
+        <div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--text);">SQL Server or LocalDB</div>
+          <div style="font-size: 13px; color: var(--text3);">LocalDB ships with Visual Studio; SQL Server Express also works</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATABASE MODEL -->
+  <section class="section" id="model">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Database Model</h2>
+    </div>
+
+    <p>Your API will manage two related entities. Define them as C# classes in a <code>Models/</code> folder.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🧩 Product Entity</div>
+        <div style="padding: 16px 18px;">
+          <table style="width:100%; font-size: 13px; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Field</th>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="color: var(--accent2); font-family: var(--mono); font-size:12px;">ProductId</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">int — PK, auto-increment</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Name</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">string</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Description</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">string <span class="pill yellow">optional</span></td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Price</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">decimal</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0;"><strong style="color: var(--accent3); font-family: var(--mono); font-size:12px;">CategoryId</strong></td>
+                <td style="padding: 8px 0; color: var(--text2);">int — FK → Category</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🏷️ Category Entity</div>
+        <div style="padding: 16px 18px;">
+          <table style="width:100%; font-size: 13px; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Field</th>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="color: var(--accent2); font-family: var(--mono); font-size:12px;">CategoryId</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">int — PK, auto-increment</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0;"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Name</strong></td>
+                <td style="padding: 8px 0; color: var(--text2);">string</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);">
+            <div style="font-size: 12px; color: var(--text3); line-height: 1.6;">
+              <span style="color: var(--accent3); font-family: var(--mono);">CategoryId</span> on Product is a <strong style="color: var(--text2);">Foreign Key</strong> referencing this entity. One Category → many Products.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EF PACKAGES -->
+  <section class="section" id="packages">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Install EF Core Packages</h2>
+    </div>
+
+    <p>Ensure the following packages are installed in your ASP.NET Core project:</p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">core</span>
+        <div>
+          <div style="font-family: var(--mono); font-size: 13px; color: var(--text); font-weight: 600;">Microsoft.EntityFrameworkCore</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">The core EF library — provides all Entity Framework functionality</div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">core</span>
+        <div>
+          <div style="font-family: var(--mono); font-size: 13px; color: var(--text); font-weight: 600;">Microsoft.EntityFrameworkCore.Tools</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Includes PMC tools for running <code>Add-Migration</code> and <code>Update-Database</code></div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">core</span>
+        <div>
+          <div style="font-family: var(--mono); font-size: 13px; color: var(--text); font-weight: 600;">Microsoft.EntityFrameworkCore.Design</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Needed for design-time services like migrations</div>
+        </div>
+      </div>
+    </div>
+
+    <p>Depending on your database, also install a <strong>provider-specific package</strong>:</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px;">
+        <div style="font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 600;">Microsoft.EntityFrameworkCore.SqlServer</div>
+        <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">For SQL Server / LocalDB</div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px;">
+        <div style="font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 600;">Npgsql.EntityFrameworkCore.PostgreSQL</div>
+        <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">For PostgreSQL</div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px;">
+        <div style="font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 600;">Pomelo.EntityFrameworkCore.MySql</div>
+        <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">For MySQL</div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px;">
+        <div style="font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 600;">Microsoft.EntityFrameworkCore.Sqlite</div>
+        <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">For SQLite</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TASKS -->
+  <section class="section" id="tasks">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Tasks</h2>
+    </div>
+
+    <!-- Task 1 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Project Setup</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Create a new ASP.NET Core Web API project with <strong>.NET 8</strong>, focusing on <strong>Minimal APIs</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Task 2 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Implement Entities and DbContext</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Define <strong>Product</strong> and <strong>Category</strong> as C# record types in a <code>Models</code> folder.</p>
+        <p>Create a <code>DbContext</code> class within a <code>Data</code> folder, setting it up for your database.</p>
+      </div>
+    </div>
+
+    <!-- Task 3 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Code-First Migration</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Apply Entity Framework Core tools to generate and apply a migration for the initial database schema.</p>
+      </div>
+    </div>
+
+    <!-- Task 4 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Service Layer Implementation</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Create a folder named <code>Services</code>.</p>
+        <p>Inside, implement <strong>IProductService</strong> and <strong>ICategoryService</strong> interfaces with the necessary CRUD operations.</p>
+        <p>Implement concrete classes for these services, handling the logic for accessing and modifying database data.</p>
+      </div>
+    </div>
+
+    <!-- Task 5 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">5</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Configure Services and Middleware</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>In <strong>Program.cs</strong>, register your DbContext and service classes with dependency injection.</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs</span></div>
+          <div class="code-body" style="color: #abb2bf;">services.AddDbContext&lt;<span class="tp">ApplicationDbContext</span>&gt;(options =&gt;
+    options.UseSqlServer(Configuration.GetConnectionString(<span class="str">"DefaultConnection"</span>)));</div>
+        </div>
+
+        <p>Do not forget to add your connection string in <strong>appsettings.json</strong>:</p>
+
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">JSON</span><span class="code-label">appsettings.json</span></div>
+          <div class="code-body" style="color: #abb2bf;"><span class="str">"ConnectionStrings"</span>: {
+    <span class="str">"DefaultConnection"</span>: <span class="str">"Server=(localdb)\\mssqllocaldb;Database=<strong>YourDatabaseName</strong>;Trusted_Connection=True;MultipleActiveResultSets=true"</span>
+}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 6 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">6</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Implement CRUD Endpoints Using Minimal APIs</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>In <strong>Program.cs</strong>, define routes that use your service layer to perform CRUD operations. Ensure you cover:</p>
+
+        <div style="margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+            <div style="padding: 10px 14px; background: rgba(124,106,247,.08); border-bottom: 1px solid rgba(124,106,247,.15); font-size: 12px; font-weight: 700; color: var(--accent2);">📦 Product Endpoints</div>
+            <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(63,185,80,.15); color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">GET</span><span style="color: var(--text2);">All products</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(63,185,80,.15); color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">GET</span><span style="color: var(--text2);">Product by ID</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(0,212,170,.15); color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">POST</span><span style="color: var(--text2);">Create product</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(88,166,255,.15); color: var(--blue); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">PUT</span><span style="color: var(--text2);">Update product</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(248,81,73,.15); color: var(--red); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">DEL</span><span style="color: var(--text2);">Delete product</span></div>
+            </div>
+          </div>
+          <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+            <div style="padding: 10px 14px; background: rgba(124,106,247,.08); border-bottom: 1px solid rgba(124,106,247,.15); font-size: 12px; font-weight: 700; color: var(--accent2);">🏷️ Category Endpoints</div>
+            <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(63,185,80,.15); color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">GET</span><span style="color: var(--text2);">All categories</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(63,185,80,.15); color: var(--green); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">GET</span><span style="color: var(--text2);">Category by ID</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(0,212,170,.15); color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">POST</span><span style="color: var(--text2);">Create category</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(88,166,255,.15); color: var(--blue); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">PUT</span><span style="color: var(--text2);">Update category</span></div>
+              <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(248,81,73,.15); color: var(--red); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">DEL</span><span style="color: var(--text2);">Delete category</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task 7 -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">7</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Validation and Error Handling</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Implement validation within your service classes <strong>and/or</strong> directly in the Minimal API endpoints.</p>
+        <p>Ensure proper error handling, such as returning the correct status codes for not found or bad requests.</p>
+      </div>
+    </div>
+
+    <!-- Task 8 -->
+    <div style="margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">8</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">Testing the API</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Use <strong>Postman</strong>, <strong>Swagger</strong>, or a similar tool to test each endpoint for functionality.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BONUS -->
+  <section class="section" id="bonus">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Additional Tasks <span style="font-size: 13px; color: var(--yellow); background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.25); padding: 3px 10px; border-radius: 20px; font-weight: 600; margin-left: 8px; vertical-align: middle;"> For more practice</span></h2>
+    </div>
+
+    <p>LINQ Queries in an E-commerce System API — implement three additional analytical endpoints.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin: 20px 0;">
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">📊</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Average Price &amp; Total Count</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Create an endpoint that returns the <strong>average price</strong> of all products and the <strong>total count</strong>. Use LINQ aggregate functions <code>Average</code> and <code>Count</code>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🗂️</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Products Per Category</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Create an endpoint that returns the <strong>total number of products in each category</strong>. Use the LINQ aggregate function <code>Count</code>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🔍</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Filtered Products by Price &amp; Category</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Implement an endpoint that accepts <strong>price range parameters</strong> (minimum and maximum price) and <strong>category names</strong> for filtering products. Use LINQ to dynamically build the query based on provided parameters.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GitHub -->
+  <section id="github" class="section">
+    <div style="padding: 15px; border-top: 1px solid var(--border);">
+      <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/Homework3_Solution" target="_blank"
+         style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Final solution coming soon. Your turn now!</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">Link will be uploaded soon.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-link[data-target]').forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${entry.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -20% 0px' });
+document.querySelectorAll('section.section').forEach(s => observer.observe(s));
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer  = function(){ sidebar.classList.add('open');    overlay.classList.add('show'); };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.addEventListener('click', () => { if (window.innerWidth <= 900) closeDrawer(); });
+  });
+})();
+
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if (!fill) return;
+  window.addEventListener('scroll', () => {
+    var pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    fill.style.width = Math.min(pct, 100) + '%';
+  });
+})();
+</script>
+</body>
+</html>

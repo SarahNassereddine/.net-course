@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 18 — Building Forms with Tag Helpers</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.compare-card .code-body[style*="font-family:var(--mono)"] {
+  background: #282c34;
+  color: #abb2bf;
+}
+</style>
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 18 — Tag Helpers</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+
+<div class="course-wrap">
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;line-height:1.2;">
+      <div><span style="opacity:.7;">Supervised by</span> <span style="color:var(--text2);font-weight:500;">Dr. Kamal B.</span></div>
+    </div>
+    <div class="chapter-label">Chapter 18</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="intro" onclick="scrollPageTo('intro')"><span class="dot"></span>Introduction to Tag Helpers</button>
+    <button class="nav-link" data-target="why" onclick="scrollPageTo('why')"><span class="dot"></span>Why Tag Helpers?</button>
+    <button class="nav-link" data-target="enabling" onclick="scrollPageTo('enabling')"><span class="dot"></span>Enabling Tag Helpers</button>
+    <button class="nav-link" data-target="data-annotations" onclick="scrollPageTo('data-annotations')"><span class="dot"></span>DataAnnotations &amp; Tag Helpers</button>
+    <button class="nav-link" data-target="form-helper" onclick="scrollPageTo('form-helper')"><span class="dot"></span>Form Tag Helper</button>
+    <button class="nav-link" data-target="label-helper" onclick="scrollPageTo('label-helper')"><span class="dot"></span>Label Tag Helper</button>
+    <button class="nav-link" data-target="input-helper" onclick="scrollPageTo('input-helper')"><span class="dot"></span>Input &amp; Textarea Tag Helpers</button>
+    <button class="nav-link" data-target="override-output" onclick="scrollPageTo('override-output')"><span class="dot"></span>Overriding Tag Helper Output</button>
+    <button class="nav-link" data-target="select-helper" onclick="scrollPageTo('select-helper')"><span class="dot"></span>Select Tag Helper</button>
+    <button class="nav-link" data-target="select-advanced" onclick="scrollPageTo('select-advanced')"><span class="dot"></span>Select — OptGroups &amp; No-Selection</button>
+    <button class="nav-link" data-target="validation-msg" onclick="scrollPageTo('validation-msg')"><span class="dot"></span>Validation Message Helper</button>
+    <button class="nav-link" data-target="validation-summary" onclick="scrollPageTo('validation-summary')"><span class="dot"></span>Validation Summary Helper</button>
+    <button class="nav-link" data-target="client-validation" onclick="scrollPageTo('client-validation')"><span class="dot"></span>Enabling Client-Side Validation</button>
+    <button class="nav-link" data-target="anchor-helper" onclick="scrollPageTo('anchor-helper')"><span class="dot"></span>Anchor Tag Helper</button>
+    <button class="nav-link" data-target="append-version" onclick="scrollPageTo('append-version')"><span class="dot"></span>Cache-busting (asp-append-version)</button>
+    <button class="nav-link" data-target="environment-helper" onclick="scrollPageTo('environment-helper')"><span class="dot"></span>Environment Tag Helper</button>
+    <button class="nav-link" data-target="html-helpers" onclick="scrollPageTo('html-helpers')"><span class="dot"></span>Tag Helpers vs HTML Helpers</button>
+    <button class="nav-link" data-target="csrf" onclick="scrollPageTo('csrf')"><span class="dot"></span>CSRF &amp; Anti-Forgery Tokens</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Creating a Website with Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link active" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 18</div>
+    <h1 class="chapter-title">Building Forms with Tag Helpers</h1>
+    <p class="chapter-subtitle">Tag Helpers let you write clean, semantic HTML that automatically generates correct form attributes, validates inputs, and protects against CSRF — all driven by your C# model.</p>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="intro">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Introduction to Tag Helpers</h2>
+    </div>
+
+    <p><strong>Tag Helpers</strong> are a feature of ASP.NET Core for server-side HTML rendering. They are Razor components that customize the HTML generated in your templates — either by augmenting standard HTML elements with <code>asp-*</code> attributes, or as entirely new standalone elements.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Server-side only — not for SPAs</div>
+        <div class="callout-text">Razor and Tag Helpers are for <strong>server-side HTML rendering</strong>. You can't use Tag Helpers directly in frontend frameworks like Angular, React, or Vue. For those, you'd use Minimal APIs or Web API controllers instead.</div>
+      </div>
+    </div>
+
+    <!-- Tag Helper vs plain HTML visual comparison -->
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Plain HTML — manual, error-prone</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;form action=<span class="str">"/Checkout"</span> method=<span class="str">"post"</span>&gt;
+    &lt;label for=<span class="str">"FirstName"</span>&gt;First Name&lt;/label&gt;
+    &lt;input type=<span class="str">"text"</span>
+           id=<span class="str">"FirstName"</span>
+           name=<span class="str">"Input.FirstName"</span>
+           value=<span class="str">"@Model.Input.FirstName"</span>
+           required /&gt;
+    <span class="cm">&lt;!-- Easy to get id/name wrong! --&gt;</span>
+    <span class="cm">&lt;!-- No validation attributes generated --&gt;</span>
+&lt;/form&gt;</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Tag Helpers — declarative, correct</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Checkout"</span>&gt;
+    &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span>&gt;&lt;/label&gt;
+    &lt;input <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span> /&gt;
+    <span class="cm">&lt;!-- Tag Helpers generate correct id, name, --&gt;</span>
+    <span class="cm">&lt;!-- value, type AND validation attributes --&gt;</span>
+    <span class="cm">&lt;!-- Cannot mis-spell the property name --&gt;</span>
+&lt;/form&gt;</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Visual distinction in Visual Studio</div>
+        <div class="callout-text">In Visual Studio, Tag Helpers are distinguishable from normal elements — they appear <strong>bold and in a different color</strong>. C# expressions are shaded, and IntelliSense is available for the model properties, giving you compile-time safety when referencing model members.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="why">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Why Tag Helpers?</h2>
+    </div>
+
+    <p>Tag Helpers solve four interconnected problems when building forms in ASP.NET Core:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0;">
+      <div style="background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.25);border-radius:var(--radius);padding:18px;">
+        <div style="font-size:20px;margin-bottom:8px;">🔗</div>
+        <div style="font-weight:700;color:var(--accent);font-size:14px;margin-bottom:6px;">Auto-populate values</div>
+        <div style="font-size:13px;color:var(--text2);">Automatically fills the <code>value</code> attribute from the PageModel property — no manual <code>value="@Model.X"</code>.</div>
+      </div>
+      <div style="background:rgba(124,106,247,.07);border:1px solid rgba(124,106,247,.25);border-radius:var(--radius);padding:18px;">
+        <div style="font-size:20px;margin-bottom:8px;">🏷️</div>
+        <div style="font-weight:700;color:var(--accent2);font-size:14px;margin-bottom:6px;">Correct id and name</div>
+        <div style="font-size:13px;color:var(--text2);">Generates the exact <code>id</code> and <code>name</code> attributes that model binding needs — no mismatches.</div>
+      </div>
+      <div style="background:rgba(9,105,218,.07);border:1px solid rgba(9,105,218,.25);border-radius:var(--radius);padding:18px;">
+        <div style="font-size:20px;margin-bottom:8px;">🎯</div>
+        <div style="font-weight:700;color:var(--blue);font-size:14px;margin-bottom:6px;">Correct input type</div>
+        <div style="font-size:13px;color:var(--text2);">Picks the right HTML <code>type</code> attribute (<code>email</code>, <code>number</code>, <code>checkbox</code>, etc.) based on the C# type and DataAnnotations.</div>
+      </div>
+      <div style="background:rgba(45,164,78,.07);border:1px solid rgba(45,164,78,.25);border-radius:var(--radius);padding:18px;">
+        <div style="font-size:20px;margin-bottom:8px;">⚡</div>
+        <div style="font-weight:700;color:var(--green);font-size:14px;margin-bottom:6px;">Validation attributes</div>
+        <div style="font-size:13px;color:var(--text2);">Generates <code>data-val-*</code> attributes for jQuery Unobtrusive Validation — client-side rules from server-side annotations.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 3 (NEW) ══ -->
+  <section class="section" id="enabling">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Enabling Tag Helpers — <code>_ViewImports.cshtml</code></h2>
+    </div>
+
+    <p>Tag Helpers are <strong>not available by default</strong> in every Razor file. You must explicitly opt in by adding an <code>@addTagHelper</code> directive. This is typically done once in the <code>_ViewImports.cshtml</code> file so every view in the application inherits it.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/_ViewImports.cshtml — enabling Tag Helpers</span></div>
+      <div class="code-body"><span class="cm">@* This single line enables ALL built-in ASP.NET Core Tag Helpers *@</span>
+@<span class="tp">addTagHelper</span> *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<span class="cm">@* Breaking down the syntax:
+   *            → wildcard — import ALL Tag Helpers from this assembly
+   Microsoft.AspNetCore.Mvc.TagHelpers → the assembly containing the built-in helpers
+
+   You can also import Tag Helpers from other assemblies (e.g. your own):
+*@</span>
+@<span class="tp">addTagHelper</span> *, MyApp.TagHelpers
+
+<span class="cm">@* Or remove a specific Tag Helper if you need to opt out: *@</span>
+@<span class="tp">removeTagHelper</span> Microsoft.AspNetCore.Mvc.TagHelpers.FormTagHelper, Microsoft.AspNetCore.Mvc.TagHelpers</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Already done in new project templates</div>
+        <div class="callout-text">If you create a new ASP.NET Core Razor Pages project using <code>dotnet new webapp</code> or Visual Studio, the <code>_ViewImports.cshtml</code> already contains the <code>@addTagHelper</code> directive. You only need to add it manually if you created the file by hand or are working in a project that didn't include it. If Tag Helpers appear to be doing nothing (no <code>asp-*</code> IntelliSense), a missing <code>_ViewImports.cshtml</code> is usually the cause.</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Opting out of a specific Tag Helper with <code>@</code> prefix</div>
+        <div class="callout-text">You can also suppress a Tag Helper on a single element using the <code>!</code> prefix. For example, <code>&lt;!label asp-for="Email"&gt;&lt;/!label&gt;</code> prevents the Label Tag Helper from running on that element, rendering it as plain HTML. This is useful when you need the raw element for a specific reason but don't want to remove the Tag Helper globally.</div>
+      </div>
+    </div>
+
+    <div id="quiz-enabling1" class="quiz-block">
+      <div class="quiz-question">🧠 You add <code>asp-page="Checkout"</code> to your form element but nothing changes in the rendered HTML — it still generates no <code>action</code> attribute. What is the most likely cause?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-enabling1',false)">The Form Tag Helper doesn't work with Razor Pages, only MVC controllers</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-enabling1',true)">The <code>@addTagHelper</code> directive is missing from <code>_ViewImports.cshtml</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-enabling1',false)">You must also add <code>method="post"</code> before <code>asp-page</code> is recognized</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-enabling1',false)">The Razor Page named "Checkout" doesn't exist yet</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-enabling1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="data-annotations">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">DataAnnotations and Tag Helpers Working Together</h2>
+    </div>
+
+    <p>DataAnnotations on your model serve <strong>double duty</strong>: they validate data on the server AND provide metadata that Tag Helpers use to generate the correct HTML.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">A view model decorated with DataAnnotations</span></div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">UserBindingModel</span>
+{
+    [<span class="tp">Required</span>]
+    [<span class="tp">StringLength</span>(<span class="nm">100</span>, ErrorMessage = <span class="str">"Maximum length is {1}"</span>)]
+    [<span class="tp">Display</span>(<span class="tp">Name</span> = <span class="str">"Your name"</span>)]
+    <span class="kw">public string</span> FirstName { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">Required</span>]
+    [<span class="tp">EmailAddress</span>]
+    <span class="kw">public string</span> Email { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">Phone</span>(ErrorMessage = <span class="str">"Not a valid phone number."</span>)]
+    [<span class="tp">Display</span>(<span class="tp">Name</span> = <span class="str">"Phone number"</span>)]
+    <span class="kw">public string</span> PhoneNumber { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">Range</span>(<span class="nm">18</span>, <span class="nm">120</span>)]
+    <span class="kw">public int</span> Age { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="cm">// In the PageModel, expose it with [BindProperty]:</span>
+<span class="kw">public class</span> <span class="tp">CheckoutModel</span> : <span class="tp">PageModel</span>
+{
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public</span> <span class="tp">UserBindingModel</span> Input { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Binding model vs view model — use two separate objects in production</div>
+        <div class="callout-text">For simplicity in examples, the same class is used for both binding and display. In production, you should use <strong>two separate objects</strong> — a binding model (what comes from the request) and a view model (what gets displayed). This prevents <strong>mass-assignment attacks</strong> where a user crafts a POST body with extra fields they shouldn't be able to set.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="form-helper">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">The Form Tag Helper</h2>
+    </div>
+
+    <p>The Form Tag Helper generates the <code>action</code> and <code>method</code> attributes on a <code>&lt;form&gt;</code> element using Razor Page routing — and also injects a hidden anti-CSRF token automatically.</p>
+
+    <table class="data-table">
+      <tr><th>Attribute</th><th>What it generates</th><th>Example</th></tr>
+      <tr>
+        <td><code>asp-page</code></td>
+        <td>Sets the <code>action</code> attribute to the URL of the specified Razor Page</td>
+        <td><code>asp-page="Checkout"</code> → <code>action="/Checkout"</code></td>
+      </tr>
+      <tr>
+        <td><code>asp-route-*</code></td>
+        <td>Appends route parameters to the action URL</td>
+        <td><code>asp-route-id="5"</code> → <code>action="/Product/5"</code></td>
+      </tr>
+      <tr>
+        <td><code>asp-page-handler</code></td>
+        <td>Sets which page handler to invoke on POST</td>
+        <td><code>asp-page-handler="Delete"</code> → calls <code>OnPostDelete()</code></td>
+      </tr>
+      <tr>
+        <td><code>asp-antiforgery</code></td>
+        <td>Controls hidden CSRF token generation (default: true)</td>
+        <td><code>asp-antiforgery="false"</code> disables the token</td>
+      </tr>
+    </table>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor → HTML</span><span class="code-label">Form Tag Helper examples</span></div>
+      <div class="code-body"><span class="cm">@* Basic — posts back to the current page (must add method="post" manually) *@</span>
+&lt;form method=<span class="str">"post"</span>&gt;...&lt;/form&gt;
+
+<span class="cm">@* Post to a named Razor Page *@</span>
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Checkout"</span>&gt;...&lt;/form&gt;
+<span class="cm">→ generates: &lt;form action="/Checkout" method="post"&gt;...&lt;/form&gt;</span>
+
+<span class="cm">@* With route parameter *@</span>
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Product"</span> <span class="tp">asp-route-id</span>=<span class="str">"@Model.ProductId"</span>&gt;...&lt;/form&gt;
+<span class="cm">→ generates: &lt;form action="/Product/5" method="post"&gt;</span>
+
+<span class="cm">@* With specific page handler — calls OnPostDelete() *@</span>
+&lt;form <span class="tp">asp-page-handler</span>=<span class="str">"Delete"</span>&gt;...&lt;/form&gt;
+
+<span class="cm">@* Disable CSRF token (rare — only for APIs or external consumers) *@</span>
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Checkout"</span> <span class="tp">asp-antiforgery</span>=<span class="str">"false"</span>&gt;...&lt;/form&gt;</div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body">
+        <div class="callout-title">Hidden Anti-CSRF Token — Automatic</div>
+        <div class="callout-text">The main job of the Form Tag Helper is to generate the <code>action</code> attribute, but it also performs one critical hidden function: it <strong>automatically generates a hidden field</strong> containing an anti-forgery token to prevent Cross-Site Request Forgery (CSRF) attacks. You don't write this manually — it's always there when using the Form Tag Helper.</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Never use GET for forms that modify data</div>
+        <div class="callout-text">If you omit <code>asp-page</code>, you must manually add <code>method="post"</code>. Using GET for forms that modify data is a security risk — GET requests can be triggered by visiting a URL (e.g., via a malicious image tag), whereas POST requires an explicit form submission.</div>
+      </div>
+    </div>
+
+    <div id="quiz-form1" class="quiz-block">
+      <div class="quiz-question">🧠 Besides generating the <code>action</code> attribute, what critical security feature does the Form Tag Helper provide automatically?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-form1',false)">It encrypts the form data before submission</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-form1',true)">It generates a hidden anti-CSRF (anti-forgery) token that is validated on the server</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-form1',false)">It adds HTTPS enforcement to the form action URL</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-form1',false)">It validates all input fields client-side before allowing submission</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-form1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="label-helper">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">The Label Tag Helper</h2>
+    </div>
+
+    <p>The Label Tag Helper generates the caption and <code>for</code> attribute for a <code>&lt;label&gt;</code> element, based on the model property referenced via <code>asp-for</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + Razor → HTML</span><span class="code-label">Label Tag Helper — how the caption is derived</span></div>
+      <div class="code-body"><span class="cm">// Model property:</span>
+[<span class="tp">Display</span>(<span class="tp">Name</span> = <span class="str">"Your name"</span>)]
+<span class="kw">public string</span> FirstName { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+<span class="kw">public string</span> Email { <span class="kw">get</span>; <span class="kw">set</span>; }  <span class="cm">// No [Display] attribute</span>
+
+<span class="cm">// Razor:</span>
+&lt;label <span class="tp">asp-for</span>=<span class="str">"FirstName"</span>&gt;&lt;/label&gt;
+&lt;label <span class="tp">asp-for</span>=<span class="str">"Email"</span>&gt;&lt;/label&gt;
+
+<span class="cm">// Generated HTML:</span>
+&lt;label for=<span class="str">"FirstName"</span>&gt;Your name&lt;/label&gt;    <span class="cm">← uses [Display] Name</span>
+&lt;label for=<span class="str">"Email"</span>&gt;Email&lt;/label&gt;           <span class="cm">← falls back to property name</span>
+
+<span class="cm">// Override the caption manually:</span>
+&lt;label <span class="tp">asp-for</span>=<span class="str">"Email"</span>&gt;Please enter your Email&lt;/label&gt;
+<span class="cm">→ &lt;label for="Email"&gt;Please enter your Email&lt;/label&gt;</span>
+
+<span class="cm">// Sub-properties (dot notation works just like C#):</span>
+&lt;label <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span>&gt;&lt;/label&gt;
+&lt;label <span class="tp">asp-for</span>=<span class="str">"Input.Address.City"</span>&gt;&lt;/label&gt;</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">♿</div>
+      <div class="callout-body">
+        <div class="callout-title">Accessibility — the for attribute matters</div>
+        <div class="callout-text">The <code>for</code> attribute is important for accessibility. It specifies the ID of the <code>&lt;input&gt;</code> to which the label refers, allowing screen readers to announce the label when the input is focused, and allowing users to click the label to focus the input. The Label Tag Helper sets this correctly, matching the <code>id</code> of the corresponding input.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="input-helper">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">The Input and Textarea Tag Helpers</h2>
+    </div>
+
+    <p>The Input Tag Helper generates an <code>&lt;input&gt;</code> element with the correct <code>type</code>, <code>id</code>, <code>name</code>, <code>value</code>, and <code>data-val-*</code> validation attributes — all derived automatically from the model property.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + Razor → HTML</span><span class="code-label">Input Tag Helper — full generated output for [EmailAddress]</span></div>
+      <div class="code-body"><span class="cm">// Model:</span>
+[<span class="tp">Required</span>]
+[<span class="tp">EmailAddress</span>]
+<span class="kw">public string</span> Email { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+<span class="cm">// Razor:</span>
+&lt;input <span class="tp">asp-for</span>=<span class="str">"Input.Email"</span> /&gt;
+
+<span class="cm">// Generated HTML (from the [EmailAddress] attribute):</span>
+&lt;input
+    type=<span class="str">"email"</span>
+    id=<span class="str">"Input_Email"</span>
+    name=<span class="str">"Input.Email"</span>
+    value=<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="86f2e3f5f2c6e3fee7ebf6eae3a8e5e9eb">[email&#160;protected]</a>"</span>
+    data-val=<span class="str">"true"</span>
+    data-val-email=<span class="str">"The Email Address field is not a valid e-mail address."</span>
+    data-val-required=<span class="str">"The Email Address field is required."</span>
+/&gt;
+
+<span class="cm">// The data-val-* attributes are picked up by jQuery Unobtrusive Validation</span>
+<span class="cm">// for client-side validation — no extra JavaScript code needed.</span></div>
+    </div>
+
+    <p>How the Input Tag Helper picks the <code>type</code>:</p>
+
+    <table class="data-table">
+      <tr><th>C# type / Annotation</th><th>Generated <code>type</code></th></tr>
+      <tr><td><code>string</code></td><td><code>type="text"</code></td></tr>
+      <tr><td><code>string</code> + <code>[EmailAddress]</code></td><td><code>type="email"</code></td></tr>
+      <tr><td><code>string</code> + <code>[Phone]</code></td><td><code>type="tel"</code></td></tr>
+      <tr><td><code>string</code> + <code>[Url]</code></td><td><code>type="url"</code></td></tr>
+      <tr><td><code>string</code> + <code>[DataType(DataType.Password)]</code></td><td><code>type="password"</code></td></tr>
+      <tr><td><code>[HiddenInput]</code> attribute</td><td><code>type="hidden"</code></td></tr>
+      <tr><td><code>bool</code></td><td><code>type="checkbox"</code></td></tr>
+      <tr><td><code>byte</code>, <code>int</code>, <code>short</code>, <code>long</code></td><td><code>type="number"</code></td></tr>
+      <tr><td><code>decimal</code>, <code>double</code>, <code>float</code></td><td><code>type="text"</code> (culture-safe)</td></tr>
+      <tr><td><code>DateTime</code> or <code>[DataType(DataType.Date)]</code></td><td><code>type="datetime-local"</code></td></tr>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Why decimal renders as text, not number</div>
+        <div class="callout-text"><code>decimal</code>, <code>double</code>, and <code>float</code> types render as <code>type="text"</code> rather than <code>type="number"</code>. This is intentional — different cultures render decimal points and number group separators differently (e.g. <code>1.5</code> vs <code>1,5</code>). Rendering as text avoids parse errors that would appear only in certain browser-culture combinations.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">asp-format — controlling display format</div>
+        <div class="callout-text">Use <code>asp-format</code> to customize how the value is displayed in the input. For example: <code>&lt;input asp-for="Dec" asp-format="{0:0.000}" /&gt;</code> — if <code>Dec</code> is <code>1.2</code>, this generates <code>value="1.200"</code>. Under the covers, this performs a <code>string.Format()</code> on the property's value. You can also set the format via <code>[DisplayFormat("{0:0.000}")]</code> on the model property.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor → HTML</span><span class="code-label">Textarea Tag Helper</span></div>
+      <div class="code-body"><span class="cm">// Model:</span>
+[<span class="tp">StringLength</span>(<span class="nm">200</span>)]
+[<span class="tp">Required</span>]
+<span class="kw">public string</span> Multiline { <span class="kw">get</span>; <span class="kw">set</span>; } = <span class="str">"This is some text."</span>;
+
+<span class="cm">// Razor:</span>
+&lt;textarea <span class="tp">asp-for</span>=<span class="str">"Multiline"</span>&gt;&lt;/textarea&gt;
+
+<span class="cm">// Generated HTML:</span>
+&lt;textarea
+    data-val=<span class="str">"true"</span>
+    id=<span class="str">"Multiline"</span>
+    name=<span class="str">"Multiline"</span>
+    data-val-length=<span class="str">"Maximum length 200."</span>
+    data-val-length-max=<span class="str">"200"</span>
+    data-val-required=<span class="str">"The Multiline field is required."</span>&gt;
+This is some text.    <span class="cm">&lt;!-- value goes inside the tag for textarea --&gt;</span>
+&lt;/textarea&gt;</div>
+    </div>
+
+
+    <!-- ▸ Try it: see what the Input Tag Helper generates -->
+    <div style="margin-top:24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">
+        🧪 Try it — toggle DataAnnotations and see the generated HTML
+      </div>
+      <div style="padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:2px;">Property in your PageModel:</div>
+          <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="th-required" checked> <code>[Required]</code>
+          </label>
+          <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="th-email"> <code>[EmailAddress]</code>
+          </label>
+          <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="th-maxlen"> <code>[MaxLength(100)]</code>
+          </label>
+          <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="th-display"> <code>[Display(Name="Email Address")]</code>
+          </label>
+          <div style="margin-top:8px;font-size:12px;color:var(--text3);">Razor: <code>&lt;input asp-for="Input.Email" /&gt;</code></div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Generated HTML:</div>
+          <pre id="th-output" style="margin:0;padding:12px 14px;background:#282c34;color:#abb2bf;border-radius:6px;font-family:var(--mono);font-size:11.5px;line-height:1.8;overflow-x:auto;white-space:pre-wrap;"></pre>
+          <div style="margin-top:12px;font-size:12px;color:var(--text3);">Browser preview:</div>
+          <div id="th-preview" style="margin-top:6px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg);"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+function gen() {
+        var req = document.getElementById('th-required').checked;
+        var email = document.getElementById('th-email').checked;
+        var maxl = document.getElementById('th-maxlen').checked;
+        var disp = document.getElementById('th-display').checked;
+
+        var type = email ? 'email' : 'text';
+        var fieldName = disp ? 'Email Address' : 'Email';
+
+        var lines = ['&lt;input'];
+        lines.push('  type="' + type + '"');
+        lines.push('  id="Input_Email"');
+        lines.push('  name="Input.Email"');
+        
+        if (req || email || maxl) lines.push('  data-val="true"');
+        if (req) lines.push('  data-val-required="The ' + fieldName + ' field is required."');
+        if (email) lines.push('  data-val-email="The ' + fieldName + ' field is not a valid e-mail address."');
+        if (maxl) {
+            lines.push('  data-val-length="Maximum length 100."');
+            lines.push('  data-val-length-max="100"');
+        }
+        lines.push('/&gt;');
+
+        document.getElementById('th-output').innerHTML = lines.join('\n');
+
+        var preview = document.getElementById('th-preview');
+        preview.innerHTML = '';
+        var inp = document.createElement('input');
+        inp.type = type;
+        if (maxl) inp.maxLength = 100;
+        inp.placeholder = fieldName + (req ? ' *' : '');
+        inp.style.cssText = 'width:100%; padding:8px 12px; border:1px solid #ccc; border-radius:4px; font-size:14px; box-sizing:border-box;';
+        preview.appendChild(inp);
+    
+
+    ['th-required', 'th-email', 'th-maxlen', 'th-display'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('change', gen);
+    });
+}
+    gen();
+    </script>
+
+    <div id="quiz-input1" class="quiz-block">
+      <div class="quiz-question">🧠 Your model has a <code>string</code> property decorated with <code>[EmailAddress]</code>. What <code>type</code> attribute does the Input Tag Helper generate?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-input1',false)"><code>type="text"</code> — the C# type is <code>string</code>, so text is the default</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-input1',true)"><code>type="email"</code> — the <code>[EmailAddress]</code> attribute provides metadata that overrides the default</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-input1',false)"><code>type="email"</code> — only if you explicitly set <code>type="email"</code> in the Razor markup</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-input1',false)"><code>type="text"</code> always — the Tag Helper never changes input types</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-input1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 8 (NEW) ══ -->
+  <section class="section" id="override-output">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Overriding Tag Helper Output</h2>
+    </div>
+
+    <p>Tag Helpers are designed to <strong>not get in your way</strong>. Any attribute you set manually in your Razor markup is passed through to the output unchanged — even if the Tag Helper would normally generate that same attribute. You can always override the defaults.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Passing through custom attributes &amp; overriding defaults</span></div>
+      <div class="code-body"><span class="cm">// The 'class' attribute is yours — Tag Helper won't touch it:</span>
+&lt;input <span class="kw">class</span>=<span class="str">"form-control"</span> <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span> /&gt;
+<span class="cm">→ generates: &lt;input class="form-control" type="text" id="Input_FirstName" ... /&gt;</span>
+
+<span class="cm">// Override the 'type' attribute — force an HTML5 color picker:</span>
+&lt;input type=<span class="str">"color"</span> <span class="tp">asp-for</span>=<span class="str">"FavoriteColor"</span> /&gt;
+<span class="cm">// Even though FavoriteColor is a string (which maps to type="text"),</span>
+<span class="cm">// your explicit type="color" wins and is preserved in the output.</span>
+
+<span class="cm">// Add any extra HTML5 attribute — they all pass through:</span>
+&lt;input <span class="tp">asp-for</span>=<span class="str">"Input.Age"</span> placeholder=<span class="str">"e.g. 25"</span> min=<span class="str">"18"</span> max=<span class="str">"120"</span> /&gt;
+
+<span class="cm">// Force a range slider for a numeric property:</span>
+&lt;input type=<span class="str">"range"</span> min=<span class="str">"0"</span> max=<span class="str">"100"</span> <span class="tp">asp-for</span>=<span class="str">"Input.Quantity"</span> /&gt;</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">This is better than legacy HTML Helpers</div>
+        <div class="callout-text">In legacy ASP.NET (HTML Helpers), adding extra attributes to generated elements required passing an anonymous object as a parameter — e.g., <code>@Html.TextBoxFor(m =&gt; m.Name, new { @class = "form-control" })</code>. Tag Helpers let you add attributes naturally in HTML, which is more readable and works properly with all HTML editors and IDEs.</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Legacy HTML Helper — awkward</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* Had to pass attributes as an anonymous object *@</span>
+@<span class="tp">Html</span>.<span class="fn">TextBoxFor</span>(m => m.Email,
+    <span class="kw">new</span> { @<span class="kw">class</span> = <span class="str">"form-control"</span>,
+          placeholder = <span class="str">"Enter email"</span> })
+
+<span class="cm">@* Confusing @ escaping, hard to read, no HTML IntelliSense *@</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Tag Helper — natural HTML</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* Just write normal HTML attributes inline *@</span>
+&lt;input <span class="tp">asp-for</span>=<span class="str">"Email"</span>
+       <span class="kw">class</span>=<span class="str">"form-control"</span>
+       placeholder=<span class="str">"Enter email"</span> /&gt;
+
+<span class="cm">@* Reads like HTML, full editor support *@</span></div>
+      </div>
+    </div>
+
+    <div id="quiz-override1" class="quiz-block">
+      <div class="quiz-question">🧠 Your <code>FavoriteColor</code> property is a <code>string</code>. By default, the Input Tag Helper would generate <code>type="text"</code>. How do you make it render as an HTML5 color picker instead?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-override1',false)">Add a <code>[DataType(DataType.Color)]</code> attribute to the model property</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-override1',true)">Explicitly write <code>type="color"</code> in the Razor markup — your value overrides the Tag Helper default</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-override1',false)">Change the property type to <code>Color</code> — the Tag Helper maps C# types automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-override1',false)">It's not possible — you can't override what the Input Tag Helper generates</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-override1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="select-helper">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">The Select Tag Helper</h2>
+    </div>
+
+    <p>The Select Tag Helper generates <code>&lt;select&gt;</code> dropdowns and multiselect lists. It needs two PageModel properties: one to hold the <strong>selected value(s)</strong>, one to hold the <strong>list of options</strong>.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Only works with SelectListItem</div>
+        <div class="callout-text">The Select Tag Helper requires the items list to be of type <code>IEnumerable&lt;SelectListItem&gt;</code>. Each <code>SelectListItem</code> exposes a <code>Value</code> (what gets submitted) and <code>Text</code> (what the user sees). The items list property should <strong>NOT</strong> be in the binding model — it shouldn't be model-bound from the request. Normally you'd load it in <code>OnGet()</code>.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + Razor</span><span class="code-label">Select Tag Helper — dropdown and multiselect</span></div>
+      <div class="code-body"><span class="cm">// PageModel:</span>
+<span class="kw">public class</span> <span class="tp">SelectModel</span> : <span class="tp">PageModel</span>
+{
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public string</span> SelectedCurrency { <span class="kw">get</span>; <span class="kw">set</span>; }   <span class="cm">// single value</span>
+
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="kw">string</span>&gt; SelectedCurrencies { <span class="kw">get</span>; <span class="kw">set</span>; } <span class="cm">// multiselect</span>
+
+    <span class="cm">// NOT BindProperty — loaded from application, not from request</span>
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">SelectListItem</span>&gt; Currencies { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public void</span> <span class="fn">OnGet</span>()
+    {
+        Currencies = <span class="kw">new</span>[]
+        {
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"USD"</span>, Text = <span class="str">"US Dollar"</span> },
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"GBP"</span>, Text = <span class="str">"British Pound"</span> },
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"EUR"</span>, Text = <span class="str">"Euro"</span> },
+        };
+    }
+}
+
+<span class="cm">// Razor — single-select dropdown:</span>
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedCurrency"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Model.Currencies"</span>&gt;&lt;/select&gt;
+
+<span class="cm">// Razor — multiselect list box (IEnumerable property → adds 'multiple' automatically):</span>
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedCurrencies"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Model.Currencies"</span>&gt;&lt;/select&gt;
+
+<span class="cm">// Razor — list box of fixed height (standard HTML 'size' attribute):</span>
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedCurrency"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Model.Currencies"</span> size=<span class="str">"4"</span>&gt;&lt;/select&gt;
+
+<span class="cm">// Razor — for enum types (built-in helper generates SelectListItem from enum):</span>
+&lt;select <span class="tp">asp-for</span>=<span class="str">"Status"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Html.GetEnumSelectList&lt;OrderStatus&gt;()"</span>&gt;&lt;/select&gt;</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">asp-for vs asp-items — prefix rules</div>
+        <div class="callout-text"><code>asp-for</code> must <strong>not</strong> include the <code>Model.</code> prefix (it's implied). <code>asp-items</code>, on the other hand, <strong>must</strong> include it if referencing a view model property — e.g., <code>asp-items="Model.Currencies"</code>. The Select Tag Helper automatically adds the <code>multiple</code> HTML attribute if the property bound by <code>asp-for</code> is an <code>IEnumerable</code>.</div>
+      </div>
+    </div>
+
+    <div id="quiz-select1" class="quiz-block">
+      <div class="quiz-question">🧠 Your PageModel has <code>public IEnumerable&lt;string&gt; SelectedColors { get; set; }</code>. You bind it with <code>asp-for="SelectedColors"</code>. What does the Select Tag Helper do automatically?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-select1',false)">It throws an error — you must use <code>IList</code> not <code>IEnumerable</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select1',true)">It adds the <code>multiple</code> attribute to the <code>&lt;select&gt;</code> element, enabling multiselect</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select1',false)">Nothing special — you must manually add <code>multiple</code> to enable multiselect</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select1',false)">It generates a checkbox list instead of a select element</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-select1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 10 (NEW) ══ -->
+  <section class="section" id="select-advanced">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Select — OptGroups and the "No Selection" Option</h2>
+    </div>
+
+    <p>Two common requirements come up frequently when working with <code>&lt;select&gt;</code> elements: grouping items with <code>&lt;optgroup&gt;</code> labels, and adding a "no selection" placeholder at the top of the list.</p>
+
+    <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:24px 0 10px;">OptGroups — grouping items with <code>SelectListGroup</code></h3>
+
+    <p>To add <code>&lt;optgroup&gt;</code> elements to a select list, assign a <code>SelectListGroup</code> to the <code>Group</code> property of each <code>SelectListItem</code>. Items without a group are rendered outside any group, after the grouped items.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + Razor → HTML</span><span class="code-label">Select Tag Helper — grouping with optgroup</span></div>
+      <div class="code-body"><span class="cm">// PageModel setup — create groups, assign to items:</span>
+<span class="kw">public class</span> <span class="tp">SelectListsModel</span> : <span class="tp">PageModel</span>
+{
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="kw">string</span>&gt; SelectedValues { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">SelectListItem</span>&gt; Items { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public</span> <span class="fn">SelectListsModel</span>()
+    {
+        <span class="cm">// ① Create group objects:</span>
+        <span class="kw">var</span> dynamic = <span class="kw">new</span> <span class="tp">SelectListGroup</span> { Name = <span class="str">"Dynamic Languages"</span> };
+        <span class="kw">var</span> @static = <span class="kw">new</span> <span class="tp">SelectListGroup</span> { Name = <span class="str">"Static Languages"</span> };
+
+        <span class="cm">// ② Assign groups to items:</span>
+        Items = <span class="kw">new</span> <span class="tp">List</span>&lt;<span class="tp">SelectListItem</span>&gt;
+        {
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"js"</span>,     Text = <span class="str">"JavaScript"</span>, Group = dynamic },
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"python"</span>, Text = <span class="str">"Python"</span>,     Group = dynamic },
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"cpp"</span>,    Text = <span class="str">"C++"</span>,         Group = @static },
+            <span class="kw">new</span> <span class="tp">SelectListItem</span> { Value = <span class="str">"csharp"</span>, Text = <span class="str">"C#"</span>            } <span class="cm">// no group</span>
+        };
+    }
+}
+
+<span class="cm">// Razor — no change needed, Tag Helper handles it:</span>
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedValues"</span> <span class="tp">asp-items</span>=<span class="str">"Model.Items"</span>&gt;&lt;/select&gt;
+
+<span class="cm">// Generated HTML:</span>
+&lt;select id=<span class="str">"SelectedValues"</span> name=<span class="str">"SelectedValues"</span> multiple=<span class="str">"multiple"</span>&gt;
+    &lt;optgroup label=<span class="str">"Dynamic Languages"</span>&gt;
+        &lt;option value=<span class="str">"js"</span>&gt;JavaScript&lt;/option&gt;
+        &lt;option value=<span class="str">"python"</span>&gt;Python&lt;/option&gt;
+    &lt;/optgroup&gt;
+    &lt;optgroup label=<span class="str">"Static Languages"</span>&gt;
+        &lt;option value=<span class="str">"cpp"</span>&gt;C++&lt;/option&gt;
+    &lt;/optgroup&gt;
+    &lt;option value=<span class="str">"csharp"</span>&gt;C#&lt;/option&gt;  <span class="cm">&lt;!-- no group → rendered outside --&gt;</span>
+&lt;/select&gt;</div>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:700;color:var(--text);margin:24px 0 10px;">Adding a "No Selection" Option</h3>
+
+    <p>Without a placeholder, a <code>&lt;select&gt;</code> dropdown always has a value — it defaults to the first item. This can be misleading. Add an explicit "not selected" <code>&lt;option&gt;</code> inline in your Razor — Tag Helpers pass extra options through unchanged.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ No placeholder — always has a value</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedValue"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Model.Items"</span>&gt;
+&lt;/select&gt;
+<span class="cm">&lt;!-- Renders "JavaScript" as selected by default --&gt;
+&lt;!-- User might not notice they need to make a choice --&gt;</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With placeholder — clear intent</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;select <span class="tp">asp-for</span>=<span class="str">"SelectedValue"</span>
+        <span class="tp">asp-items</span>=<span class="str">"Model.Items"</span>&gt;
+    &lt;option value=<span class="str">""</span>&gt;** Not selected **&lt;/option&gt;
+&lt;/select&gt;
+<span class="cm">&lt;!-- Extra &lt;option&gt; is placed at the top --&gt;
+&lt;!-- Blank Value="" = null/empty when submitted --&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Extra &lt;option&gt; elements are always passed through unchanged</div>
+        <div class="callout-text">Any <code>&lt;option&gt;</code> elements you add manually inside the <code>&lt;select&gt;</code> in your Razor markup are rendered at the top of the list, before the Tag Helper's generated options. The Tag Helper doesn't remove or modify them. Use <code>value=""</code> so that submitting without a selection gives you an empty/null value that your <code>[Required]</code> validation can catch.</div>
+      </div>
+    </div>
+
+    <div id="quiz-select2" class="quiz-block">
+      <div class="quiz-question">🧠 You want to group your <code>&lt;select&gt;</code> options under labels like "North America" and "Europe". What do you need to add to each <code>SelectListItem</code>?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-select2',false)">A <code>Category</code> property — the Select Tag Helper reads it automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select2',false)">A special CSS class — the browser groups items with matching classes</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select2',true)">Assign a <code>SelectListGroup</code> instance to the item's <code>Group</code> property — the Tag Helper generates <code>&lt;optgroup&gt;</code> elements automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-select2',false)">Write the <code>&lt;optgroup&gt;</code> HTML manually — the Tag Helper doesn't support groups</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-select2-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="validation-msg">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">The Validation Message Tag Helper</h2>
+    </div>
+
+    <p>The Validation Message Tag Helper displays the error message for a <strong>specific property</strong> when validation fails — applied to a <code>&lt;span&gt;</code> using <code>asp-validation-for</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor → HTML</span><span class="code-label">Showing validation errors per-field</span></div>
+      <div class="code-body"><span class="cm">@* Razor — place next to each input *@</span>
+&lt;div&gt;
+    &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.Email"</span>&gt;&lt;/label&gt;
+    &lt;input <span class="tp">asp-for</span>=<span class="str">"Input.Email"</span> /&gt;
+    &lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Input.Email"</span>&gt;&lt;/span&gt;
+&lt;/div&gt;
+
+<span class="cm">// Generated HTML (before error):</span>
+&lt;span class=<span class="str">"field-validation-valid"</span>
+      data-valmsg-for=<span class="str">"Input.Email"</span>
+      data-valmsg-replace=<span class="str">"true"</span>&gt;&lt;/span&gt;
+
+<span class="cm">// After failed validation — server-side error shown:</span>
+&lt;span class=<span class="str">"field-validation-error"</span>
+      data-valmsg-for=<span class="str">"Input.Email"</span>&gt;
+    The Email Address field is required.
+&lt;/span&gt;
+
+<span class="cm">// jQuery Validation also populates this span for client-side errors,</span>
+<span class="cm">// clearing it again when the user corrects their input.</span></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="validation-summary">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">The Validation Summary Tag Helper</h2>
+    </div>
+
+    <p>The Validation Summary Tag Helper displays a <strong>summary of all validation errors</strong> in one place — useful especially for showing model-level errors that aren't tied to a specific property.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Validation summary — three modes</span></div>
+      <div class="code-body"><span class="cm">@* Applied to a div using asp-validation-summary *@</span>
+
+<span class="cm">// None — don't display a summary (pointless but available)</span>
+&lt;div <span class="tp">asp-validation-summary</span>=<span class="str">"None"</span>&gt;&lt;/div&gt;
+
+<span class="cm">// ModelOnly — only errors NOT associated with a property</span>
+<span class="cm">// Best when field-level spans already show per-field errors:</span>
+&lt;div <span class="tp">asp-validation-summary</span>=<span class="str">"ModelOnly"</span>&gt;&lt;/div&gt;
+
+<span class="cm">// All — every error, both property-level and model-level</span>
+&lt;div <span class="tp">asp-validation-summary</span>=<span class="str">"All"</span>&gt;&lt;/div&gt;
+
+<span class="cm">// Adding a model-level error in your handler (blank key = model error):</span>
+<span class="kw">if</span> (Input.CurrencyFrom == Input.CurrencyTo)
+{
+    ModelState.<span class="fn">AddModelError</span>(<span class="tp">string</span>.Empty, <span class="str">"Cannot convert currency to itself"</span>);
+}
+<span class="kw">if</span> (!ModelState.IsValid) <span class="kw">return</span> <span class="fn">Page</span>();</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">When to use ModelOnly vs All</div>
+        <div class="callout-text">Use <code>ModelOnly</code> when you already have per-field <code>&lt;span asp-validation-for="..."&gt;</code> elements next to each input — those handle property errors. <code>ModelOnly</code> then only shows business rule errors that span multiple fields (like "start date must be before end date"). Use <code>All</code> if you want a single summary at the top of the form and don't use per-field spans.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 13 (NEW) ══ -->
+  <section class="section" id="client-validation">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Enabling Client-Side Validation</h2>
+    </div>
+
+    <p>The Input Tag Helper generates <code>data-val-*</code> attributes on your inputs, but those attributes do nothing on their own. To activate client-side validation, you must include the <strong>jQuery Validation and Unobtrusive Validation</strong> JavaScript libraries in your page.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">How it works end-to-end</div>
+        <div class="callout-text">The Input Tag Helper writes <code>data-val="true"</code>, <code>data-val-required="..."</code>, <code>data-val-email="..."</code>, and similar attributes directly onto the <code>&lt;input&gt;</code>. When the page loads, jQuery Unobtrusive Validation reads these attributes and registers the validation rules automatically — no additional JavaScript needed.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Adding the validation scripts to a view — two approaches</span></div>
+      <div class="code-body"><span class="cm">@* Approach 1 — Use the built-in partial view (recommended for new projects) *@</span>
+<span class="cm">@* Add this section at the bottom of any Razor Page that needs client validation: *@</span>
+
+@section <span class="tp">Scripts</span> {
+    @await <span class="tp">Html</span>.<span class="fn">PartialAsync</span>(<span class="str">"_ValidationScriptsPartial"</span>)
+}
+
+<span class="cm">// _ValidationScriptsPartial.cshtml contains:
+//   &lt;script src="~/lib/jquery-validation/dist/jquery.validate.min.js"&gt;&lt;/script&gt;
+//   &lt;script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"&gt;&lt;/script&gt;</span>
+
+
+<span class="cm">@* Approach 2 — Add scripts directly (for full control) *@</span>
+&lt;script src=<span class="str">"~/lib/jquery-validation/dist/jquery.validate.min.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="str">"~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"</span>&gt;&lt;/script&gt;
+
+<span class="cm">// NOTE: jQuery itself must also be included — the default layout template
+// includes it globally, so you usually don't need to add it separately.</span></div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Without validation scripts</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">&lt;!-- data-val-* attributes are present in HTML --&gt;</span>
+&lt;input data-val=<span class="str">"true"</span>
+       data-val-required=<span class="str">"Required."</span>
+       name=<span class="str">"Email"</span> /&gt;
+
+<span class="cm">&lt;!-- But nothing reads them — user can submit
+     an empty form, errors only caught server-side --&gt;</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ With validation scripts</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+@section <span class="tp">Scripts</span> {
+    @await <span class="tp">Html</span>.<span class="fn">PartialAsync</span>(
+        <span class="str">"_ValidationScriptsPartial"</span>)
+}
+<span class="cm">&lt;!-- jQuery Unobtrusive Validation reads the
+     data-val-* attributes and shows errors
+     instantly as the user types or blurs each field --&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Client-side validation is supplemental — always validate server-side too</div>
+        <div class="callout-text">Client-side validation improves the user experience by giving instant feedback, but it can be bypassed (users can disable JavaScript or send raw HTTP requests). Always check <code>ModelState.IsValid</code> in your page handler — server-side validation is the authoritative check. Client-side is a UX layer on top, not a replacement.</div>
+      </div>
+    </div>
+
+    <div id="quiz-clientval1" class="quiz-block">
+      <div class="quiz-question">🧠 You've used the Input Tag Helper and your inputs have <code>data-val-required="..."</code> attributes. But when users submit the empty form, no validation errors appear — the form just reloads with a blank page. What is most likely missing?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-clientval1',false)">You forgot to add <code>asp-validation-for</code> spans — client validation requires them</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-clientval1',true)">The jQuery Validation and jQuery Unobtrusive Validation scripts are not included in the page</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-clientval1',false)">Client-side validation requires <code>[ValidateClientSide]</code> on the PageModel</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-clientval1',false)">The <code>data-val-*</code> attributes only work with MVC controllers, not Razor Pages</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-clientval1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 14 ══ -->
+  <section class="section" id="anchor-helper">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2 class="section-title">The Anchor Tag Helper</h2>
+    </div>
+
+    <p>The Anchor Tag Helper generates the <code>href</code> attribute of an <code>&lt;a&gt;</code> element using routing — the same routing system used by forms. This means your links always point to the correct URL even if you change your routes.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor → HTML</span><span class="code-label">Anchor Tag Helper — generating links via routing</span></div>
+      <div class="code-body"><span class="cm">@* Link to the Index page (generates "/" not "/Index") *@</span>
+&lt;a <span class="tp">asp-page</span>=<span class="str">"/Index"</span>&gt;Home&lt;/a&gt;
+<span class="cm">→ &lt;a href="/"&gt;Home&lt;/a&gt;</span>
+
+<span class="cm">@* Link to a page with a route parameter *@</span>
+&lt;a <span class="tp">asp-page</span>=<span class="str">"/Product/Detail"</span> <span class="tp">asp-route-id</span>=<span class="str">"@item.Id"</span>&gt;View&lt;/a&gt;
+<span class="cm">→ &lt;a href="/Product/Detail/42"&gt;View&lt;/a&gt;</span>
+
+<span class="cm">@* Link to a specific page handler — calls OnGetExport() *@</span>
+&lt;a <span class="tp">asp-page</span>=<span class="str">"/Orders"</span> <span class="tp">asp-page-handler</span>=<span class="str">"Export"</span>&gt;Export&lt;/a&gt;
+<span class="cm">→ &lt;a href="/Orders?handler=Export"&gt;Export&lt;/a&gt;</span>
+
+<span class="cm">@* Generate an absolute URL (includes protocol + host) *@</span>
+&lt;a <span class="tp">asp-page</span>=<span class="str">"/Index"</span> <span class="tp">asp-protocol</span>=<span class="str">"https"</span> <span class="tp">asp-host</span>=<span class="str">"myapp.com"</span>&gt;Home&lt;/a&gt;
+<span class="cm">→ &lt;a href="https://myapp.com/"&gt;Home&lt;/a&gt;</span></div>
+    </div>
+
+    <table class="data-table">
+      <tr><th>Attribute</th><th>Purpose</th></tr>
+      <tr><td><code>asp-page</code></td><td>The Razor Page to link to</td></tr>
+      <tr><td><code>asp-page-handler</code></td><td>Specific page handler method (e.g., <code>OnGetExport</code>)</td></tr>
+      <tr><td><code>asp-area</code></td><td>Sets the area route parameter</td></tr>
+      <tr><td><code>asp-host</code></td><td>Generates an absolute URL to the specified host</td></tr>
+      <tr><td><code>asp-protocol</code></td><td>Generates <code>http://</code> or <code>https://</code> absolute URL</td></tr>
+      <tr><td><code>asp-route</code></td><td>Uses a <em>named route</em> to generate the URL (not the same as <code>asp-route-*</code>)</td></tr>
+      <tr><td><code>asp-route-*</code></td><td>Sets individual route parameters (repeat for multiple)</td></tr>
+    </table>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">asp-route vs asp-route-* — easy to confuse</div>
+        <div class="callout-text"><code>asp-route</code> (no suffix) is for specifying a <strong>named route</strong> (e.g., a named minimal API endpoint). <code>asp-route-*</code> (with suffix) sets <strong>individual route parameter values</strong> during URL generation. These are two different attributes and serve different purposes — don't confuse them.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 15 ══ -->
+  <section class="section" id="append-version">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2 class="section-title">Cache-Busting with asp-append-version</h2>
+    </div>
+
+    <p>Browsers cache CSS, JS, and image files for performance. When you update a file, users may still see the old cached version. <strong>Cache-busting</strong> solves this by appending a unique version string to the URL.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">How it works</div>
+        <div class="callout-text">A cache-busting query string adds a parameter like <code>?v=1</code>. When the file changes, the hash changes too (e.g., <code>?v=2</code>). Browsers see this as a new URL and fetch the fresh file, rather than using the cached version. The <code>asp-append-version</code> attribute computes the hash <strong>automatically</strong> from the file's contents — you never need to update it manually.</div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Manual — you forget to update</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">&lt;!-- Hard-coded version — easy to forget to bump --&gt;</span>
+&lt;link href=<span class="str">"/css/site.css?v=1"</span> rel=<span class="str">"stylesheet"</span> /&gt;
+&lt;script src=<span class="str">"/js/site.js?v=1"</span>&gt;&lt;/script&gt;
+<span class="cm">&lt;!-- Update every reference everywhere = mistakes --&gt;</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ asp-append-version — automatic</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;link rel=<span class="str">"stylesheet"</span>
+      href=<span class="str">"~/css/site.css"</span>
+      <span class="tp">asp-append-version</span>=<span class="str">"true"</span> /&gt;
+&lt;script src=<span class="str">"~/js/site.js"</span>
+        <span class="tp">asp-append-version</span>=<span class="str">"true"</span>&gt;&lt;/script&gt;
+
+<span class="cm">→ Generated HTML:</span>
+&lt;link href=<span class="str">"/css/site.css?v=EWaMeWsJ..."</span> /&gt;</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Hash-based — updates automatically on any file change</div>
+        <div class="callout-text">The <code>asp-append-version</code> attribute loads the referenced file and generates a <strong>unique hash based on its contents</strong>. Every time you change the file, the hash changes. The browser sees the new hash as a new URL and fetches the updated version. Works on <code>&lt;script&gt;</code>, <code>&lt;link&gt;</code>, and <code>&lt;img&gt;</code> elements.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 16 ══ -->
+  <section class="section" id="environment-helper">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2 class="section-title">Conditional Markup with the Environment Tag Helper</h2>
+    </div>
+
+    <p>The Environment Tag Helper renders its content only when the app is running in the specified environments. Unlike most Tag Helpers, the whole element is the Tag Helper — not just an attribute on an existing element.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">C# if statement — verbose</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+@<span class="kw">if</span> (env == <span class="str">"Testing"</span> || env == <span class="str">"Staging"</span>)
+{
+    &lt;div class=<span class="str">"warning"</span>&gt;
+        You are on a testing environment
+    &lt;/div&gt;
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">&lt;environment&gt; Tag Helper — clean</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;<span class="tp">environment</span> include=<span class="str">"Testing,Staging"</span>&gt;
+    &lt;div class=<span class="str">"warning"</span>&gt;
+        You are on a testing environment
+    &lt;/div&gt;
+&lt;/<span class="tp">environment</span>&gt;
+
+&lt;<span class="tp">environment</span> exclude=<span class="str">"Development"</span>&gt;
+    <span class="cm">&lt;!-- Only shown in non-Development --&gt;</span>
+    &lt;script src=<span class="str">"site.min.js"</span>&gt;&lt;/script&gt;
+&lt;/<span class="tp">environment</span>&gt;</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Common use case — minified vs development bundles</div>
+        <div class="callout-text">A very common pattern is to serve unminified, readable JavaScript files in Development (for debugging) and minified bundles in Production (for performance). The Environment Tag Helper makes this a one-liner in your layout file. Use <code>include="Development"</code> for the verbose version and <code>exclude="Development"</code> for the minified one.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 17 (NEW) ══ -->
+  <section class="section" id="html-helpers">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2 class="section-title">Tag Helpers vs HTML Helpers</h2>
+    </div>
+
+    <p>If you've worked with legacy ASP.NET MVC, you may have used <strong>HTML Helpers</strong> — C# methods that generated HTML from your views. Tag Helpers are their modern replacement, but HTML Helpers still exist in ASP.NET Core for backward compatibility.</p>
+
+    <table class="data-table">
+      <tr><th>Feature</th><th>HTML Helpers (legacy)</th><th>Tag Helpers (modern)</th></tr>
+      <tr>
+        <td>Syntax</td>
+        <td><code>@Html.TextBoxFor(m =&gt; m.Name, new { @class = "x" })</code></td>
+        <td><code>&lt;input asp-for="Name" class="x" /&gt;</code></td>
+      </tr>
+      <tr>
+        <td>Looks like</td>
+        <td>C# method calls embedded in HTML</td>
+        <td>Normal HTML attributes</td>
+      </tr>
+      <tr>
+        <td>Editor support</td>
+        <td>Confused most non-VS HTML editors</td>
+        <td>Works in any HTML editor, full IntelliSense</td>
+      </tr>
+      <tr>
+        <td>Adding extra attributes</td>
+        <td>Anonymous object parameter — verbose and error-prone</td>
+        <td>Just write them inline naturally</td>
+      </tr>
+      <tr>
+        <td>Multiple helpers on one element</td>
+        <td>Not easily possible</td>
+        <td>Multiple <code>asp-*</code> attributes on same element — fully supported</td>
+      </tr>
+      <tr>
+        <td>Available in ASP.NET Core?</td>
+        <td>Yes — kept for migration scenarios</td>
+        <td>Yes — preferred for all new code</td>
+      </tr>
+    </table>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ HTML Helper — C#-centric, hard to read</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+@<span class="tp">Html</span>.<span class="fn">LabelFor</span>(m => m.Email)
+@<span class="tp">Html</span>.<span class="fn">TextBoxFor</span>(m => m.Email,
+    <span class="kw">new</span> { @<span class="kw">class</span> = <span class="str">"form-control"</span> })
+@<span class="tp">Html</span>.<span class="fn">ValidationMessageFor</span>(m => m.Email)
+
+<span class="cm">@* Reads like C#, confuses HTML editors,
+   awkward anonymous object for attributes *@</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Tag Helper — HTML-centric, readable</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+&lt;label <span class="tp">asp-for</span>=<span class="str">"Email"</span>&gt;&lt;/label&gt;
+&lt;input <span class="tp">asp-for</span>=<span class="str">"Email"</span>
+       <span class="kw">class</span>=<span class="str">"form-control"</span> /&gt;
+&lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Email"</span>&gt;&lt;/span&gt;
+
+<span class="cm">@* Reads like HTML, any editor supports it,
+   attributes just go inline naturally *@</span></div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">When you might still see HTML Helpers</div>
+        <div class="callout-text">You'll encounter HTML Helpers in older codebases being migrated to ASP.NET Core, and in some built-in framework helpers like <code>@Html.PartialAsync()</code> and <code>@Html.GetEnumSelectList&lt;T&gt;()</code> — the latter is commonly used inside <code>asp-items</code> on a select element. HTML Helpers are not going away, but for any new form markup, use Tag Helpers exclusively.</div>
+      </div>
+    </div>
+
+    <div id="quiz-htmlhelper1" class="quiz-block">
+      <div class="quiz-question">🧠 A colleague says "Tag Helpers are just like ASP.NET WebForms Server Controls — they have a complex lifecycle and can modify anything on the page." Are they correct?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-htmlhelper1',false)">Yes — Tag Helpers and WebForms Server Controls work the same way under the hood</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-htmlhelper1',true)">No — Tag Helpers have no lifecycle, they only affect the element they're attached to and cannot modify anything else on the page</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-htmlhelper1',false)">Partially — Tag Helpers have a lifecycle but are scoped to the current form</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-htmlhelper1',false)">Yes — but Tag Helpers are simpler because they use attributes instead of code-behind files</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-htmlhelper1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 18 ══ -->
+  <section class="section" id="csrf">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <h2 class="section-title">CSRF Protection and ValidateAntiForgeryToken</h2>
+    </div>
+
+    <p>A <strong>CSRF (Cross-Site Request Forgery)</strong> attack tricks a user into unknowingly submitting a malicious request to a site where they're authenticated — like changing their password or making a purchase without knowing it.</p>
+
+    <!-- CSRF Attack Diagram -->
+    <div class="code-block" style="background:var(--bg2);border:1px solid rgba(207,34,46,.3);">
+      <div class="code-header" style="background:rgba(207,34,46,.08);border-bottom:1px solid rgba(207,34,46,.2);">
+        <span class="code-lang" style="color:var(--red);">Attack</span><span class="code-label">How a CSRF attack works</span>
+      </div>
+      <div style="padding:20px;font-family:var(--sans);font-size:13px;">
+        <div style="display:flex;flex-direction:column;gap:8px;max-width:560px;margin:0 auto;">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(9,105,218,.07);border:1px solid rgba(9,105,218,.2);border-radius:6px;">
+            <span style="color:var(--blue);font-weight:700;font-size:20px;">1</span>
+            <span style="font-size:12px;color:var(--text2);">User logs into their bank at <strong>bank.com</strong> and stays logged in (auth cookie stored)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(207,34,46,.06);border:1px solid rgba(207,34,46,.2);border-radius:6px;">
+            <span style="color:var(--red);font-weight:700;font-size:20px;">2</span>
+            <span style="font-size:12px;color:var(--text2);">User visits <strong>evil.com</strong> — which silently sends a POST to <code>bank.com/transfer?to=hacker&amp;amount=1000</code></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(207,34,46,.06);border:1px solid rgba(207,34,46,.2);border-radius:6px;">
+            <span style="color:var(--red);font-weight:700;font-size:20px;">3</span>
+            <span style="font-size:12px;color:var(--text2);">Browser automatically sends the bank cookie — server thinks it's a legitimate request!</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(45,164,78,.07);border:1px solid rgba(45,164,78,.2);border-radius:6px;">
+            <span style="color:var(--green);font-weight:700;font-size:20px;">✓</span>
+            <span style="font-size:12px;color:var(--text2);"><strong>Anti-forgery token prevents this</strong> — the malicious site can't read the token from bank.com (cross-origin blocked), so validation fails</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Anti-forgery token — how it works in ASP.NET Core</span></div>
+      <div class="code-body"><span class="cm">// ① Server generates a unique token and embeds it in the form</span>
+<span class="cm">// (Form Tag Helper does this automatically — hidden field)</span>
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Submit"</span>&gt;
+    <span class="cm">&lt;!-- Hidden field added automatically by the Form Tag Helper: --&gt;</span>
+    <span class="cm">&lt;!-- &lt;input name="__RequestVerificationToken" type="hidden" value="..." /&gt; --&gt;</span>
+    &lt;input <span class="tp">asp-for</span>=<span class="str">"Input.Username"</span> /&gt;
+    &lt;button type=<span class="str">"submit"</span>&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+
+<span class="cm">// ② On POST, [ValidateAntiForgeryToken] checks the token</span>
+[<span class="tp">ValidateAntiForgeryToken</span>]
+<span class="kw">public</span> <span class="tp">IActionResult</span> <span class="fn">OnPost</span>()
+{
+    <span class="cm">// Only executes if token is present and valid</span>
+    <span class="cm">// If token is missing or invalid → 400 Bad Request</span>
+    TempData[<span class="str">"Success"</span>] = <span class="str">"Your message has been sent!"</span>;
+    <span class="kw">return</span> <span class="fn">RedirectToPage</span>();
+}
+
+<span class="cm">// ③ In ASP.NET Core Razor Pages — validation is automatic!</span>
+<span class="cm">// Razor Pages validates the anti-forgery token on every POST by default.</span>
+<span class="cm">// [ValidateAntiForgeryToken] is NOT required explicitly — it's built in.</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Razor Pages validates CSRF automatically on every POST</div>
+        <div class="callout-text">In Razor Pages, <strong>anti-forgery validation is automatic</strong> for all POST requests. You don't need to add <code>[ValidateAntiForgeryToken]</code> manually. The Form Tag Helper always adds the token to forms. The framework always validates it on POST. This is one of the built-in security features that makes Razor Pages safer than rolling your own forms.</div>
+      </div>
+    </div>
+
+    <div id="quiz-csrf1" class="quiz-block">
+      <div class="quiz-question">🧠 A user visits a malicious website that tries to send a POST to your Razor Pages app (CSRF attack). Why does the anti-forgery token protect against this?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-csrf1',false)">The malicious site's requests are blocked by the browser's firewall</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-csrf1',false)">POST requests from other origins are blocked by HTTP itself</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-csrf1',true)">The malicious site cannot read your site's token (blocked by same-origin policy), so it can't include a valid token in its forged request — which the server rejects</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-csrf1',false)">The token is encrypted with the user's password, which only the real site knows</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-csrf1-fb"></div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Old Razor syntax vs Tag Helper (for reference)</div>
+        <div class="callout-text">
+          Old MVC Razor syntax: <code>@Html.AntiForgeryToken()</code> — manually adds the hidden token field.<br>
+          Modern Razor Pages / Tag Helper: just use <code>&lt;form asp-page="..."&gt;</code> — the token is added automatically. No manual <code>@Html.AntiForgeryToken()</code> needed.
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="github" class="section">
+<div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+  <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter18" target="_blank" 
+     style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+    </div>
+    
+    <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+      Visit this link to run and test the code for this chapter.
+    </div>
+  </a>
+</div></section>
+
+</main>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function answer(btn, id, correct) {
+  const block = document.getElementById(id);
+  block.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) { btn.classList.add('correct'); fb.textContent = '✅ Correct!'; fb.className = 'quiz-feedback show ok'; }
+  else { btn.classList.add('wrong'); block.querySelectorAll('.quiz-option').forEach(b => { if (b._c) b.classList.add('reveal'); }); fb.textContent = '❌ Not quite — review the section above.'; fb.className = 'quiz-feedback show err'; }
+}
+document.querySelectorAll('.quiz-option').forEach(b => { b._c = b.getAttribute('onclick')?.includes(',true)'); });
+function scrollPageTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+function fabGo(id) { closeFab(); scrollPageTo(id); }
+function toggleFab() { document.getElementById('fabPanel').classList.toggle('open'); }
+function closeFab() { document.getElementById('fabPanel').classList.remove('open'); }
+document.addEventListener('click', e => { const fp = document.getElementById('fabPanel'); if (fp && !fp.contains(e.target) && !e.target.closest('.fab-sections')) closeFab(); });
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { navLinks.forEach(l => l.classList.remove('active')); const l = document.querySelector(`.nav-link[data-target="${e.target.id}"]`); if (l) l.classList.add('active'); } }); }, { rootMargin: '-20% 0px -20% 0px' });
+sections.forEach(s => observer.observe(s));
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+  const fill = document.getElementById('mobileProgressFill'); if (fill) fill.style.width = Math.min(pct, 100) + '%';
+});
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay'), sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer = function(){ sidebar.classList.add('open'); overlay.classList.add('show'); };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 17 — Rendering HTML with Razor Views</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.compare-card .code-body[style*="font-family:var(--mono)"] {
+  background: #282c34;
+  color: #abb2bf;
+}
+</style>
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 17 — Razor Views</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+
+<div class="course-wrap">
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size:11px;color:var(--text3);margin-top:8px;border-top:1px solid var(--border);padding-top:6px;line-height:1.2;">
+      <div><span style="opacity:.7;">Supervised by</span> <span style="color:var(--text2);font-weight:500;">Dr. Kamal B.</span></div>
+    </div>
+    <div class="chapter-label">Chapter 17</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="review" onclick="scrollPageTo('review')"><span class="dot"></span>Quick Review</button>
+    <button class="nav-link" data-target="views-rendering" onclick="scrollPageTo('views-rendering')"><span class="dot"></span>Views &amp; the UI</button>
+    <button class="nav-link" data-target="razor-codebehind" onclick="scrollPageTo('razor-codebehind')"><span class="dot"></span>Razor view &amp; code-behind</button>
+    <button class="nav-link" data-target="razor-templates" onclick="scrollPageTo('razor-templates')"><span class="dot"></span>Introducing Razor templates</button>
+    <button class="nav-link" data-target="passing-data" onclick="scrollPageTo('passing-data')"><span class="dot"></span>Passing data to views</button>
+    <button class="nav-link" data-target="csharp-razor" onclick="scrollPageTo('csharp-razor')"><span class="dot"></span>C# in Razor templates</button>
+    <button class="nav-link" data-target="loops" onclick="scrollPageTo('loops')"><span class="dot"></span>Loops &amp; conditionals</button>
+    <button class="nav-link" data-target="html-raw" onclick="scrollPageTo('html-raw')"><span class="dot"></span>Html.Raw &amp; XSS safety</button>
+    <button class="nav-link" data-target="layouts" onclick="scrollPageTo('layouts')"><span class="dot"></span>Layouts — shared markup</button>
+    <button class="nav-link" data-target="sections" onclick="scrollPageTo('sections')"><span class="dot"></span>Sections in layouts</button>
+    <button class="nav-link" data-target="partials" onclick="scrollPageTo('partials')"><span class="dot"></span>Partial views</button>
+    <button class="nav-link" data-target="viewimports" onclick="scrollPageTo('viewimports')"><span class="dot"></span>_ViewImports</button>
+    <button class="nav-link" data-target="viewstart" onclick="scrollPageTo('viewstart')"><span class="dot"></span>_ViewStart</button>
+      <button class="nav-link" data-target="runtime-compilation" onclick="scrollPageTo('runtime-compilation')"><span class="dot"></span>Runtime Compilation</button>
+    <button class="nav-link" data-target="inject-views" onclick="scrollPageTo('inject-views')"><span class="dot"></span>@inject in Views</button>
+    <button class="nav-link" data-target="view-components" onclick="scrollPageTo('view-components')"><span class="dot"></span>View Components</button>
+    <button class="nav-link" data-target="ajax-partial" onclick="scrollPageTo('ajax-partial')"><span class="dot"></span>AJAX &amp; Partial Views</button>
+    <button class="nav-link" data-target="summary" onclick="scrollPageTo('summary')"><span class="dot"></span>Chapter Summary</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Creating a Website with Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link active" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 17</div>
+    <h1 class="chapter-title">Rendering HTML Using Razor Views</h1>
+    <p class="chapter-subtitle">How Razor views work, how to pass data into them, use C# logic inside them, and organize them with layouts, sections, and partial views.</p>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="review">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Quick Review — Core Concepts</h2>
+    </div>
+
+    <table class="data-table">
+      <tr><th>Term</th><th>What It Is</th></tr>
+      <tr>
+        <td><strong>Razor Pages</strong></td>
+        <td>The page-based paradigm in ASP.NET Core — combines routing, model binding, and HTML generation using Razor views</td>
+      </tr>
+      <tr>
+        <td><strong>Razor Page</strong></td>
+        <td>A single page/endpoint — two files: <code>.cshtml</code> (Razor view) + <code>.cshtml.cs</code> (PageModel)</td>
+      </tr>
+      <tr>
+        <td><strong>PageModel</strong></td>
+        <td>Where most of the action happens — defines binding models, validates them, runs page handlers, and prepares view data</td>
+      </tr>
+      <tr>
+        <td><strong>Page Handler</strong></td>
+        <td>Each Razor Page handles a single route but can respond to multiple HTTP verbs (GET, POST). Each handler handles one verb.</td>
+      </tr>
+      <tr>
+        <td><strong>Razor View</strong></td>
+        <td>Also called a "Razor template" — used to generate the HTML response in the final stage of a request</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="views-rendering">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Views: Rendering the User Interface</h2>
+    </div>
+
+    <p>A Razor view is responsible for generating the HTML that gets sent to the browser. It has access to the <code>PageModel</code> instance to read data, but it should never <strong>call methods</strong> on it — only access already-prepared properties.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Views should be read-only</div>
+        <div class="callout-text">Views shouldn't call methods on the PageModel. The view should generally only be accessing data that has <strong>already been collected and exposed as properties</strong>. The PageModel prepares everything in the handler, the view just displays it.</div>
+      </div>
+    </div>
+
+    <p>A Razor view file combines <strong>normal HTML</strong> with <strong>C# expressions</strong> and <strong>Tag Helpers</strong>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">What a Razor view file contains</span></div>
+      <div class="code-body"><span class="cm">@* ❶ Normal HTML is sent to the browser unchanged *@</span>
+&lt;h1&gt;My Products&lt;/h1&gt;
+
+<span class="cm">@* ❷ Tag Helpers attach to HTML elements to create forms *@</span>
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Checkout"</span> <span class="tp">method</span>=<span class="str">"post"</span>&gt;
+    &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.Name"</span>&gt;&lt;/label&gt;
+
+    <span class="cm">@* ❸ Values from C# objects are written to HTML *@</span>
+    &lt;input <span class="tp">asp-for</span>=<span class="str">"Input.Name"</span> value=<span class="str">"@Model.DefaultName"</span> /&gt;
+
+    <span class="cm">@* ❹ C# constructs like for loops work inside Razor *@</span>
+    @<span class="kw">foreach</span> (<span class="kw">var</span> item <span class="kw">in</span> Model.Items)
+    {
+        &lt;p&gt;@item.Name — @item.Price&lt;/p&gt;
+    }
+
+    <span class="cm">@* ❺ Tag Helpers outside forms — e.g., generating links *@</span>
+    &lt;a <span class="tp">asp-page</span>=<span class="str">"Details"</span> <span class="tp">asp-route-id</span>=<span class="str">"@item.Id"</span>&gt;View&lt;/a&gt;
+&lt;/form&gt;</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">Can you swap out the Razor engine?</div>
+        <div class="callout-text">It's possible to swap out the Razor templating engine and replace it with your own server-side rendering engine. However, you <strong>can't replace Razor with a client-side framework</strong> like Angular or React in this way — for that, you'd use Minimal APIs or Web API controllers with a separate client-side framework.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="razor-codebehind">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Razor View and Code-Behind</h2>
+    </div>
+
+    <p>Each Razor Page consists of two files with the same name — a <code>.cshtml</code> view and a <code>.cshtml.cs</code> code-behind (PageModel). They're linked not by filename but by the <code>@model</code> directive at the top of the view.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📄 ToDoItem.cshtml (View)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* ❶ @page makes this file a Razor Page (enables routing) *@</span>
+@page
+<span class="cm">@* ❷ @model links this view to its PageModel *@</span>
+@model <span class="tp">ToDoItemModel</span>
+
+&lt;h1&gt;@Model.Title&lt;/h1&gt;
+
+@<span class="kw">foreach</span> (<span class="kw">var</span> task <span class="kw">in</span> Model.Tasks)
+{
+    &lt;p&gt;@task&lt;/p&gt;
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">⚙️ ToDoItem.cshtml.cs (PageModel)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="kw">public class</span> <span class="tp">ToDoItemModel</span> : <span class="tp">PageModel</span>
+{
+    <span class="kw">public</span> <span class="tp">string</span> Title { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">string</span>&gt; Tasks { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public void</span> <span class="fn">OnGet</span>()
+    {
+        Title = <span class="str">"Tasks for today"</span>;
+        Tasks = _db.<span class="fn">GetTasks</span>();
+        <span class="cm">// Prepare data, view will read it</span>
+    }
+}</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — What @page and @model do</div>
+        <div class="callout-text">
+          <code>@page</code> — makes the file a Razor Page. <strong>Without this directive</strong>, the Razor Pages framework will not route requests to the page.<br><br>
+          <code>@model</code> — specifies which PageModel is associated with this view. The framework uses it to decide which class to instantiate, bind properties on, and run handlers from.<br><br>
+          A <strong>directive</strong> is a statement in a Razor file that changes the way the template is parsed or compiled. Another common directive is <code>@using newNamespace</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">@model vs Model — case matters!</div>
+        <div class="callout-text"><code>@model</code> (lowercase m) is the directive at the top of the view that declares the type. <code>Model</code> (uppercase M) is the property you use anywhere in the view to access the PageModel instance. E.g.: <code>&lt;h1&gt;@Model.Title&lt;/h1&gt;</code>.</div>
+      </div>
+    </div>
+
+    <div id="quiz-v1" class="quiz-block">
+      <div class="quiz-question">🧠 What happens to a <code>.cshtml</code> file that is missing the <code>@page</code> directive?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-v1',false)">It causes a compilation error</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-v1',true)">The Razor Pages framework ignores it for routing — it won't handle any requests</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-v1',false)">It becomes a layout file automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-v1',false)">It still works but only handles GET requests</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-v1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="razor-templates">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Introducing Razor Templates</h2>
+    </div>
+
+    <p>A Razor template is a mix of HTML and C#. The Razor parser compiles it into a C# class — it's not interpreted at runtime line by line, it's <strong>compiled</strong>, just like any other C# code.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Anatomy of a Razor template</span></div>
+      <div class="code-body"><span class="cm">@* Directives at the top *@</span>
+@page
+@model <span class="tp">ProductDetailModel</span>
+@using <span class="tp">MyApp.Models</span>
+
+<span class="cm">@* HTML flows through unchanged *@</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+
+<span class="cm">@* C# inline expression — @ symbol *@</span>
+&lt;h1&gt;@Model.ProductName&lt;/h1&gt;
+&lt;p&gt;Price: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b490f4f9dbd0d1d89ae4c6ddd7d19ae0dbe7c0c6dddad3">[email&#160;protected]</a>("F2")&lt;/p&gt;
+
+<span class="cm">@* C# code block — @{} *@</span>
+@{
+    <span class="kw">var</span> isOnSale = Model.Price &lt; <span class="nm">10.00m</span>;
+    <span class="kw">var</span> badgeText = isOnSale ? <span class="str">"SALE!"</span> : <span class="str">"Regular price"</span>;
+}
+
+&lt;span&gt;@badgeText&lt;/span&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="passing-data">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Passing Data to Views</h2>
+    </div>
+
+    <p>Use the following mechanisms in order of preference:</p>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="display:flex;gap:14px;padding:16px 20px;background:rgba(0,212,170,.05);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,212,170,.2);color:var(--accent);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">PageModel Properties <span class="pill green">Preferred</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;">Expose any data to display as public properties on the PageModel. Access via <code>Model.PropertyName</code> in the view. This is the clean, strongly-typed approach.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px 20px;background:rgba(124,106,247,.04);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(124,106,247,.2);color:var(--accent2);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">ViewData <span class="pill purple">For layouts</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;">A dictionary of objects with string keys — shared throughout the request. Useful for passing data to layout files (e.g., the page title). Not strongly-typed.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px 20px;background:rgba(191,135,0,.04);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(191,135,0,.2);color:var(--yellow);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">TempData <span class="pill yellow">PRG pattern</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;">Persists data across a redirect — stored in an encrypted cookie. Deleted after it's read. Commonly used with POST-REDIRECT-GET to pass a success message to the next page.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px 20px;background:rgba(9,105,218,.04);border-bottom:1px solid var(--border);">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(9,105,218,.2);color:var(--blue);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">HttpContext</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;">Technically available in both handler and view — but using it to transfer data between them is discouraged. Use PageModel properties instead.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;padding:16px 20px;background:rgba(207,34,46,.04);">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(207,34,46,.2);color:var(--red);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">5</div>
+        <div>
+          <div style="font-weight:700;color:var(--text);font-size:14px;">@inject Services <span class="pill red">Use carefully</span></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;">You can inject a DI service directly into a view with <code>@inject Service myService</code>. Useful in rare cases (e.g., authorization checks in views), but generally the PageModel should call the service and expose the result.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor + C#</span><span class="code-label">ViewData — passing the page title to a layout</span></div>
+      <div class="code-body"><span class="cm">@* In the Razor Page view — set the title in ViewData *@</span>
+@{
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Home Page"</span>;
+}
+
+<span class="cm">@* In the layout file — read it *@</span>
+&lt;title&gt;@ViewData[<span class="str">"Title"</span>] — My App&lt;/title&gt;
+
+<span class="cm">@* TempData — survive a redirect *@</span>
+<span class="cm">// In the POST handler (before redirect):</span>
+TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed successfully!"</span>;
+<span class="kw">return</span> <span class="fn">RedirectToPage</span>(<span class="str">"Confirmation"</span>);
+
+<span class="cm">// In the Confirmation.cshtml view (after redirect):</span>
+@<span class="kw">if</span> (TempData[<span class="str">"Success"</span>] <span class="kw">is string</span> msg)
+{
+    &lt;div class=<span class="str">"alert"</span>&gt;@msg&lt;/div&gt;
+    <span class="cm">@* TempData is now deleted — gone on next request *@</span>
+}</div>
+    </div>
+
+    <div id="quiz-data1" class="quiz-block">
+      <div class="quiz-question">🧠 After a successful POST, you redirect to a confirmation page and want to show "Order placed!". Which mechanism is designed exactly for this?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-data1',false)">ViewData — it persists between requests automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-data1',true)">TempData — designed to survive exactly one redirect, then it's deleted</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-data1',false)">PageModel properties — they serialize across redirects</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-data1',false)">@inject — inject the message from a service</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-data1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="csharp-razor">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Using C# in Razor Templates</h2>
+    </div>
+
+    <p>Razor provides two ways to embed C# into HTML:</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">@ — Inline expression</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* Writes the result of an expression to HTML *@</span>
+&lt;h1&gt;@Model.Title&lt;/h1&gt;
+&lt;p&gt;Price: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ba9efaf7d5dedfd694eac8d3d9df">[email&#160;protected]</a>&lt;/p&gt;
+&lt;span&gt;@(Model.First + " " + Model.Last)&lt;/span&gt;
+
+<span class="cm">@* Use parentheses for complex expressions *@</span>
+&lt;p&gt;Total: @(Model.Qty * Model.Price)&lt;/p&gt;
+
+<span class="cm">@* Literal @ character — use @@ *@</span>
+&lt;p&gt;Email us at info@@myapp.com&lt;/p&gt;</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">@{} — Code block</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* Normal C# code — runs during rendering *@</span>
+@{
+    <span class="kw">var</span> count = Model.Items.Count;
+    <span class="kw">var</span> label = count == <span class="nm">1</span> ? <span class="str">"item"</span> : <span class="str">"items"</span>;
+}
+
+&lt;p&gt;You have @count @label.&lt;/p&gt;
+
+<span class="cm">@* It's all compiled as real C# *@</span>
+@{
+    Layout = <span class="str">"_Layout"</span>;
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Products"</span>;
+}</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Everything in Razor is compiled C#</div>
+        <div class="callout-text">A Razor view is compiled into a C# class. All the code inside <code>@{}</code> blocks and <code>@</code> expressions is real C# — you get full IntelliSense, compile-time checking, and the same performance characteristics as hand-written C# code.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="loops">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Adding Loops and Conditionals to Razor Templates</h2>
+    </div>
+
+    <p>Standard C# control flow (<code>foreach</code>, <code>if</code>, <code>switch</code>) works directly in Razor. No special Razor syntax needed — just prefix with <code>@</code>.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">foreach, if, else — all standard C#</span></div>
+      <div class="code-body"><span class="cm">@* foreach loop — iterate over a list *@</span>
+&lt;ul&gt;
+@<span class="kw">foreach</span> (<span class="kw">var</span> task <span class="kw">in</span> Model.Tasks)
+{
+    &lt;li&gt;@task.Name — <span class="kw">due</span> @task.DueDate.ToShortDateString()&lt;/li&gt;
+}
+&lt;/ul&gt;
+
+<span class="cm">@* if / else — conditional rendering *@</span>
+@<span class="kw">if</span> (Model.Tasks.Count == <span class="nm">0</span>)
+{
+    &lt;p&gt;You have no tasks. Enjoy your day! 🎉&lt;/p&gt;
+}
+<span class="kw">else</span>
+{
+    &lt;p&gt;You have @Model.Tasks.Count task(s) to complete.&lt;/p&gt;
+}
+
+<span class="cm">@* for loop with index *@</span>
+@<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; Model.Items.Count; i++)
+{
+    &lt;p&gt;@(i + 1). @Model.Items[i].Name&lt;/p&gt;
+}</div>
+    </div>
+
+    <div id="quiz-loop1" class="quiz-block">
+      <div class="quiz-question">🧠 You want to render a table row for each item in <code>Model.Orders</code>. Which is the correct Razor syntax?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-loop1',false)"><code>{{#each Orders}}&lt;tr&gt;...&lt;/tr&gt;{{/each}}</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-loop1',true)"><code>@foreach (var o in Model.Orders) { &lt;tr&gt;&lt;td&gt;@o.Id&lt;/td&gt;&lt;/tr&gt; }</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-loop1',false)"><code>@for Orders as o { &lt;tr&gt;&lt;/tr&gt; }</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-loop1',false)"><code>@Repeat(Model.Orders) { ... }</code></button>
+      </div>
+      <div class="quiz-feedback" id="quiz-loop1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="html-raw">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Rendering Raw HTML — Html.Raw and XSS Safety</h2>
+    </div>
+
+    <p>By default, Razor <strong>HTML-encodes all output</strong> — characters like <code>&lt;</code> become <code>&amp;lt;</code>. This protects against Cross-Site Scripting (XSS) attacks. The <code>Html.Raw()</code> helper bypasses this encoding.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Default — HTML Encoded (Safe)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="kw">var</span> task = <span class="str">"&lt;strong&gt;Check oil&lt;/strong&gt;"</span>;
+<span class="cm">// Razor renders it as literal text:</span>
+<span class="cm">// &amp;lt;strong&amp;gt;Check oil&amp;lt;/strong&amp;gt;</span>
+&lt;p&gt;@task&lt;/p&gt;
+<span class="cm">// Browser displays: &lt;strong&gt;Check oil&lt;/strong&gt;</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header bad">⚠️ Html.Raw — Unencoded (Dangerous)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="kw">var</span> task = <span class="str">"&lt;strong&gt;Check oil&lt;/strong&gt;"</span>;
+<span class="cm">// Html.Raw skips encoding — renders as HTML:</span>
+&lt;p&gt;@Html.<span class="fn">Raw</span>(task)&lt;/p&gt;
+<span class="cm">// Browser displays: <strong>Check oil</strong></span>
+
+<span class="cm">// ❌ NEVER use with user input!</span>
+<span class="cm">// &lt;script&gt;alert('XSS')&lt;/script&gt; would execute</span></div>
+      </div>
+    </div>
+
+    <div class="callout danger">
+      <div class="callout-icon">🚨</div>
+      <div class="callout-body">
+        <div class="callout-title">XSS — Never use Html.Raw on user input</div>
+        <div class="callout-text">Using <code>Html.Raw</code> on user input creates a serious security vulnerability. An attacker could inject <code>&lt;script&gt;alert('stolen: '+document.cookie)&lt;/script&gt;</code> as input, which your site would then execute in every visitor's browser. Only use <code>Html.Raw</code> on content you fully trust and control.</div>
+      </div>
+    </div>
+    <!-- ▸ Try it: XSS encoding simulation -->
+    <div style="margin-top:24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">
+        🧪 Try it — see how Razor encodes output vs Html.Raw
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px;">
+        <label style="font-size:13px;color:var(--text2);">
+          Type anything (try: <code>&lt;strong&gt;hello&lt;/strong&gt;</code> or <code>&lt;script&gt;alert(1)&lt;/script&gt;</code>):
+          <input id="xss-input" value="<strong>Check oil</strong>"
+            style="display:block;width:100%;margin-top:6px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:13px;background:var(--bg);color:var(--text);">
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">@task — encoded (safe)</div>
+            <div id="xss-encoded" style="padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:12px;min-height:36px;word-break:break-all;"></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">What the browser shows:</div>
+            <div id="xss-encoded-render" style="padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;margin-top:2px;min-height:32px;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Html.Raw(task) — unencoded (dangerous)</div>
+            <div id="xss-raw" style="padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-family:var(--mono);font-size:12px;min-height:36px;word-break:break-all;"></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">What the browser shows:</div>
+            <div id="xss-raw-render" style="padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;margin-top:2px;min-height:32px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+    (function(){
+      function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+      function update(){
+        var v = document.getElementById('xss-input').value;
+        document.getElementById('xss-encoded').textContent = esc(v);
+        document.getElementById('xss-encoded-render').textContent = v;
+        document.getElementById('xss-raw').textContent = v;
+        document.getElementById('xss-raw-render').innerHTML = v;
+      }
+      document.getElementById('xss-input').addEventListener('input', update);
+      update();
+    })();
+    </script>
+
+  </section>
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="layouts">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Layouts — Shared Markup Across Pages</h2>
+    </div>
+
+    <p>A <strong>layout</strong> in Razor is a template that includes common code — headers, footers, nav bars, CSS links — shared across all or most pages. It cannot be rendered directly; it's always rendered in conjunction with a child view.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — Why layouts exist</div>
+        <div class="callout-text">A typical web application has a block-based layout where some blocks are common to every page. The header will likely be identical across your whole application, but the sidebar may differ per section, and the body content differs for every page. Layouts let you define the common structure once.</div>
+      </div>
+    </div>
+
+    <!-- Layout diagram -->
+    <div class="code-block" style="background:var(--bg2);border:1px solid var(--border);">
+      <div class="code-header"><span class="code-lang">Structure</span><span class="code-label">How a layout wraps child content</span></div>
+      <div style="padding:20px;font-family:var(--sans);font-size:13px;">
+        <div style="border:2px solid rgba(124,106,247,.4);border-radius:10px;padding:16px;background:rgba(124,106,247,.04);position:relative;">
+          <div style="font-weight:700;color:var(--accent2);font-size:12px;margin-bottom:12px;">_Layout.cshtml</div>
+          <div style="background:rgba(9,105,218,.1);border:1px solid rgba(9,105,218,.25);border-radius:6px;padding:10px;margin-bottom:8px;font-size:12px;color:var(--blue);">
+            ① Common &lt;head&gt; — CSS links, meta tags, title from ViewData
+          </div>
+          <div style="background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);border-radius:6px;padding:10px;margin-bottom:8px;font-size:12px;color:var(--accent);">
+            ② Shared header / navbar
+          </div>
+          <div style="background:rgba(207,34,46,.1);border:2px dashed rgba(207,34,46,.4);border-radius:6px;padding:16px;margin-bottom:8px;text-align:center;">
+            <div style="font-weight:700;color:var(--red);font-size:13px;">③ @RenderBody()</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px;">← Child view content inserted here</div>
+          </div>
+          <div style="background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);border-radius:6px;padding:10px;font-size:12px;color:var(--accent);">
+            ④ Shared footer
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">_Layout.cshtml — the layout file</span></div>
+      <div class="code-body"><span class="cm">@* Layout files do NOT have @page — they're not routable *@</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    <span class="cm">&lt;!-- ❶ ViewData passes the title from the child view --&gt;</span>
+    &lt;title&gt;@ViewData[<span class="str">"Title"</span>]&lt;/title&gt;
+    <span class="cm">&lt;!-- ❷ Common CSS is defined in the layout --&gt;</span>
+    &lt;link rel=<span class="str">"stylesheet"</span> href=<span class="str">"~/css/site.css"</span> /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;My App — shared across all pages&lt;/header&gt;
+
+    &lt;main&gt;
+        <span class="cm">&lt;!-- ❸ Child view content rendered here --&gt;</span>
+        @<span class="fn">RenderBody</span>()
+    &lt;/main&gt;
+
+    &lt;footer&gt;© 2024 My App&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+    </div>
+
+    <p>Conventions to follow with layout files:</p>
+    <ul style="color:var(--text2);font-size:14px;line-height:2;padding-left:20px;">
+      <li>Prefix layout filenames with an underscore: <code>_Layout.cshtml</code>, <code>_TwoColumn.cshtml</code></li>
+      <li>Place in <code>Pages/Shared/</code> so you can refer to them by short name (e.g., <code>"_Layout"</code>)</li>
+      <li>Every layout file must call <code>@RenderBody()</code> exactly once</li>
+      <li>ASP.NET Core apps can have <strong>multiple layouts</strong>, and layouts can reference other layouts</li>
+    </ul>
+
+    <div id="quiz-layout1" class="quiz-block">
+      <div class="quiz-question">🧠 What is the minimum requirement for every layout file in ASP.NET Core Razor Pages?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-layout1',false)">It must start with the <code>@page</code> directive</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-layout1',true)">It must call <code>@RenderBody()</code> exactly once — this is where child view content is inserted</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-layout1',false)">It must have a corresponding <code>.cshtml.cs</code> code-behind file</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-layout1',false)">It must be named <code>_Layout.cshtml</code></button>
+      </div>
+      <div class="quiz-feedback" id="quiz-layout1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="sections">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Overriding Parent Layouts Using Sections</h2>
+    </div>
+
+    <p>Sections let a child view inject content into <strong>specific named spots</strong> in the layout — beyond just the main body. A common use case is injecting page-specific JavaScript at the bottom of the layout.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📄 Child View — defines a section</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+@page
+@model <span class="tp">ProductModel</span>
+
+&lt;h1&gt;Products&lt;/h1&gt;
+&lt;p&gt;Main content here...&lt;/p&gt;
+
+<span class="cm">@* Define a Scripts section — placed anywhere in the file *@</span>
+@section Scripts {
+    &lt;script src=<span class="str">"~/js/products.js"</span>&gt;&lt;/script&gt;
+}
+
+<span class="cm">@* Define a Sidebar section *@</span>
+@section Sidebar {
+    &lt;aside&gt;Filter by category...&lt;/aside&gt;
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🖼️ Layout — renders sections</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="cm">@* ❷ @RenderBody() — all non-section content *@</span>
+@<span class="fn">RenderBody</span>()
+
+<span class="cm">@* ❸ Required section — error if view doesn't define it *@</span>
+@<span class="fn">RenderSection</span>(<span class="str">"Sidebar"</span>, required: <span class="kw">true</span>)
+
+<span class="cm">@* ❹ Optional section — silently ignored if not defined *@</span>
+@<span class="fn">RenderSection</span>(<span class="str">"Scripts"</span>, required: <span class="kw">false</span>)</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Common optional Scripts section</div>
+        <div class="callout-text">It's common to have an optional <code>Scripts</code> section in your layout. Views that need page-specific JavaScript (like jQuery Validation) define it. Views that don't need it simply omit the section — no error, since it's optional. This avoids loading unnecessary scripts on every page.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="partials">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Using Partial Views to Encapsulate Markup</h2>
+    </div>
+
+    <p>Partial views are <strong>reusable chunks of Razor markup</strong> — like a component or a helper. They break up large views into smaller, focused pieces. They are rendered using the <code>&lt;partial /&gt;</code> Tag Helper.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title"> Note — What partial views are</div>
+        <div class="callout-text">Partial views are a bit like Razor Pages without the PageModel and handlers. They are purely about rendering small sections of HTML — no routing, no model binding, no validation, no handlers. They just render.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Using a partial view with &lt;partial /&gt;</span></div>
+      <div class="code-body"><span class="cm">@* Render partial by name — framework searches for _ToDo.cshtml *@</span>
+&lt;partial name=<span class="str">"_ToDo"</span> model=<span class="str">"@item"</span> /&gt;
+
+<span class="cm">@* Render with absolute path *@</span>
+&lt;partial name=<span class="str">"~/Pages/Shared/_ProductCard.cshtml"</span> model=<span class="str">"@product"</span> /&gt;
+
+<span class="cm">@* Loop and render a partial for each item *@</span>
+@<span class="kw">foreach</span> (<span class="kw">var</span> item <span class="kw">in</span> Model.ToDos)
+{
+    &lt;partial name=<span class="str">"_ToDo"</span> model=<span class="str">"@item"</span> /&gt;
+}</div>
+    </div>
+
+    <p>When you use a short name like <code>_ToDo</code>, the framework searches for the file starting from the current page's folder, working up:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Search order</span><span class="code-label">Framework looks for _ToDo.cshtml in these locations</span></div>
+      <div class="code-body"><span class="cm">// If the calling page is at: Pages/Agenda/ToDos/RecentToDos.cshtml</span>
+<span class="nm">1.</span> Pages/Agenda/ToDos/         <span class="cm">← current page's folder (first)</span>
+<span class="nm">2.</span> Pages/Agenda/
+<span class="nm">3.</span> Pages/
+<span class="nm">4.</span> Pages/Shared/               <span class="cm">← shared folder (recommended location)</span>
+<span class="nm">5.</span> Views/Shared/</div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="viewimports">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Importing Common Directives with _ViewImports</h2>
+    </div>
+
+    <p>The <code>_ViewImports.cshtml</code> file contains directives that are <strong>automatically inserted at the top of every Razor view</strong> in the same folder and subfolders. Avoids repeating <code>@using</code> statements in every view.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">_ViewImports.cshtml — shared across all views</span></div>
+      <div class="code-body"><span class="cm">@* Make namespaces available in all views *@</span>
+@using MyApp.Models
+@using MyApp.ViewModels
+@using Microsoft.AspNetCore.Mvc.RazorPages
+
+<span class="cm">@* Activate Tag Helpers (required for asp-* attributes) *@</span>
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<span class="cm">@* Only directives go here — no C# logic, no @{} blocks *@</span>
+<span class="cm">@* For logic that runs before every view, use _ViewStart.cshtml *@</span></div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Only directives — no arbitrary C#</div>
+        <div class="callout-text">You should only put Razor <strong>directives</strong> in <code>_ViewImports.cshtml</code> (like <code>@using</code>, <code>@addTagHelper</code>, <code>@model</code>). You can't put arbitrary C# code there. For code that should run before every view (like setting the <code>Layout</code>), use <code>_ViewStart.cshtml</code> instead.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 13 ══ -->
+  <section class="section" id="viewstart">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Running Code for Every View with _ViewStart</h2>
+    </div>
+
+    <p>The <code>_ViewStart.cshtml</code> file can contain <strong>any Razor code</strong>, and it executes <strong>before</strong> each view in the same folder (and subfolders) renders. Its most common use is setting the default layout for all pages.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">_ViewStart.cshtml — set the default layout for all pages</span></div>
+      <div class="code-body"><span class="cm">@* Runs before every Razor Page view *@</span>
+@{
+    <span class="cm">// All pages will use _Layout.cshtml by default</span>
+    Layout = <span class="str">"_Layout"</span>;
+}
+
+<span class="cm">// Individual views can override this:</span>
+@{
+    Layout = <span class="str">"_TwoColumnLayout"</span>;  <span class="cm">// override for this page only</span>
+}
+
+<span class="cm">// Or disable the layout entirely:</span>
+@{
+    Layout = <span class="kw">null</span>;  <span class="cm">// render without any layout</span>
+}</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📋 _ViewImports.cshtml</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>What:</strong> Razor directives only (<code>@using</code>, <code>@addTagHelper</code>)<br>
+          <strong>When:</strong> Applied as if added to top of every view<br>
+          <strong>Runs for:</strong> Views, layouts, partial views
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">⚡ _ViewStart.cshtml</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>What:</strong> Any Razor code (most commonly sets <code>Layout</code>)<br>
+          <strong>When:</strong> Runs before each view renders<br>
+          <strong>Runs for:</strong> Razor Page views only — NOT layouts or partials
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-vs1" class="quiz-block">
+      <div class="quiz-question">🧠 You want all Razor Page views to use <code>_Layout.cshtml</code> by default without repeating it in every view. What is the correct approach?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-vs1',false)">Add <code>@addLayout "_Layout"</code> to <code>_ViewImports.cshtml</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vs1',true)">Create <code>_ViewStart.cshtml</code> with <code>@{ Layout = "_Layout"; }</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vs1',false)">Register the layout in <code>Program.cs</code> via <code>builder.Services.AddLayout("_Layout")</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vs1',false)">Add <code>@using Layout = "_Layout"</code> to <code>_ViewImports.cshtml</code></button>
+      </div>
+      <div class="quiz-feedback" id="quiz-vs1-fb"></div>
+    </div>
+
+    
+  <!-- ══ SECTION 14 ══ -->
+  <section class="section" id="runtime-compilation">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2 class="section-title">Runtime Compilation of Razor Pages</h2>
+    </div>
+
+    <p>By default, Razor Pages are <strong>compiled at build time</strong> — they become C# classes in your application. ASP.NET Core also supports <strong>runtime compilation</strong>, which lets you modify <code>.cshtml</code> files while the app is running without stopping and rebuilding.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Build-time compilation (default)</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>Behavior:</strong> Views compiled when you run <code>dotnet build</code><br>
+          <strong>Performance:</strong> No overhead at runtime<br>
+          <strong>Errors:</strong> Caught at build time<br>
+          <strong>Use:</strong> Production &amp; CI/CD — always
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header bad">⚡ Runtime compilation (opt-in)</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>Behavior:</strong> <code>.cshtml</code> changes picked up without rebuild<br>
+          <strong>Performance:</strong> Adds overhead — recompiles on change<br>
+          <strong>Errors:</strong> Caught only at request time<br>
+          <strong>Use:</strong> Local development only — disable in production
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Enabling runtime compilation — Program.cs + NuGet</span></div>
+      <div class="code-body"><span class="cm">// 1. Install the NuGet package:</span>
+<span class="cm">//    Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation</span>
+
+<span class="cm">// 2. Add to Program.cs — only for Development:</span>
+<span class="kw">var</span> builder = WebApplication.<span class="fn">CreateBuilder</span>(args);
+
+builder.Services
+    .<span class="fn">AddRazorPages</span>()
+    .<span class="fn">AddRazorRuntimeCompilation</span>();  <span class="cm">// ← add this</span>
+
+<span class="cm">// Or conditionally, only in Development:</span>
+<span class="kw">if</span> (builder.Environment.<span class="fn">IsDevelopment</span>())
+{
+    builder.Services
+        .<span class="fn">AddRazorPages</span>()
+        .<span class="fn">AddRazorRuntimeCompilation</span>();
+}</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Avoid runtime compilation in production</div>
+        <div class="callout-text">Runtime compilation is handy when developing locally — you can edit a view and refresh the browser without rebuilding. However, it adds startup and request overhead and delays error detection. <strong>Never enable it in production deployments.</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 15 ══ -->
+  <section class="section" id="inject-views">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2 class="section-title">Injecting Services into Views with @inject</h2>
+    </div>
+
+    <p>Beyond passing data via the PageModel, ASP.NET Core lets you inject services directly into a view using the <code>@inject</code> directive. This gives the view access to a DI-registered service without going through the PageModel.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Use sparingly — prefer PageModel properties</div>
+        <div class="callout-text">Injecting services in views can seem convenient, but it violates the MVC separation of concerns — the view shouldn't be responsible for fetching or computing data. <strong>Use <code>@inject</code> only for view-specific helpers</strong> (e.g., localization, authorization checks, feature flags), never to replace PageModel data-loading logic.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">@inject — inject a service directly into a view</span></div>
+      <div class="code-body"><span class="cm">@* Syntax: @inject ServiceType variableName *@</span>
+@inject <span class="tp">IStringLocalizer</span>&lt;<span class="tp">SharedResources</span>&gt; Localizer
+@inject <span class="tp">IAuthorizationService</span> AuthService
+
+<span class="cm">@* Use it anywhere in the view *@</span>
+&lt;h1&gt;@Localizer[<span class="str">"WelcomeTitle"</span>]&lt;/h1&gt;
+
+@{
+    <span class="kw">var</span> canEdit = <span class="kw">await</span> AuthService.<span class="fn">AuthorizeAsync</span>(
+        User, <span class="str">"EditPolicy"</span>);
+}
+
+@<span class="kw">if</span> (canEdit.Succeeded)
+{
+    &lt;a <span class="tp">asp-page</span>=<span class="str">"Edit"</span>&gt;Edit&lt;/a&gt;
+}
+
+<span class="cm">@* Common legitimate use: feature flags *@</span>
+@inject <span class="tp">IFeatureManager</span> Features
+
+@<span class="kw">if</span> (<span class="kw">await</span> Features.<span class="fn">IsEnabledAsync</span>(<span class="str">"NewUI"</span>))
+{
+    &lt;partial name=<span class="str">"_NewDashboard"</span> /&gt;
+}
+<span class="kw">else</span>
+{
+    &lt;partial name=<span class="str">"_OldDashboard"</span> /&gt;
+}</div>
+    </div>
+
+    <table class="data-table">
+      <tr><th>Mechanism</th><th>Best For</th><th>Avoid When</th></tr>
+      <tr>
+        <td><strong>PageModel Properties</strong></td>
+        <td>All page-specific data — products, users, counts, anything from a DB</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>ViewData</strong></td>
+        <td>Cross-cutting UI data like page titles shared with layouts</td>
+        <td>Strongly typed data — use PageModel instead</td>
+      </tr>
+      <tr>
+        <td><strong>@inject</strong></td>
+        <td>View-layer helpers: localization, auth checks, feature flags</td>
+        <td>Loading data from a database or service — do that in PageModel</td>
+      </tr>
+    </table>
+
+    <div id="quiz-inject1" class="quiz-block">
+      <div class="quiz-question">🧠 You want to show an "Edit" button only if the user has the <code>"CanEdit"</code> policy. Where should the authorization check happen?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-inject1',false)">In the database query — filter out items the user can't edit</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-inject1',false)">In a <code>@{}</code> code block reading from <code>ViewData</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-inject1',true)">In the view using <code>@inject IAuthorizationService</code> — this is a view-rendering decision, acceptable use of @inject</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-inject1',false)">In <code>_ViewImports.cshtml</code> so it applies to all views automatically</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-inject1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 16 ══ -->
+  <section class="section" id="view-components">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2 class="section-title">View Components — Partial Views with Logic</h2>
+    </div>
+
+    <p>A <strong>View Component</strong> is like a partial view that can also execute code and call services. It replaces the old "child action" pattern from legacy ASP.NET. Use it when a reusable UI fragment needs its own data-fetching logic — for example, a shopping cart badge, a notification bell, or a user avatar dropdown.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📄 Partial view</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>Data:</strong> Passed in from the parent view/page<br>
+          <strong>Logic:</strong> None — display only<br>
+          <strong>Services:</strong> Cannot call services<br>
+          <strong>Use:</strong> Simple reusable UI fragments
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">⚙️ View Component</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          <strong>Data:</strong> Fetches its own data independently<br>
+          <strong>Logic:</strong> Has an <code>InvokeAsync()</code> method<br>
+          <strong>Services:</strong> Full DI — can call any service<br>
+          <strong>Use:</strong> Self-contained UI widgets with business logic
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + Razor</span><span class="code-label">Anatomy of a View Component</span></div>
+      <div class="code-body"><span class="cm">// 1. The component class — in /ViewComponents/ folder</span>
+<span class="kw">public class</span> <span class="tp">CartSummaryViewComponent</span> : <span class="tp">ViewComponent</span>
+{
+    <span class="kw">private readonly</span> <span class="tp">ICartService</span> _cart;
+
+    <span class="kw">public</span> <span class="fn">CartSummaryViewComponent</span>(<span class="tp">ICartService</span> cart)
+        => _cart = cart;   <span class="cm">// ← full dependency injection</span>
+
+    <span class="kw">public async</span> <span class="tp">Task</span>&lt;<span class="tp">IViewComponentResult</span>&gt; <span class="fn">InvokeAsync</span>()
+    {
+        <span class="kw">var</span> count = <span class="kw">await</span> _cart.<span class="fn">GetItemCountAsync</span>(HttpContext.User);
+        <span class="kw">return</span> <span class="fn">View</span>(count);   <span class="cm">// renders Default.cshtml with count as model</span>
+    }
+}
+
+<span class="cm">// 2. The view — at /Pages/Shared/Components/CartSummary/Default.cshtml</span>
+@model <span class="tp">int</span>
+&lt;span class=<span class="str">"cart-badge"</span>&gt;🛒 @Model items&lt;/span&gt;
+
+<span class="cm">// 3. Invoke from any Razor Page or layout:</span>
+@<span class="kw">await</span> <span class="fn">Component</span>.<span class="fn">InvokeAsync</span>(<span class="str">"CartSummary"</span>)
+
+<span class="cm">// Or using Tag Helper syntax (cleaner — requires @addTagHelper in _ViewImports):</span>
+&lt;<span class="tp">vc:cart-summary</span> /&gt;</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">View component file location convention</div>
+        <div class="callout-text">View component views are located at <code>/Pages/Shared/Components/{ComponentName}/Default.cshtml</code>. You can use a different view name by passing it as a string to <code>View("ViewName", model)</code>, but <code>Default.cshtml</code> is the convention.</div>
+      </div>
+    </div>
+
+    <div id="quiz-vc1" class="quiz-block">
+      <div class="quiz-question">🧠 Every page in your app needs to show the number of unread notifications for the logged-in user — fetched from the database. What is the best approach?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-vc1',false)">Add a <code>NotificationCount</code> property to every single PageModel</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vc1',false)">Use a partial view and pass the count from every page</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vc1',true)">Create a View Component — it fetches its own data independently and can be placed in the layout</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-vc1',false)">Use <code>@inject</code> in the layout to call the notification service directly</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-vc1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 17 ══ -->
+  <section class="section" id="ajax-partial">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2 class="section-title">AJAX with Razor — Partial Views and Dynamic Updates</h2>
+    </div>
+
+    <p>Razor is a <strong>server-side rendering</strong> (SSR) engine — it generates HTML on the server and sends it to the browser. For highly dynamic pages, you can combine SSR with <strong>AJAX</strong>: the browser requests just a <em>partial</em> update, and the server returns only the HTML for a section of the page.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <div class="callout-title">AJAX with Razor = partial views + dedicated handlers</div>
+        <div class="callout-text">To use AJAX with Razor Pages, expose your partial views via dedicated Razor Page handlers (e.g., <code>OnGetProductList()</code> that returns a <code>PartialViewResult</code>). Your JavaScript then fetches that URL and injects the returned HTML into the DOM.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C# + JS</span><span class="code-label">AJAX pattern with Razor Pages — handler + fetch</span></div>
+      <div class="code-body"><span class="cm">// PageModel — dedicated handler that returns a partial</span>
+<span class="kw">public class</span> <span class="tp">ProductsModel</span> : <span class="tp">PageModel</span>
+{
+    <span class="kw">public</span> <span class="tp">IList</span>&lt;<span class="tp">Product</span>&gt; Products { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public</span> <span class="tp">IActionResult</span> <span class="fn">OnGetProductList</span>(<span class="tp">string</span> category)
+    {
+        Products = _db.<span class="fn">GetByCategory</span>(category);
+        <span class="kw">return</span> <span class="fn">Partial</span>(<span class="str">"_ProductList"</span>, Products);  <span class="cm">// returns only the partial</span>
+    }
+}
+
+<span class="cm">// _ProductList.cshtml — the partial view</span>
+@model <span class="tp">IList</span>&lt;<span class="tp">Product</span>&gt;
+@<span class="kw">foreach</span> (<span class="kw">var</span> p <span class="kw">in</span> Model)
+{
+    &lt;div class=<span class="str">"product-card"</span>&gt;@p.Name — @p.Price.ToString(<span class="str">"C"</span>)&lt;/div&gt;
+}
+
+<span class="cm">// JavaScript — fetch updated HTML from the server</span>
+<span class="kw">async function</span> <span class="fn">loadCategory</span>(category) {
+    <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/Products?handler=ProductList&amp;category=${category}`</span>);
+    <span class="kw">const</span> html = <span class="kw">await</span> res.<span class="fn">text</span>();
+    document.<span class="fn">getElementById</span>(<span class="str">'product-container'</span>).innerHTML = html;
+}</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Good use of AJAX + Razor</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          Filtering a product list without a full page reload<br>
+          Loading more items (infinite scroll)<br>
+          Refreshing a notification count badge<br>
+          Updating a small widget in a dashboard
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Consider a SPA instead</div>
+        <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:14px 16px;line-height:1.8;color:var(--text2);">
+          The whole app is highly interactive (think Figma, Gmail)<br>
+          Near-instant UI updates with complex local state<br>
+          Offline support required<br>
+          Team already knows React/Angular/Vue
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Consider Blazor for rich interactivity</div>
+        <div class="callout-text">If you need a highly dynamic UI but want to stay in the .NET ecosystem, <strong>Blazor</strong> is designed exactly for that. Blazor Server and Blazor WebAssembly offer component-based interactivity without writing JavaScript. AJAX + Razor works well for simpler scenarios, but Blazor is the ASP.NET Core answer to SPAs.</div>
+      </div>
+    </div>
+
+    <div id="quiz-ajax1" class="quiz-block">
+      <div class="quiz-question">🧠 You're using Razor Pages and want a "Load More" button that appends more results to a list without reloading the entire page. What is the recommended approach?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-ajax1',false)">Rewrite the entire app as a React SPA</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ajax1',true)">Create a named page handler that returns a <code>PartialViewResult</code>, then use <code>fetch()</code> in JavaScript to call it and append the HTML</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ajax1',false)">Use <code>ViewData</code> — it persists between AJAX requests automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-ajax1',false)">Return a full page from the handler and use JavaScript to extract the relevant part</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-ajax1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 18 ══ -->
+  <section class="section" id="summary">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <h2 class="section-title">Chapter Summary</h2>
+    </div>
+
+    <p>Everything covered in Chapter 17 — a complete reference of Razor view concepts, patterns, and decisions.</p>
+
+    <table class="data-table">
+      <tr><th>Concept</th><th>Key Point</th></tr>
+      <tr>
+        <td><strong>Razor View</strong></td>
+        <td>Mixes HTML and C# to generate HTML dynamically. Compiled into a C# class at build time. Views should only <em>read</em> PageModel properties — never call methods.</td>
+      </tr>
+      <tr>
+        <td><strong>@page / @model</strong></td>
+        <td><code>@page</code> makes a file a routable Razor Page. <code>@model</code> (lowercase) declares the PageModel type. <code>Model</code> (uppercase) accesses the instance in the view.</td>
+      </tr>
+      <tr>
+        <td><strong>Passing Data</strong></td>
+        <td>Use PageModel properties first. Fall back to ViewData for cross-view data (titles, layout). Use TempData to survive one redirect. Use @inject sparingly for view-layer helpers.</td>
+      </tr>
+      <tr>
+        <td><strong>@ expressions / @{} blocks</strong></td>
+        <td><code>@expr</code> writes a value to HTML (no semicolons). <code>@(expr)</code> for expressions with spaces. <code>@{ }</code> runs C# code without output (needs semicolons). Use <code>@@</code> for a literal @.</td>
+      </tr>
+      <tr>
+        <td><strong>HTML Encoding / Html.Raw</strong></td>
+        <td>All <code>@</code> expressions are HTML-encoded by default (XSS protection). Use <code>Html.Raw()</code> only for trusted HTML — never on user input.</td>
+      </tr>
+      <tr>
+        <td><strong>Layouts</strong></td>
+        <td>Extract shared markup (header, footer, CSS links) into a layout. The layout calls <code>@RenderBody()</code> to render the child view. Set via <code>Layout = "_Layout"</code> in the view or in <code>_ViewStart.cshtml</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Sections</strong></td>
+        <td>Allow child views to inject content into specific slots of a layout. Defined with <code>@section Name { }</code>, rendered with <code>@RenderSection("Name", required: bool)</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Partial Views</strong></td>
+        <td>Reusable view fragments. No routing, no PageModel. Rendered via <code>&lt;partial name="_Name" model="data" /&gt;</code>. Cannot run <code>_ViewStart.cshtml</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>View Components</strong></td>
+        <td>Like a partial view with its own logic and DI. Use for self-contained UI widgets that need data from services (cart, notifications). Replaces the old "child action" pattern.</td>
+      </tr>
+      <tr>
+        <td><strong>_ViewImports</strong></td>
+        <td>Adds directives (<code>@using</code>, <code>@addTagHelper</code>) to all views in the folder and subfolders. Directives only — no arbitrary C#.</td>
+      </tr>
+      <tr>
+        <td><strong>_ViewStart</strong></td>
+        <td>Runs arbitrary C# before each Razor Page view (not layouts/partials). Most common use: set default layout. Individual views can override it.</td>
+      </tr>
+      <tr>
+        <td><strong>Runtime Compilation</strong></td>
+        <td>Opt-in feature for local development. Recompiles <code>.cshtml</code> files on-the-fly without a rebuild. Must NOT be enabled in production.</td>
+      </tr>
+      <tr>
+        <td><strong>AJAX + Razor</strong></td>
+        <td>Combine partial views with named page handlers (<code>OnGet<em>Name</em>()</code> returning <code>Partial(...)</code>) and JavaScript <code>fetch()</code>. For heavy interactivity, consider Blazor instead.</td>
+      </tr>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">Up Next — Chapter 18: Tag Helpers</div>
+        <div class="callout-text">Tag Helpers are one of the biggest improvements to Razor in ASP.NET Core. They look like normal HTML attributes prefixed with <code>asp-</code> and make generating HTML forms, links, and other elements far simpler and more editor-friendly than the old <code>HtmlHelper</code> approach. Chapter 18 covers them in depth.</div>
+      </div>
+    </div>
+  </section>
+  <section id="github" class="section">
+<div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+  <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter17" target="_blank" 
+     style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+    </div>
+    
+    <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+      Visit this link to run and test the code for this chapter.
+    </div>
+  </a>
+</div></section>
+
+</main>
+</div>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function answer(btn, id, correct) {
+  const block = document.getElementById(id);
+  block.querySelectorAll('.quiz-option').forEach(b => b.disabled = true);
+  const fb = document.getElementById(id + '-fb');
+  if (correct) { btn.classList.add('correct'); fb.textContent = '✅ Correct!'; fb.className = 'quiz-feedback show ok'; }
+  else { btn.classList.add('wrong'); block.querySelectorAll('.quiz-option').forEach(b => { if (b._c) b.classList.add('reveal'); }); fb.textContent = '❌ Not quite — review the section above.'; fb.className = 'quiz-feedback show err'; }
+}
+document.querySelectorAll('.quiz-option').forEach(b => { b._c = b.getAttribute('onclick')?.includes(',true)'); });
+function scrollPageTo(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting) { navLinks.forEach(l => l.classList.remove('active')); const l = document.querySelector(`.nav-link[data-target="${e.target.id}"]`); if (l) l.classList.add('active'); } }); }, { rootMargin: '-20% 0px -20% 0px' });
+sections.forEach(s => observer.observe(s));
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+  const fill = document.getElementById('mobileProgressFill'); if (fill) fill.style.width = Math.min(pct, 100) + '%';
+});
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay'), sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer = function(){ sidebar.classList.add('open'); overlay.classList.add('show'); };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(l => l.addEventListener('click', () => { if (window.innerWidth <= 900) closeDrawer(); }));
+})();
+</script>
+</body>
+</html>

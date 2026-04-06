@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 11 — Documenting APIs with OpenAPI</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 11 — OpenAPI</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span>
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span>
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Chapter 11</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="what-is-openapi" onclick="scrollPageTo('what-is-openapi')"><span class="dot"></span>What is OpenAPI?</button>
+    <button class="nav-link" data-target="adding-openapi" onclick="scrollPageTo('adding-openapi')"><span class="dot"></span>Adding OpenAPI</button>
+    <button class="nav-link" data-target="swagger-ui" onclick="scrollPageTo('swagger-ui')"><span class="dot"></span>Swagger UI</button>
+    <button class="nav-link" data-target="metadata" onclick="scrollPageTo('metadata')"><span class="dot"></span>Adding Metadata</button>
+    <button class="nav-link" data-target="nswag-clients" onclick="scrollPageTo('nswag-clients')"><span class="dot"></span>Generating Clients</button>
+    <button class="nav-link" data-target="using-client" onclick="scrollPageTo('using-client')"><span class="dot"></span>Using Generated Client</button>
+    <button class="nav-link" data-target="customizing" onclick="scrollPageTo('customizing')"><span class="dot"></span>Customizing Client</button>
+    <button class="nav-link" data-target="summaries" onclick="scrollPageTo('summaries')"><span class="dot"></span>Summaries &amp; Descriptions</button>
+    <button class="nav-link" data-target="attributes" onclick="scrollPageTo('attributes')"><span class="dot"></span>Attributes vs Methods</button>
+    <button class="nav-link" data-target="xml-comments" onclick="scrollPageTo('xml-comments')"><span class="dot"></span>XML Comments</button>
+    <button class="nav-link" data-target="limitations" onclick="scrollPageTo('limitations')"><span class="dot"></span>Limitations</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link active" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Creating a Website with Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 11</div>
+    <h1 class="chapter-title">Documenting APIs with OpenAPI</h1>
+    <p class="chapter-subtitle">Generate rich, machine-readable API descriptions, explore them with Swagger UI, and auto-generate strongly-typed C# clients using NSwag.</p>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="what-is-openapi">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">What is OpenAPI?</h2>
+    </div>
+
+    <p><strong>OpenAPI</strong> (previously called Swagger) is a language-agnostic specification for describing RESTful APIs. At its core, OpenAPI defines the schema of a JSON document that describes the URLs available in your application, how to invoke them, and the data types they return.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">OpenAPI vs Swagger — What's the difference?</div>
+        <div class="callout-text">
+          <strong>OpenAPI</strong> is the name of the <em>specification</em>. <strong>Swagger</strong> is the name of the <em>tooling ecosystem</em> built around it (Swagger UI, Swashbuckle, etc.). Think of OpenAPI as the standard, and Swagger as the brand of tools that implement it.
+        </div>
+      </div>
+    </div>
+
+    <p>Providing an OpenAPI document for your application unlocks a range of automation possibilities:</p>
+
+    <div style="margin: 20px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center;">
+        <div style="font-size: 22px; margin-bottom: 8px;">🔍</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px;">Swagger UI</div>
+        <div style="font-size: 12px; color: var(--text3);">Browse and test endpoints visually</div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center;">
+        <div style="font-size: 22px; margin-bottom: 8px;">⚡</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px;">Client Generation</div>
+        <div style="font-size: 12px; color: var(--text3);">Auto-generate typed C# clients</div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center;">
+        <div style="font-size: 22px; margin-bottom: 8px;">☁️</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px;">API Gateways</div>
+        <div style="font-size: 12px; color: var(--text3);">Integrate with Azure API Management</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">📝</div>
+      <div class="callout-body">
+        <div class="callout-title">WSDL Analogy</div>
+        <div class="callout-text">If you're familiar with SOAP from old ASP.NET, think of OpenAPI as the HTTP/REST equivalent of WSDL. Just as a <code>.wsdl</code> file described your XML SOAP services, an OpenAPI document describes your REST API.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa1" class="quiz-block">
+      <div class="quiz-question">🧠 What is the correct relationship between "OpenAPI" and "Swagger"?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa1',false)">They are the same thing — just two names for the same project</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa1',true)">OpenAPI is the specification; Swagger is the tooling ecosystem built around it</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa1',false)">Swagger is the specification; OpenAPI is the newer name for NSwag</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa1',false)">OpenAPI is Microsoft's proprietary format; Swagger is the open-source alternative</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="adding-openapi">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Adding an OpenAPI Description</h2>
+    </div>
+
+    <p>ASP.NET Core supports OpenAPI document generation through third-party libraries. The two most popular are <strong>NSwag</strong> and <strong>Swashbuckle</strong>. In this chapter we use <strong>Swashbuckle</strong>.</p>
+
+    <p>Install via the .NET CLI:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">CLI</span><span class="code-label">Terminal</span></div>
+      <div class="code-body" style="color: #abb2bf;">dotnet add package Swashbuckle.AspNetCore</div>
+    </div>
+
+    <p>Then configure your <code>Program.cs</code> to enable OpenAPI generation and expose it via middleware:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — Adding Swashbuckle</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="kw">using</span> System.Collections.Concurrent;
+
+<span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer(); <span class="cm">// ❶ Endpoint discovery</span>
+builder.Services.AddSwaggerGen();           <span class="cm">// ❷ OpenAPI document generator</span>
+
+<span class="tp">WebApplication</span> app = builder.Build();
+
+<span class="kw">var</span> _fruit = <span class="kw">new</span> <span class="tp">ConcurrentDictionary</span>&lt;<span class="kw">string</span>, <span class="tp">Fruit</span>&gt;();
+
+app.UseSwagger();   <span class="cm">// ❸ Exposes /swagger/v1/swagger.json</span>
+app.UseSwaggerUI(); <span class="cm">// ❹ Serves the Swagger UI at /swagger</span>
+
+app.MapGet(<span class="str">"/fruit/{id}"</span>, (<span class="kw">string</span> id) =>
+    _fruit.TryGetValue(id, <span class="kw">out var</span> fruit)
+        ? TypedResults.Ok(fruit)
+        : Results.Problem(statusCode: <span class="nm">404</span>));
+
+app.MapPost(<span class="str">"/fruit/{id}"</span>, (<span class="kw">string</span> id, <span class="tp">Fruit</span> fruit) =>
+    _fruit.TryAdd(id, fruit)
+        ? TypedResults.Created(<span class="str">$"/fruit/{id}"</span>, fruit)
+        : Results.ValidationProblem(<span class="kw">new</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">string</span>[]&gt;
+        {
+            { <span class="str">"id"</span>, <span class="kw">new</span>[] { <span class="str">"A fruit with this id already exists"</span> } }
+        }));
+
+app.Run();
+
+<span class="kw">record</span> <span class="tp">Fruit</span>(<span class="kw">string</span> Name, <span class="kw">int</span> Stock);</div>
+    </div>
+
+    <div style="margin: 20px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+      <div style="background: var(--bg3); padding: 10px 16px; font-size: 12px; font-weight: 600; color: var(--text3); border-bottom: 1px solid var(--border);">HOW IT WORKS — SWASHBUCKLE PIPELINE</div>
+      <div style="padding: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 0;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(0,212,170,.15); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+            <div><strong style="color: var(--text);">ASP.NET Core Metadata Service</strong> <span style="color: var(--text3); font-size: 13px;">reads all endpoint metadata (route, verb, parameters, types)</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(0,212,170,.15); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+            <div><strong style="color: var(--text);">Swashbuckle OpenAPI Services</strong> <span style="color: var(--text3); font-size: 13px;">process the metadata and generate a JSON OpenAPI document</span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border);">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(0,212,170,.15); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+            <div><strong style="color: var(--text);">Swagger Middleware</strong> <span style="color: var(--text3); font-size: 13px;">serves the OpenAPI document at <code>/swagger/v1/swagger.json</code></span></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0;">
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: rgba(0,212,170,.15); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">4</div>
+            <div><strong style="color: var(--text);">Swagger UI Middleware</strong> <span style="color: var(--text3); font-size: 13px;">serves an interactive web UI at <code>/swagger</code> built from the document</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p>You can also customize the document title and description by passing options to <code>AddSwaggerGen()</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Customizing the OpenAPI document info</span></div>
+      <div class="code-body" style="color: #abb2bf;">builder.Services.AddSwaggerGen(x =>
+    x.SwaggerDoc(<span class="str">"v1"</span>, <span class="kw">new</span> <span class="tp">OpenApiInfo</span>()
+    {
+        Title = <span class="str">"Fruitify"</span>,
+        Description = <span class="str">"An API for interacting with fruit stock"</span>,
+        Version = <span class="str">"1.0"</span>
+    }));</div>
+    </div>
+
+    <div id="quiz-oa2" class="quiz-block">
+      <div class="quiz-question">🧠 Which two service registrations are required to enable OpenAPI generation with Swashbuckle?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa2',false)"><code>AddSwagger()</code> and <code>AddOpenApi()</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa2',true)"><code>AddEndpointsApiExplorer()</code> and <code>AddSwaggerGen()</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa2',false)"><code>AddSwaggerUI()</code> and <code>AddApiExplorer()</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa2',false)"><code>AddOpenApiDocument()</code> and <code>AddSwashbuckle()</code></button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa2-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="swagger-ui">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Testing Your APIs with Swagger UI</h2>
+    </div>
+
+    <p><strong>Swagger UI</strong> is an open-source web UI that visualizes and lets you test your OpenAPI endpoints. Think of it as a lightweight, built-in alternative to Postman for local development.</p>
+
+    <p>After calling <code>app.UseSwaggerUI()</code>, navigate to <code>/swagger</code> in your running app. You'll see:</p>
+
+    <div style="margin: 20px 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Endpoint list</strong></td><td>All routes with their HTTP verb and route template</td></tr>
+          <tr><td><strong>Parameter details</strong></td><td>Required/optional, source (path/query/body), and type</td></tr>
+          <tr><td><strong>Response schemas</strong></td><td>Expected response types and status codes</td></tr>
+          <tr><td><strong>"Try it out"</strong></td><td>Fill in parameters and execute real HTTP requests to your running app</td></tr>
+          <tr><td><strong>curl equivalent</strong></td><td>Swagger shows the equivalent curl command after every request</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✨</div>
+      <div class="callout-body">
+        <div class="callout-title">Swagger UI vs Postman</div>
+        <div class="callout-text">Swagger UI is great for quick local testing — no setup needed. Postman shines when you need collections, team sharing, environments, and scripted test flows. For individual endpoint testing during development, Swagger UI is perfect.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa3" class="quiz-block">
+      <div class="quiz-question">🧠 By default, where does Swagger UI serve its interactive page when <code>app.UseSwaggerUI()</code> is called?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa3',false)"><code>/swagger/ui</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa3',false)"><code>/api/docs</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa3',true)"><code>/swagger</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa3',false)"><code>/openapi</code></button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa3-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="metadata">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Adding Metadata to Your Minimal APIs</h2>
+    </div>
+
+    <p><strong>Metadata</strong> is information about an API that doesn't change how the endpoint executes — it enriches the OpenAPI description. Without it, Swagger UI may show incomplete response information.</p>
+
+    <p>There are three broad categories of metadata you can add:</p>
+
+    <div style="margin: 20px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+      <div style="background: rgba(124,106,247,.06); border: 1px solid rgba(124,106,247,.2); border-radius: var(--radius); padding: 16px;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--accent2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em;">Routing</div>
+        <div style="font-size: 13px; color: var(--text2);">e.g. <code>WithName()</code> — globally unique name for URL generation</div>
+      </div>
+      <div style="background: rgba(0,212,170,.06); border: 1px solid rgba(0,212,170,.2); border-radius: var(--radius); padding: 16px;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em;">Middleware</div>
+        <div style="font-size: 13px; color: var(--text2);">e.g. authorization, hostname filtering, output caching per-endpoint</div>
+      </div>
+      <div style="background: rgba(88,166,255,.06); border: 1px solid rgba(88,166,255,.2); border-radius: var(--radius); padding: 16px;">
+        <div style="font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em;">OpenAPI</div>
+        <div style="font-size: 13px; color: var(--text2);">Drives Swashbuckle's document generation — tags, response types, etc.</div>
+      </div>
+    </div>
+
+    <p>Here's how to add tags and explicitly declare response types so that Swagger UI shows accurate information:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Adding OpenAPI metadata to endpoints</span></div>
+      <div class="code-body" style="color: #abb2bf;">app.MapGet(<span class="str">"/fruit/{id}"</span>, (<span class="kw">string</span> id) =>
+    _fruit.TryGetValue(id, <span class="kw">out var</span> fruit)
+        ? TypedResults.Ok(fruit)
+        : Results.Problem(statusCode: <span class="nm">404</span>))
+    .WithTags(<span class="str">"fruit"</span>)          <span class="cm">// ❶ Groups endpoint in Swagger UI</span>
+    .Produces&lt;<span class="tp">Fruit</span>&gt;()           <span class="cm">// ❷ Documents the 200 OK response type</span>
+    .ProducesProblem(<span class="nm">404</span>);        <span class="cm">// ❸ Documents the 404 Problem Details response</span>
+
+app.MapPost(<span class="str">"/fruit/{id}"</span>, (<span class="kw">string</span> id, <span class="tp">Fruit</span> fruit) =>
+    _fruit.TryAdd(id, fruit)
+        ? TypedResults.Created(<span class="str">$"/fruit/{id}"</span>, fruit)
+        : Results.ValidationProblem(<span class="kw">new</span> Dictionary&lt;<span class="kw">string</span>, <span class="kw">string</span>[]&gt;
+        {
+            { <span class="str">"id"</span>, <span class="kw">new</span>[] { <span class="str">"A fruit with this id already exists"</span> } }
+        }))
+    .WithTags(<span class="str">"fruit"</span>)
+    .Produces&lt;<span class="tp">Fruit</span>&gt;(<span class="nm">201</span>)        <span class="cm">// ❹ Returns 201 Created, not 200 OK</span>
+    .ProducesValidationProblem(); <span class="cm">// ❺ Documents the 400 validation error response</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✨</div>
+      <div class="callout-body">
+        <div class="callout-title">Use Route Groups for Shared Metadata</div>
+        <div class="callout-text">You can use <strong>route groups</strong> (from Chapter 5) to apply tags and other metadata to multiple endpoints at once, avoiding repetition. For example: <code>var fruit = app.MapGroup("/fruit").WithTags("fruit");</code></div>
+      </div>
+    </div>
+
+    <div id="quiz-oa4" class="quiz-block">
+      <div class="quiz-question">🧠 A POST endpoint returns <code>TypedResults.Created()</code>. Which call correctly documents its 201 response?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa4',false)"><code>.Produces&lt;Fruit&gt;()</code> — no status code needed, Swashbuckle infers 201</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa4',true)"><code>.Produces&lt;Fruit&gt;(201)</code> — the status code must be specified explicitly</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa4',false)"><code>.ProducesProblem(201)</code> — ProblemDetails is used for all non-200 responses</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa4',false)"><code>.WithStatusCode(201)</code> — dedicated method for setting the success code</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa4-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="nswag-clients">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Generating Strongly-Typed Clients with NSwag</h2>
+    </div>
+
+    <p>One of the most powerful features of OpenAPI is <strong>automatic client generation</strong>. Using NSwag, you can generate a C# class that wraps all the HTTP calls to your API — no manual serialization, no string interpolation for paths, no error-code checking boilerplate.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">How Code Generation Works</div>
+        <div class="callout-text">
+          1. Visual Studio or the .NET tool <strong>downloads</strong> your OpenAPI JSON locally.<br>
+          2. The NuGet package <strong>hooks into your build</strong>, reads the JSON, and generates a <code>Client.cs</code> file in your <code>obj</code> folder.<br>
+          3. Any time the JSON changes, the client <strong>regenerates automatically</strong> on the next build.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; font-weight: 600; color: var(--text); margin: 24px 0 12px;">Using Visual Studio</h3>
+    <p>Right-click your client project → <strong>Add &gt; Service Reference</strong> → select <strong>OpenAPI</strong> → paste the URL to your <code>swagger.json</code> → set a namespace and class name → click <strong>Finish</strong>.</p>
+
+    <h3 style="font-size: 16px; font-weight: 600; color: var(--text); margin: 24px 0 12px;">Using the .NET Global Tool</h3>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">CLI</span><span class="code-label">Terminal — Installing and using the OpenAPI tool</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="cm"># Install once globally</span>
+dotnet tool install -g Microsoft.dotnet-openapi
+
+<span class="cm"># Add the OpenAPI reference from your project folder</span>
+dotnet openapi add url http://localhost:5062/swagger/v1/swagger.json \
+    --output-file OpenAPIs\fruit.json
+
+<span class="cm"># Install required packages</span>
+dotnet add package NSwag.ApiDescription.Client
+dotnet add package Microsoft.Extensions.ApiDescription.Client
+dotnet add package Newtonsoft.Json</div>
+    </div>
+
+    <p>After either approach, your <code>.csproj</code> will contain an <code>&lt;OpenApiReference&gt;</code> element. Update the packages to their latest versions and add <code>ClassName</code>/<code>Namespace</code> attributes:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">.csproj — Updated OpenAPI reference</span></div>
+      <div class="code-body" style="color: #abb2bf;">&lt;<span class="tp">OpenApiReference</span>
+    Include=<span class="str">"OpenAPIs\fruit.json"</span>
+    SourceUrl=<span class="str">"http://localhost:5062/swagger/v1/swagger.json"</span>
+    Namespace=<span class="str">"Fruit"</span>
+    ClassName=<span class="str">"FruitClient"</span> /&gt;
+
+&lt;<span class="cm">!-- Keep these at latest versions: --</span>&gt;
+&lt;<span class="tp">PackageReference</span> Include=<span class="str">"Microsoft.Extensions.ApiDescription.Client"</span> Version=<span class="str">"7.0.0"</span> /&gt;
+&lt;<span class="tp">PackageReference</span> Include=<span class="str">"NSwag.ApiDescription.Client"</span> Version=<span class="str">"13.18.2"</span> /&gt;
+&lt;<span class="tp">PackageReference</span> Include=<span class="str">"Newtonsoft.Json"</span> Version=<span class="str">"13.0.1"</span> /&gt;</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Visual Studio adds out-of-date packages</div>
+        <div class="callout-text">After using Visual Studio's Add Service Reference wizard, you must manually update <code>NSwag.ApiDescription.Client</code> and <code>Microsoft.Extensions.ApiDescription.Client</code> to their latest versions — the wizard installs old ones that may not build.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa5" class="quiz-block">
+      <div class="quiz-question">🧠 The OpenAPI JSON file in your project is a snapshot downloaded at one point in time. You add a new endpoint to your API. What must you do to get the generated client to include the new endpoint?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa5',false)">Rebuild the solution — NSwag polls the remote API and updates automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa5',false)">Delete the generated <code>Client.cs</code> file and rebuild</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa5',true)">Refresh the downloaded JSON (via Visual Studio or <code>dotnet openapi refresh</code>), then rebuild</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa5',false)">Add a new <code>&lt;OpenApiReference&gt;</code> element pointing to the new endpoint's URL</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa5-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="using-client">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Using the Generated Client</h2>
+    </div>
+
+    <p>After building, NSwag generates a <code>FruitClient</code> class (or whatever class name you specified) in your <code>obj</code> folder. Using it is straightforward:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — Using the generated FruitClient</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="kw">using</span> Fruit; <span class="cm">// ❶ Generated namespace</span>
+
+<span class="kw">var</span> client = <span class="kw">new</span> <span class="tp">FruitClient</span>( <span class="cm">// ❷ Instantiate the generated client</span>
+    <span class="str">"https://localhost:7186"</span>, <span class="cm">// ❸ Base address of the API</span>
+    <span class="kw">new</span> <span class="tp">HttpClient</span>());       <span class="cm">// ❹ HttpClient used for requests</span>
+
+<span class="cm">// ❺ Call the MapPost endpoint — auto-serializes the body</span>
+<span class="tp">Fruit</span>.Fruit created = <span class="kw">await</span> client.FruitPOSTAsync(<span class="str">"123"</span>,
+    <span class="kw">new</span> <span class="tp">Fruit</span>.Fruit { Name = <span class="str">"Banana"</span>, Stock = <span class="nm">100</span> });
+
+Console.WriteLine(<span class="str">$"Created {created.Name}"</span>);
+
+<span class="cm">// ❻ Call the MapGet endpoint — auto-deserializes the response</span>
+<span class="tp">Fruit</span>.Fruit fetched = <span class="kw">await</span> client.FruitGETAsync(<span class="str">"123"</span>);
+Console.WriteLine(<span class="str">$"Fetched {fetched.Name}"</span>);</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✨</div>
+      <div class="callout-body">
+        <div class="callout-title">Improve Auto-Generated Method Names</div>
+        <div class="callout-text">NSwag uses the endpoint's <strong>OperationID</strong> for method names. Without it, you get ugly names like <code>FruitPOSTAsync</code>. Add <code>.WithName("CreateFruit")</code> to your endpoint, refresh the OpenAPI document, and NSwag will generate a clean <code>CreateFruitAsync()</code> method instead.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="customizing">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Customizing the Generated Client</h2>
+    </div>
+
+    <p>NSwag provides several options to configure the generated code. Add them as an <code>&lt;Options&gt;</code> element inside <code>&lt;OpenApiReference&gt;</code> in your <code>.csproj</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">.csproj — NSwag customization options</span></div>
+      <div class="code-body" style="color: #abb2bf;">&lt;<span class="tp">OpenApiReference</span>
+    Include=<span class="str">"OpenAPIs\fruit.json"</span>
+    SourceUrl=<span class="str">"http://localhost:5062/swagger/v1/swagger.json"</span>
+    Namespace=<span class="str">"Fruit"</span>
+    ClassName=<span class="str">"FruitClient"</span>&gt;
+    &lt;<span class="tp">Options</span>&gt;/UseBaseUrl:<span class="kw">false</span> /GenerateClientInterfaces:<span class="kw">true</span> /JsonLibrary:SystemTextJson&lt;/<span class="tp">Options</span>&gt;
+&lt;/<span class="tp">OpenApiReference</span>&gt; <span class="cm">// ← Don't forget to close the outer element!</span></div>
+    </div>
+
+    <table class="data-table" style="margin: 20px 0;">
+      <thead>
+        <tr><th>Option</th><th>Default</th><th>What it does</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>/UseBaseUrl:false</code></strong></td>
+          <td><code>true</code></td>
+          <td>Removes the <code>baseUrl</code> constructor arg; relies on <code>HttpClient.BaseAddress</code> instead — friendlier for DI</td>
+        </tr>
+        <tr>
+          <td><strong><code>/GenerateClientInterfaces:true</code></strong></td>
+          <td><code>false</code></td>
+          <td>Generates an <code>IFruitClient</code> interface — lets you mock the client in unit tests</td>
+        </tr>
+        <tr>
+          <td><strong><code>/JsonLibrary:SystemTextJson</code></strong></td>
+          <td>Newtonsoft.Json</td>
+          <td>Uses the built-in <code>System.Text.Json</code> instead of Newtonsoft — fewer dependencies</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>After applying these options, update your consuming code:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Using the updated client with interface and HttpClient.BaseAddress</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="tp">IFruitClient</span> client = <span class="kw">new</span> <span class="tp">FruitClient</span>( <span class="cm">// ❶ Now uses the interface</span>
+    <span class="kw">new</span> <span class="tp">HttpClient</span>() { BaseAddress =    <span class="cm">// ❷ Base address on HttpClient</span>
+        <span class="kw">new</span> <span class="tp">Uri</span>(<span class="str">"https://localhost:7186"</span>) });
+
+<span class="tp">Fruit</span>.Fruit created = <span class="kw">await</span> client.FruitPOSTAsync(<span class="str">"123"</span>,
+    <span class="kw">new</span> <span class="tp">Fruit</span>.Fruit { Name = <span class="str">"Banana"</span>, Stock = <span class="nm">100</span> });</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Options Don't Auto-Regenerate</div>
+        <div class="callout-text">Changing <code>&lt;Options&gt;</code> in your <code>.csproj</code> does <em>not</em> trigger regeneration on its own. If the client doesn't update, <strong>delete your <code>obj</code> folder</strong> and rebuild. Alternatively, make a tiny change in the JSON file, build, then revert it.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa6" class="quiz-block">
+      <div class="quiz-question">🧠 You want to mock <code>FruitClient</code> in unit tests. Which NSwag option enables this?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa6',false)"><code>/GenerateMocks:true</code> — generates mock classes automatically</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa6',true)"><code>/GenerateClientInterfaces:true</code> — generates an <code>IFruitClient</code> interface you can mock</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa6',false)"><code>/UseBaseUrl:false</code> — makes the client injectable, enabling mocking</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa6',false)"><code>/TestMode:true</code> — switches the client to a test-friendly mode</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa6-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="summaries">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Adding Summaries &amp; Descriptions</h2>
+    </div>
+
+    <p>To add human-readable summaries and descriptions to your endpoints, install the <code>Microsoft.AspNetCore.OpenApi</code> package and call <code>WithOpenApi()</code> on your endpoint:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">CLI</span><span class="code-label">Terminal</span></div>
+      <div class="code-body" style="color: #abb2bf;">dotnet add package Microsoft.AspNetCore.OpenApi</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Adding summary and description via fluent methods</span></div>
+      <div class="code-body" style="color: #abb2bf;">app.MapGet(<span class="str">"/fruit/{id}"</span>, (<span class="kw">string</span> id) =>
+    _fruit.TryGetValue(id, <span class="kw">out var</span> fruit)
+        ? TypedResults.Ok(fruit)
+        : Results.Problem(statusCode: <span class="nm">404</span>))
+    .WithName(<span class="str">"GetFruit"</span>)
+    .WithTags(<span class="str">"fruit"</span>)
+    .Produces&lt;<span class="tp">Fruit</span>&gt;()
+    .ProducesProblem(<span class="nm">404</span>)
+    .WithSummary(<span class="str">"Fetches a fruit"</span>)                   <span class="cm">// ❶ Short summary</span>
+    .WithDescription(<span class="str">"Fetches a fruit by id, or returns 404"</span> +
+                     <span class="str">" if no fruit with the ID exists"</span>)  <span class="cm">// ❷ Longer description</span>
+    .WithOpenApi();                                        <span class="cm">// ❸ Required to expose summary/desc to Swashbuckle</span></div>
+    </div>
+
+    <p>To also add a description for individual parameters, use the <code>WithOpenApi()</code> overload that accepts a lambda:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Describing parameters inline</span></div>
+      <div class="code-body" style="color: #abb2bf;">.WithOpenApi(o =>
+{
+    o.Parameters[<span class="nm">0</span>].Description = <span class="str">"The id of the fruit to fetch"</span>;
+    o.Summary = <span class="str">"Fetches a fruit"</span>;
+    <span class="kw">return</span> o;
+});</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">WithOpenApi() is the key</div>
+        <div class="callout-text"><code>WithSummary()</code> and <code>WithDescription()</code> add metadata to the endpoint, but that metadata is <em>only picked up by Swashbuckle</em> when you also call <code>WithOpenApi()</code>. Without it, the summary and description are silently ignored in the OpenAPI document.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="attributes">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Attributes vs Fluent Methods</h2>
+    </div>
+
+    <p>Almost every fluent metadata method has an equivalent <strong>attribute</strong> you can apply directly to the handler lambda or method. Both produce the same OpenAPI output — it's a matter of style preference.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">Fluent Methods</div>
+        <div class="code-body" style="font-size: 12px; padding: 14px 16px; color: #abb2bf;">app.MapGet(<span class="str">"/fruit/{id}"</span>, handler)
+    .WithName(<span class="str">"GetFruit"</span>)
+    .WithTags(<span class="str">"fruit"</span>)
+    .WithSummary(<span class="str">"Fetches a fruit"</span>)
+    .Produces&lt;<span class="tp">Fruit</span>&gt;()
+    .ProducesProblem(<span class="nm">404</span>)
+    .WithOpenApi();</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">Attributes</div>
+        <div class="code-body" style="font-size: 12px; padding: 14px 16px; color: #abb2bf;">[<span class="tp">EndpointName</span>(<span class="str">"GetFruit"</span>)]
+[<span class="tp">Tags</span>(<span class="str">"fruit"</span>)]
+[<span class="tp">EndpointSummary</span>(<span class="str">"Fetches a fruit"</span>)]
+[<span class="tp">ProducesResponseType</span>(<span class="kw">typeof</span>(<span class="tp">Fruit</span>), <span class="nm">200</span>)]
+[<span class="tp">ProducesResponseType</span>(..., <span class="nm">404</span>)]
+(<span class="kw">string</span> id) => ...</div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">WithOpenApi() cannot be replaced</div>
+        <div class="callout-text">Even when using attributes, you must still call <code>.WithOpenApi()</code> on the endpoint for Swashbuckle to read the attribute metadata. It is the only call with no attribute equivalent.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa7" class="quiz-block">
+      <div class="quiz-question">🧠 You've replaced all fluent metadata calls with attributes on your handler lambda. Swagger UI no longer shows the summary. What's the likely cause?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa7',false)">Attributes are not supported on lambda methods — you must use a static method</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa7',true)">You forgot to call <code>.WithOpenApi()</code> — it's required for Swashbuckle to read attribute metadata</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa7',false)">The <code>[EndpointSummary]</code> attribute requires the <code>Microsoft.AspNetCore.OpenApi</code> package to be reinstalled</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa7',false)">Swashbuckle only reads attribute metadata in Release builds</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa7-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="xml-comments">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">XML Documentation Comments</h2>
+    </div>
+
+    <p>For a more "C# native" feel, you can use <strong>XML documentation comments</strong> (<code>///</code>) on your handler methods as the source of OpenAPI summaries and parameter descriptions.</p>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Limitation: No lambda support in .NET 7</div>
+        <div class="callout-text">XML comments on endpoint handlers only work with <strong>static or instance methods</strong>, not lambda methods or local functions. Lambda support is tracked at <a href="https://github.com/dotnet/aspnetcore/issues/39927" target="_blank" style="color: var(--blue);">dotnet/aspnetcore#39927</a>.</div>
+      </div>
+    </div>
+
+    <p>Enable in three steps:</p>
+
+    <p><strong>Step 1:</strong> Enable documentation generation in your <code>.csproj</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">.csproj</span></div>
+      <div class="code-body" style="color: #abb2bf;">&lt;<span class="tp">PropertyGroup</span>&gt;
+    &lt;<span class="tp">GenerateDocumentationFile</span>&gt;<span class="kw">true</span>&lt;/<span class="tp">GenerateDocumentationFile</span>&gt;
+&lt;/<span class="tp">PropertyGroup</span>&gt;</div>
+    </div>
+
+    <p><strong>Step 2:</strong> Configure Swashbuckle to read the generated XML file:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs</span></div>
+      <div class="code-body" style="color: #abb2bf;">builder.Services.AddSwaggerGen(opts =>
+{
+    <span class="kw">var</span> file = <span class="str">$"{Assembly.GetExecutingAssembly().GetName().Name}.xml"</span>;
+    opts.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, file));
+});</div>
+    </div>
+
+    <p><strong>Step 3:</strong> Use a class method handler with XML comments:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">FruitHandler.cs — XML comments as OpenAPI docs</span></div>
+      <div class="code-body" style="color: #abb2bf;"><span class="kw">internal class</span> <span class="tp">FruitHandler</span>
+{
+    <span class="cm">/// &lt;summary&gt;</span>
+    <span class="cm">/// Fetches a fruit by id, or returns 404 if it does not exist</span>
+    <span class="cm">/// &lt;/summary&gt;</span>
+    <span class="cm">/// &lt;param name="id"&gt;The ID of the fruit to fetch&lt;/param&gt;</span>
+    <span class="cm">/// &lt;response code="200"&gt;Returns the fruit if it exists&lt;/response&gt;</span>
+    <span class="cm">/// &lt;response code="404"&gt;If the fruit doesn't exist&lt;/response&gt;</span>
+    [<span class="tp">ProducesResponseType</span>(<span class="kw">typeof</span>(<span class="tp">Fruit</span>), <span class="nm">200</span>)]
+    [<span class="tp">ProducesResponseType</span>(<span class="nm">404</span>)]
+    [<span class="tp">Tags</span>(<span class="str">"fruit"</span>)]
+    <span class="kw">public</span> <span class="tp">IResult</span> GetFruit(<span class="kw">string</span> id)
+        => _fruit.TryGetValue(id, <span class="kw">out var</span> fruit)
+            ? TypedResults.Ok(fruit)
+            : Results.Problem(statusCode: <span class="nm">404</span>);
+}
+
+<span class="cm">// Register in Program.cs:</span>
+<span class="kw">var</span> handler = <span class="kw">new</span> <span class="tp">FruitHandler</span>(_fruit);
+app.MapGet(<span class="str">"/fruit/{id}"</span>, handler.GetFruit).WithName(<span class="str">"GetFruit"</span>);</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✨</div>
+      <div class="callout-body">
+        <div class="callout-title">Development-Only Swagger</div>
+        <div class="callout-text">If you only want Swagger UI for local testing, register and activate it conditionally so it never runs in production:<br>
+          <code>if (app.Environment.IsDevelopment()) { app.UseSwagger(); app.UseSwaggerUI(); }</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="limitations">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Knowing the Limitations of OpenAPI</h2>
+    </div>
+
+    <p>OpenAPI is powerful, but it's not a silver bullet. The specification itself acknowledges that <em>not all services can be described by OpenAPI</em>. Here are the key rough edges to know:</p>
+
+    <div style="margin: 20px 0; display: flex; flex-direction: column; gap: 12px;">
+      <div style="background: rgba(248,81,73,.05); border: 1px solid rgba(248,81,73,.15); border-radius: var(--radius); padding: 16px 20px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 6px;">❌ Some APIs can't be described</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">Dynamic API styles like <strong>HATEOAS</strong> include response links that change per request and per user — OpenAPI expects static, up-front knowledge of responses. It also struggles with complex multi-document API gateways.</div>
+      </div>
+      <div style="background: rgba(248,81,73,.05); border: 1px solid rgba(248,81,73,.15); border-radius: var(--radius); padding: 16px 20px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 6px;">❌ Generated code is opinionated</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">NSwag generates code you may not like — exceptions for error responses, two separately generated <code>Product</code> types that won't interchange between client classes. Sometimes writing your own client is simpler.</div>
+      </div>
+      <div style="background: rgba(248,81,73,.05); border: 1px solid rgba(248,81,73,.15); border-radius: var(--radius); padding: 16px 20px;">
+        <div style="font-size: 14px; font-weight: 600; color: var(--red); margin-bottom: 6px;">❌ Tooling lags the spec</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">OpenAPI spec, Swashbuckle, NSwag, and Swagger UI evolve independently. A new spec feature may not yet be supported by Swashbuckle, meaning NSwag can't generate client code for it.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✨</div>
+      <div class="callout-body">
+        <div class="callout-title">Consider gRPC for Code-Gen Heavy Workflows</div>
+        <div class="callout-text">If you love code generation but prefer an RPC-style approach, <strong>gRPC</strong> offers first-class code generation support across multiple languages with excellent .NET tooling. See <a href="https://learn.microsoft.com/aspnet/core/grpc" target="_blank" style="color: var(--blue);">learn.microsoft.com/aspnet/core/grpc</a>.</div>
+      </div>
+    </div>
+
+    <div id="quiz-oa8" class="quiz-block">
+      <div class="quiz-question">🧠 Your API follows the HATEOAS design, returning dynamic links in each response. You try to describe it with OpenAPI. What will you run into?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-oa8',false)">No problem — OpenAPI supports dynamic link generation through its <code>links</code> section</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa8',false)">You must use NSwag instead of Swashbuckle, as Swashbuckle doesn't support HATEOAS</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa8',true)">OpenAPI requires static, up-front knowledge of responses — dynamic HATEOAS links can't be described accurately</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-oa8',false)">HATEOAS is fully supported but requires the <code>Microsoft.AspNetCore.OpenApi</code> package</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-oa8-fb"></div>
+    </div>
+  </section>
+
+  <!-- ── GitHub ── -->
+  <section id="github" class="section">
+    <div style="padding: 15px; border-top: 1px solid var(--border);">
+      <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter11" target="_blank"
+         style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter 11 Examples</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">Visit this link to run and test the code for this chapter.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+const feedbackOk = {
+  'quiz-oa1': "Correct! OpenAPI is the specification — the standard that defines what the JSON document looks like. Swagger is the brand name for the tooling ecosystem (Swagger UI, Swashbuckle, etc.) built around that spec.",
+  'quiz-oa2': "Correct! AddEndpointsApiExplorer() enables ASP.NET Core's endpoint metadata discovery that Swashbuckle needs, and AddSwaggerGen() registers the services that generate the OpenAPI document from that metadata.",
+  'quiz-oa3': "Correct! By default, app.UseSwaggerUI() serves the interactive Swagger UI page at /swagger. The raw OpenAPI JSON is served at /swagger/v1/swagger.json.",
+  'quiz-oa4': "Correct! The status code must be specified explicitly when it differs from 200. .Produces<Fruit>(201) tells Swashbuckle that this endpoint returns a Fruit object with a 201 Created status.",
+  'quiz-oa5': "Correct! The JSON file in your project is a one-time snapshot. After changing your API, you must explicitly refresh it using Visual Studio's Refresh option or the 'dotnet openapi refresh' command, then rebuild to regenerate the client.",
+  'quiz-oa6': "Correct! /GenerateClientInterfaces:true makes NSwag generate an IFruitClient interface alongside the FruitClient class. This lets you swap in a mock implementation during unit tests.",
+  'quiz-oa7': "Correct! Even when using attributes exclusively, you must still call .WithOpenApi() on the endpoint. It's the trigger that tells Swashbuckle to read and incorporate the attribute metadata into the OpenAPI document.",
+  'quiz-oa8': "Correct! OpenAPI is designed for static APIs where responses are known up front. HATEOAS APIs return dynamic links that vary by resource state and user — something OpenAPI's schema model wasn't designed to capture."
+};
+const feedbackErr = {
+  'quiz-oa1': "Not quite. OpenAPI and Swagger are distinct. OpenAPI is the specification (the standard), while Swagger refers to the tooling ecosystem. The original Swagger specification was donated to the community and renamed OpenAPI.",
+  'quiz-oa2': "Not quite. AddEndpointsApiExplorer() activates the metadata service that Swashbuckle reads, and AddSwaggerGen() registers the code that builds the OpenAPI document from that metadata. Both are required.",
+  'quiz-oa3': "Not quite. The default path for Swagger UI is /swagger. The raw OpenAPI JSON document is at /swagger/v1/swagger.json. Both are configurable.",
+  'quiz-oa4': "Not quite. The status code argument to Produces<T>() is required when the endpoint doesn't return 200. For a 201 Created, you must write .Produces<Fruit>(201) explicitly.",
+  'quiz-oa5': "Not quite. NSwag watches the local JSON file for changes — not the live API. To pick up new endpoints, you first refresh the local JSON file (via Visual Studio or dotnet openapi refresh), then rebuild.",
+  'quiz-oa6': "Not quite. /UseBaseUrl:false changes how the constructor works to be DI-friendly, but doesn't generate an interface. It's /GenerateClientInterfaces:true that produces the IFruitClient interface needed for mocking.",
+  'quiz-oa7': "Not quite. Attributes can be applied to lambda handlers. The problem is missing .WithOpenApi() — without this call, Swashbuckle never reads the attribute metadata and the summary doesn't appear.",
+  'quiz-oa8': "Not quite. OpenAPI's links feature exists but is designed for static, predictable links. HATEOAS links are generated dynamically based on state and permissions — making it fundamentally hard to describe statically in an OpenAPI document."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => { if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal'); });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+function scrollPageTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -20% 0px' });
+sections.forEach(s => observer.observe(s));
+
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if(!fill) return;
+  window.addEventListener('scroll',function(){
+    var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+    fill.style.width=Math.min(pct,100)+'%';
+  });
+})();
+</script>
+</body>
+</html>

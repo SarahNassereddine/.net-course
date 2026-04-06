@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 14 — Mapping URLs to Razor Pages Using Routing</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 14 — Routing in Razor Pages</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span> 
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span> 
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Chapter 14</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="routing-intro" onclick="scrollPageTo('routing-intro')">
+      <span class="dot"></span>Routing in ASP.NET Core
+    </button>
+    <button class="nav-link" data-target="convention-vs-explicit" onclick="scrollPageTo('convention-vs-explicit')">
+      <span class="dot"></span>Convention vs explicit routing
+    </button>
+    <button class="nav-link" data-target="routing-razor" onclick="scrollPageTo('routing-razor')">
+      <span class="dot"></span>Routing to Razor Pages
+    </button>
+       <button class="nav-link" data-target="index-pages" onclick="scrollPageTo('index-pages')">
+      <span class="dot"></span>Index.cshtml special behavior
+    </button>
+    <button class="nav-link" data-target="customizing-routes" onclick="scrollPageTo('customizing-routes')">
+      <span class="dot"></span>Customizing route templates
+    </button>
+    <button class="nav-link" data-target="adding-segments" onclick="scrollPageTo('adding-segments')">
+      <span class="dot"></span>Adding route segments
+    </button>
+    <button class="nav-link" data-target="replacing-routes" onclick="scrollPageTo('replacing-routes')">
+      <span class="dot"></span>Replacing routes completely
+    </button>
+    <button class="nav-link" data-target="generating-urls" onclick="scrollPageTo('generating-urls')">
+      <span class="dot"></span>Generating URLs
+    </button>
+    <button class="nav-link" data-target="url-helper" onclick="scrollPageTo('url-helper')">
+      <span class="dot"></span>Using IUrlHelper
+    </button>
+    <button class="nav-link" data-target="mvc-url-generation" onclick="scrollPageTo('mvc-url-generation')">
+      <span class="dot"></span>URLs for MVC controllers
+    </button>
+    <button class="nav-link" data-target="link-generator" onclick="scrollPageTo('link-generator')">
+      <span class="dot"></span>Using LinkGenerator
+    </button>
+     <button class="nav-link" data-target="customizing-conventions" onclick="scrollPageTo('customizing-conventions')">
+      <span class="dot"></span>Customizing conventions
+    </button>
+    <button class="nav-link" data-target="best-practices" onclick="scrollPageTo('best-practices')">
+      <span class="dot"></span>Best practices
+    </button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Entity Framework Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link active" href="chapter14.html"><span class="dot"></span>Ch 14 — Routing in Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 14</div>
+    <h1 class="chapter-title">Mapping URLs to Razor Pages Using Routing</h1>
+    <p class="chapter-subtitle">Understand how routing works in Razor Pages, learn to customize route templates, and discover how to generate URLs dynamically for navigation in your applications.</p>
+  </div>
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="routing-intro">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Routing in ASP.NET Core</h2>
+    </div>
+
+    <p>Routing in ASP.NET Core uses the <strong>same infrastructure and middleware</strong> whether you're building minimal APIs, Razor Pages, or MVC controllers. However, there are some differences in how you define the mapping between your route templates and your handlers in each case.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">Routing Fundamentals</div>
+      
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="background:rgba(124,106,247,0.08);border:1px solid rgba(124,106,247,0.25);border-radius:6px;padding:14px;">
+          <div style="font-weight:600;color:var(--accent2);margin-bottom:6px;">🎯 Core Concept</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            Routing maps incoming request URLs to specific endpoints that execute code. It's the bridge between a URL like <code>/products/42</code> and the handler that processes it.
+          </div>
+        </div>
+
+        <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:6px;padding:14px;">
+          <div style="font-weight:600;color:var(--accent);margin-bottom:6px;">🔄 Shared Infrastructure</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+            The same <strong>RoutingMiddleware</strong> and <strong>EndpointMiddleware</strong> work across all application types, providing consistency and predictability.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">What You Already Know</div>
+        <div class="callout-text">
+          In Chapter 6, you learned about routing for minimal APIs. The same core concepts apply to Razor Pages—route templates, parameters, constraints—but with conventions that make Razor Pages even easier to work with.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="convention-vs-explicit">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Convention-Based vs. Explicit Routing</h2>
+    </div>
+
+    <p>Routing is a key part of ASP.NET Core, as it maps the incoming request's URL to a specific endpoint to execute. There are <strong>two ways</strong> to define these URL-endpoint mappings in your application:</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Routing Type</th>
+          <th>Description</th>
+          <th>Used By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Convention-Based</strong></td>
+          <td>Defined globally for your application with patterns that all endpoints must follow</td>
+          <td>MVC controllers (traditional approach)</td>
+        </tr>
+        <tr>
+          <td><strong>Explicit (Attribute) Routing</strong></td>
+          <td>Each endpoint is directly mapped with its own route template</td>
+          <td>Minimal APIs, Razor Pages, Modern MVC</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Convention-Based Routing</h3>
+    <p>Convention-based routing is defined <strong>globally</strong> for your application. You can use it to map endpoints (MVC controller actions specifically) to URLs, but those MVC controllers must <strong>adhere strictly to the conventions</strong> you define.</p>
+
+    <h3>Explicit Routing (Attribute Routing)</h3>
+    <p>With explicit routing, you tie a given URL to a specific endpoint directly. You've seen this approach with <strong>minimal APIs</strong>, where each endpoint is directly associated with a route template. You can also use explicit routing with MVC controllers by placing <code>[Route]</code> attributes on the action methods themselves.</p>
+
+    <div style="background:rgba(45,164,78,0.08);border:1px solid rgba(45,164,78,0.25);border-radius:var(--radius);padding:16px;margin:20px 0;">
+      <div style="font-weight:600;color:var(--green);margin-bottom:8px;">✨ Razor Pages Approach</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+        Razor Pages use <strong>explicit routing</strong> by creating route templates based on conventions. This gives you the best of both worlds: the simplicity of conventions with the flexibility of explicit routes.
+      </div>
+    </div>
+
+    <div id="quiz-route1" class="quiz-block">
+      <div class="quiz-question">🧠 Which routing type does Razor Pages use?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-route1',false)">Pure convention-based routing</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route1',true)">Explicit routing based on file path conventions</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route1',false)">No routing at all</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route1',false)">Only manual attribute routing</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-route1-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="routing-razor">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Routing Requests to Razor Pages</h2>
+    </div>
+
+    <p>For every Razor Page in your application, the framework uses the <strong>path of the Razor Page file relative to the Razor Pages root directory</strong> (Pages/), excluding the file extension (.cshtml), to create a route template.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:24px 0;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">File Path → Route Template</div>
+      
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <code style="font-family:var(--mono);font-size:13px;color:var(--text);">Pages/Index.cshtml</code>
+          <span style="color:var(--text3);margin:0 8px;">→</span>
+          <code style="font-family:var(--mono);font-size:13px;color:var(--accent2);font-weight:600;">/</code>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <code style="font-family:var(--mono);font-size:13px;color:var(--text);">Pages/Privacy.cshtml</code>
+          <span style="color:var(--text3);margin:0 8px;">→</span>
+          <code style="font-family:var(--mono);font-size:13px;color:var(--accent2);font-weight:600;">/Privacy</code>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <code style="font-family:var(--mono);font-size:13px;color:var(--text);">Pages/Products/View.cshtml</code>
+          <span style="color:var(--text3);margin:0 8px;">→</span>
+          <code style="font-family:var(--mono);font-size:13px;color:var(--accent2);font-weight:600;">/Products/View</code>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <code style="font-family:var(--mono);font-size:13px;color:var(--text);">Pages/Admin/Users/List.cshtml</code>
+          <span style="color:var(--text3);margin:0 8px;">→</span>
+          <code style="font-family:var(--mono);font-size:13px;color:var(--accent2);font-weight:600;">/Admin/Users/List</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Case Insensitivity</div>
+        <div class="callout-text">
+          Remember that routing is <strong>not case-sensitive</strong>. The URLs <code>/Privacy</code>, <code>/privacy</code>, and <code>/PRIVACY</code> all map to the same Razor Page.
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.25);border-radius:6px;padding:16px;margin:20px 0;">
+      <div style="font-weight:600;color:var(--accent);margin-bottom:8px;">📂 Convention Benefits</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+        This file-based routing convention makes it immediately obvious which URL a Razor Page responds to just by looking at the file structure. No need to hunt through routing configuration!
+      </div>
+    </div>
+  </section>
+  <!-- NEW SECTION: Index.cshtml Special Behavior -->
+  <section class="section" id="index-pages">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Index.cshtml Pages: Special Routing Behavior</h2>
+    </div>
+
+    <p>By default, each Razor Page creates a single route template based on its file path. However, there's an important <strong>exception to this rule</strong>: Razor Pages named <code>Index.cshtml</code>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">Index.cshtml Creates TWO Route Templates</div>
+        <div class="callout-text">
+          Index.cshtml pages create <strong>two route templates</strong>: one ending with "/Index" and one without this suffix. This matches the common behavior of index.html files in traditional HTML applications.
+        </div>
+      </div>
+    </div>
+
+    <h3>Example: Pages/ToDo/Index.cshtml</h3>
+
+    <p>If you have a Razor Page at the path <code>Pages/ToDo/Index.cshtml</code>, it creates two route templates:</p>
+
+    <div style="display:grid;gap:12px;margin:24px 0;">
+      <div style="background:rgba(45,164,78,0.06);border-left:4px solid var(--accent);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--accent);margin-bottom:8px;">✅ Route Template 1: "ToDo"</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          URL: <code>https://example.org/ToDo</code> or <code>https://example.org/todo</code> (case-insensitive)
+        </div>
+      </div>
+
+      <div style="background:rgba(45,164,78,0.06);border-left:4px solid var(--accent);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--accent);margin-bottom:8px;">✅ Route Template 2: "ToDo/Index"</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          URL: <code>https://example.org/ToDo/Index</code> or <code>https://example.org/todo/index</code>
+        </div>
+      </div>
+    </div>
+
+    <p>Both URLs execute the <strong>same</strong> Index.cshtml Razor Page.</p>
+
+    <h3>Default Template Example</h3>
+
+    <p>The standard Razor Pages template includes three pages in the Pages directory:</p>
+
+    <ul style="margin:16px 0;padding-left:24px;line-height:1.8;">
+      <li><code>Pages/Error.cshtml</code></li>
+      <li><code>Pages/Index.cshtml</code></li>
+      <li><code>Pages/Privacy.cshtml</code></li>
+    </ul>
+
+    <p>This creates a collection of <strong>four routes</strong> for the application:</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">Route Templates</div>
+      
+      <div style="display:flex;flex-direction:column;gap:8px;font-family:var(--mono);font-size:13px;">
+        <div style="padding:10px;background:rgba(124,106,247,0.08);border-radius:4px;">
+          <code style="color:var(--accent2);font-weight:600;">""</code> → Index.cshtml
+        </div>
+        <div style="padding:10px;background:rgba(124,106,247,0.08);border-radius:4px;">
+          <code style="color:var(--accent2);font-weight:600;">"Index"</code> → Index.cshtml
+        </div>
+        <div style="padding:10px;background:rgba(45,164,78,0.08);border-radius:4px;">
+          <code style="color:var(--accent);font-weight:600;">"Error"</code> → Error.cshtml
+        </div>
+        <div style="padding:10px;background:rgba(45,164,78,0.08);border-radius:4px;">
+          <code style="color:var(--accent);font-weight:600;">"Privacy"</code> → Privacy.cshtml
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Watch Out for Overlapping Routes!</div>
+        <div class="callout-text">
+          Be careful when using Index.cshtml pages. If you add <code>Pages/ToDo/Index.cshtml</code>, you <strong>must not</strong> add <code>Pages/ToDo.cshtml</code>, as you'll get an exception at runtime when you navigate to <code>/todo</code> because both pages match the route!
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="customizing-routes">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Customizing Razor Page Route Templates</h2>
+    </div>
+
+    <p>The route templates for a Razor Page are based on the file path by default, but you're also able to <strong>customize or replace</strong> the final template for each page. By default, Razor Pages have URLs consisting of a series of literal segments, such as <code>/ToDo/Index</code>.</p>
+
+    <p>To customize the Razor Page route template, you update the <code>@page</code> directive at the top of the Razor Page's .cshtml file.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🎨</div>
+      <div class="callout-body">
+        <div class="callout-title">Two Types of Customization</div>
+        <div class="callout-text">
+          You can either <strong>add segments</strong> to the default route (enhancing it) or <strong>replace the entire route</strong> with a custom template.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="adding-segments">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Adding a Segment to a Razor Page Route Template</h2>
+    </div>
+
+    <p>To add an extra segment to a Razor Page's route template, add a <strong>space</strong> followed by the extra route template segment after the <code>@page</code> statement.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Adding a literal segment</span></div>
+      <div class="code-body"><span class="cm">@* Pages/Privacy.cshtml *@</span>
+<span class="kw">@page</span> <span class="str">"Extra"</span>
+<span class="kw">@model</span> <span class="tp">PrivacyModel</span>
+
+<span class="cm">&lt;!-- Default route: /Privacy --&gt;</span>
+<span class="cm">&lt;!-- New route: /Privacy/Extra --&gt;</span></div>
+    </div>
+
+    <h3>Adding Route Parameters</h3>
+    <p>The most common reason for customizing a Razor Page's route template is to <strong>add a route parameter</strong>. You can use all the same routing features you learned about in Chapter 6, including optional parameters, default parameters, and constraints.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Adding route parameters to Razor Pages</span></div>
+      <div class="code-body"><span class="cm">@* Pages/Products.cshtml - Single parameter *@</span>
+<span class="kw">@page</span> <span class="str">"{category}/{name}"</span>
+<span class="kw">@model</span> <span class="tp">ProductsModel</span>
+
+<span class="cm">@* This matches URLs like:
+   /products/bags/white-rucksack     → category="bags", name="white-rucksack"
+   /products/shoes/black-size9       → category="shoes", name="black-size9"
+   /Products/phones/iPhoneX          → category="phones", name="iPhoneX"
+*@</span>
+
+<span class="cm">@* With optional parameter *@</span>
+<span class="kw">@page</span> <span class="str">"{id:int?}"</span>
+<span class="cm">@* Matches: /products and /products/42 *@</span>
+
+<span class="cm">@* With default value *@</span>
+<span class="kw">@page</span> <span class="str">"{page:int=1}"</span>
+<span class="cm">@* /products → page=1,  /products/5 → page=5 *@</span>
+
+<span class="cm">@* With constraint *@</span>
+<span class="kw">@page</span> <span class="str">"{id:int:min(1)}"</span>
+<span class="cm">@* Only matches positive integers *@</span></div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">Route Features Available</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Syntax</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Required parameter</td>
+            <td><code>{name}</code></td>
+            <td><code>@page "{id}"</code></td>
+          </tr>
+          <tr>
+            <td>Optional parameter</td>
+            <td><code>{name?}</code></td>
+            <td><code>@page "{id?}"</code></td>
+          </tr>
+          <tr>
+            <td>Default value</td>
+            <td><code>{name=value}</code></td>
+            <td><code>@page "{page=1}"</code></td>
+          </tr>
+          <tr>
+            <td>Type constraint</td>
+            <td><code>{name:type}</code></td>
+            <td><code>@page "{id:int}"</code></td>
+          </tr>
+          <tr>
+            <td>Multiple constraints</td>
+            <td><code>{name:type:constraint}</code></td>
+            <td><code>@page "{id:int:min(1)}"</code></td>
+          </tr>
+          <tr>
+            <td>Catch-all</td>
+            <td><code>{**name}</code></td>
+            <td><code>@page "{**path}"</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="quiz-route2" class="quiz-block">
+      <div class="quiz-question">🧠 What does <code>@page "{id:int?}"</code> mean?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-route2',false)">The page requires an integer id parameter</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route2',true)">The page accepts an optional integer id parameter</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route2',false)">The id must be a nullable integer type</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route2',false)">The page only works with query strings</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-route2-fb"></div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="replacing-routes">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Replacing a Razor Page Route Template Completely</h2>
+    </div>
+
+    <p>To specify a <strong>custom route</strong> for a Razor Page, prefix the route with <code>/</code> in the <code>@page</code> directive. This indicates that this is a custom route template, instead of an addition to the default.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Replacing the entire route template</span></div>
+      <div class="code-body"><span class="cm">@* Pages/Products/View.cshtml *@</span>
+<span class="cm">@* Default route would be: /Products/View *@</span>
+
+<span class="kw">@page</span> <span class="str">"/{category}/{name}"</span>
+<span class="kw">@model</span> <span class="tp">ViewModel</span>
+
+<span class="cm">@* Route is now: /{category}/{name} 
+   The /Products/View part is completely ignored
+*@</span>
+
+<span class="cm">@* Another example: *@</span>
+<span class="kw">@page</span> <span class="str">"/checkout"</span>
+<span class="cm">@* Completely custom route, ignores file path *@</span></div>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Use with Caution</div>
+        <div class="callout-text">
+          Replacing the route template completely breaks the intuitive file-path-to-URL convention that makes Razor Pages easy to understand. Use this feature sparingly, and only when you have a good reason.
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(255,197,61,0.08);border:1px solid rgba(255,197,61,0.25);border-radius:6px;padding:16px;margin:20px 0;">
+      <div style="font-weight:600;color:var(--orange);margin-bottom:8px;">⚡ When to Replace Routes</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+        <strong>Valid use case:</strong> You have a page at <code>Pages/Checkout/Payment.cshtml</code> but want it accessible at <code>/checkout</code> for simplicity.<br><br>
+        <strong>Better approach:</strong> Move the page to <code>Pages/Checkout.cshtml</code> instead, which naturally gives you the <code>/checkout</code> route.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="generating-urls">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Generating URLs for Razor Pages</h2>
+    </div>
+
+    <p>One of the benefits of using convention-based routing in Razor Pages is that your URLs can be somewhat <strong>fluid</strong>. If you rename a Razor Page, the URL associated with that page also changes automatically.</p>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-weight:600;color:var(--text);margin-bottom:12px;">Example: Renaming Impact</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <span style="color:var(--text3);">Original:</span>
+          <code style="font-family:var(--mono);color:var(--text);">Pages/Cart.cshtml</code>
+          <span style="color:var(--text3);">→</span>
+          <code style="font-family:var(--mono);color:var(--accent2);font-weight:600;">/Cart</code>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px;background:rgba(45,164,78,0.06);border-radius:6px;">
+          <span style="color:var(--text3);">Renamed:</span>
+          <code style="font-family:var(--mono);color:var(--text);">Pages/Basket/View.cshtml</code>
+          <span style="color:var(--text3);">→</span>
+          <code style="font-family:var(--mono);color:var(--green);font-weight:600;">/Basket/View</code>
+        </div>
+      </div>
+    </div>
+
+    <p>The problem: if you've <strong>hardcoded URLs</strong> throughout your application, renaming breaks all those links. The solution: <strong>generate URLs dynamically</strong> using the page's file path as a reference.</p>
+
+    <div class="callout success">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body">
+        <div class="callout-title">Benefits of Generated URLs</div>
+        <div class="callout-text">
+          • <strong>Refactoring-friendly:</strong> Rename or move pages without breaking links<br>
+          • <strong>Type-safe:</strong> Compiler checks ensure referenced pages exist<br>
+          • <strong>Maintainable:</strong> Single source of truth for routing
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="url-helper">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Generating URLs for a Razor Page Using IUrlHelper</h2>
+    </div>
+
+    <p>The <code>Url</code> property on a Razor Page is an instance of <strong>IUrlHelper</strong> that allows you to easily generate URLs for your application by referencing other Razor Pages by their file path.
+    <br>
+    
+    IUrlHelper is a wrapper around the LinkGenerator class you learned about in chapter 6. It adds some shortcuts for generating URLs based on the current request.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Using Url.Page() in Razor views</span></div>
+      <div class="code-body"><span class="cm">@* Generate URL to Index page *@</span>
+&lt;a <span class="attr">href</span>=<span class="str">"@Url.Page("</span>Index<span class="str">")"</span>&gt;Home&lt;/a&gt;
+
+<span class="cm">@* Generate URL with route parameter *@</span>
+&lt;a <span class="attr">href</span>=<span class="str">"@Url.Page("</span>Product<span class="str">", new { id = 5 })"</span>&gt;View Product&lt;/a&gt;
+<span class="cm">@* Results in: /Product/5 *@</span>
+
+<span class="cm">@* Generate URL to page in subfolder *@</span>
+&lt;a <span class="attr">href</span>=<span class="str">"@Url.Page("</span>/Admin/Users<span class="str">")"</span>&gt;Manage Users&lt;/a&gt;
+
+<span class="cm">@* Generate absolute URL *@</span>
+<span class="kw">var</span> absoluteUrl = Url.<span class="fn">Page</span>(<span class="str">"/Privacy"</span>, 
+    <span class="kw">null</span>, 
+    <span class="kw">null</span>, 
+    Request.Scheme);
+<span class="cm">@* Results in: https://yoursite.com/Privacy *@</span></div>
+    </div>
+
+    <h3>IUrlHelper Methods</h3>
+    <p>IUrlHelper has several different overloads of the <code>Page()</code> method:</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Method Signature</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>Page(string pageName)</code></td>
+          <td>Generate relative URL to a page</td>
+        </tr>
+        <tr>
+          <td><code>Page(string pageName, object values)</code></td>
+          <td>Generate URL with route parameters</td>
+        </tr>
+        <tr>
+          <td><code>Page(string pageName, string handler)</code></td>
+          <td>Generate URL to specific page handler</td>
+        </tr>
+        <tr>
+          <td><code>Page(string pageName, object values, string protocol, string host)</code></td>
+          <td>Generate absolute URL with custom protocol/host</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">For MVC Controllers</div>
+        <div class="callout-text">
+          Similar to Razor Pages, but use the <code>Action()</code> method on IUrlHelper. You provide an MVC controller name and action name instead of a page path:<br><br>
+          <code>@Url.Action("Index", "Home")</code><br>
+          <code>@Url.Action("Details", "Products", new { id = 5 })</code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEW SECTION: Generating URLs for MVC Controllers -->
+  <section class="section" id="mvc-url-generation">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Generating URLs for MVC Controllers</h2>
+    </div>
+
+    <p>If you're using MVC controllers (covered in detail in chapters 19-20), generating URLs is similar to Razor Pages but uses different method names on <code>IUrlHelper</code>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">MVC Controllers vs Razor Pages</div>
+        <div class="callout-text">
+          For Razor Pages, use <code>Url.Page()</code>. For MVC controllers, use <code>Url.Action()</code>. You can use both methods from either Razor Pages or MVC controllers, allowing cross-navigation.
+        </div>
+      </div>
+    </div>
+
+    <h3>Using Url.Action() for MVC Controllers</h3>
+
+    <p>The main difference from Razor Pages is that you provide an <strong>action name</strong> and <strong>controller name</strong> instead of a page path:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class CurrencyController : Controller
+{
+    [HttpGet("currency/index")]
+    public IActionResult Index()
+    {
+        // Generate URL to the View action in this controller
+        var url = Url.Action("View", "Currency", new { code = "USD" });
+        
+        return Content($"The URL is {url}");
+        // Returns: "The URL is /Currency/View/USD"
+    }
+
+    [HttpGet("currency/view/{code}")]
+    public IActionResult View(string code)
+    {
+        // This action is the target of the generated URL
+        return View();
+    }
+}</code></pre>
+    </div>
+
+    <h3>Method Signature Breakdown</h3>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-family:var(--mono);font-size:14px;margin-bottom:16px;padding:12px;background:rgba(124,106,247,0.08);border-radius:4px;">
+        <code>Url.Action(actionName, controllerName, routeValues)</code>
+      </div>
+      
+      <div style="display:grid;gap:12px;">
+        <div style="padding:12px;background:rgba(45,164,78,0.06);border-radius:6px;">
+          <div style="font-weight:600;font-size:12px;color:var(--accent);margin-bottom:4px;">actionName</div>
+          <div style="font-size:13px;color:var(--text2);">The name of the action method (e.g., "View", "Edit", "Delete")</div>
+        </div>
+        
+        <div style="padding:12px;background:rgba(124,106,247,0.06);border-radius:6px;">
+          <div style="font-weight:600;font-size:12px;color:var(--accent2);margin-bottom:4px;">controllerName</div>
+          <div style="font-size:13px;color:var(--text2);">The name of the controller without the "Controller" suffix (e.g., "Currency" for CurrencyController)</div>
+        </div>
+        
+        <div style="padding:12px;background:rgba(0,212,170,0.06);border-radius:6px;">
+          <div style="font-weight:600;font-size:12px;color:#00d4aa;margin-bottom:4px;">routeValues</div>
+          <div style="font-size:13px;color:var(--text2);">Anonymous object with additional route parameters (e.g., new { code = "USD" })</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Using nameof for Refactor-Safety</h3>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Pro Tip: Use nameof()</div>
+        <div class="callout-text">
+          Instead of using strings for action names, use the C# 6 <code>nameof</code> operator to make your code refactor-safe:<br><br>
+          <code>var url = Url.Action(nameof(View), "Currency", new { code = "USD" });</code><br><br>
+          Now if you rename the <code>View</code> method, the compiler will update this reference automatically!
+        </div>
+      </div>
+    </div>
+
+    <h3>Ambient Values in Same Controller</h3>
+
+    <p>If you're routing to an action in the <strong>same controller</strong>, you can use a different overload that omits the controller name:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class CurrencyController : Controller
+{
+    public IActionResult Index()
+    {
+        // Omit controller name when targeting same controller
+        var url = Url.Action(nameof(View), new { code = "USD" });
+        return Content($"The URL is {url}");
+    }
+
+    public IActionResult View(string code)
+    {
+        return View();
+    }
+}</code></pre>
+    </div>
+
+    <p>The <code>IUrlHelper</code> uses <strong>ambient values</strong> from the current request and overrides them with any specific values you provide.</p>
+
+    <div style="background:rgba(255,165,0,0.08);border-left:4px solid orange;padding:16px;border-radius:6px;margin:24px 0;">
+      <div style="font-weight:600;color:orange;margin-bottom:6px;">⚠️ Definition: Ambient Values</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+        <strong>Ambient values</strong> are the route values for the current request. They include <code>Controller</code> and <code>Action</code> when called from an MVC controller, and <code>Page</code> when called from a Razor Page. Ambient values can also include additional route values that were set when the action or Razor Page was initially located using routing.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="link-generator">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Generating URLs with LinkGenerator</h2>
+    </div>
+
+    <p><code>LinkGenerator</code> is a service available through dependency injection that provides various methods for generating URLs for Razor Pages and MVC actions. It's useful when you need to generate URLs outside of a Razor Page context.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Using LinkGenerator in services or middleware</span></div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">EmailService</span>
+{
+    <span class="kw">private readonly</span> <span class="tp">LinkGenerator</span> _linkGenerator;
+
+    <span class="kw">public</span> <span class="fn">EmailService</span>(<span class="tp">LinkGenerator</span> linkGenerator)
+    {
+        _linkGenerator = linkGenerator;
+    }
+
+    <span class="kw">public</span> <span class="kw">string</span> <span class="fn">GenerateConfirmationUrl</span>(<span class="tp">HttpContext</span> httpContext, 
+        <span class="kw">string</span> userId)
+    {
+        <span class="cm">// Generate path for Razor Page</span>
+        <span class="kw">var</span> path = _linkGenerator.<span class="fn">GetPathByPage</span>(
+            httpContext,
+            page: <span class="str">"/Account/Confirm"</span>,
+            values: <span class="kw">new</span> { userId });
+        
+        <span class="cm">// Generate full URI</span>
+        <span class="kw">var</span> uri = _linkGenerator.<span class="fn">GetUriByPage</span>(
+            httpContext,
+            page: <span class="str">"/Account/Confirm"</span>,
+            values: <span class="kw">new</span> { userId },
+            scheme: <span class="str">"https"</span>);
+        
+        <span class="kw">return</span> uri;
+    }
+}</div>
+    </div>
+
+    <h3>LinkGenerator Methods</h3>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Returns</th>
+            <th>Use Case</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>GetPathByPage()</code></td>
+            <td>Relative path</td>
+            <td>Generate URL path for a Razor Page</td>
+          </tr>
+          <tr>
+            <td><code>GetUriByPage()</code></td>
+            <td>Absolute URI</td>
+            <td>Generate full URL for a Razor Page</td>
+          </tr>
+          <tr>
+            <td><code>GetPathByAction()</code></td>
+            <td>Relative path</td>
+            <td>Generate URL path for MVC action</td>
+          </tr>
+          <tr>
+            <td><code>GetUriByAction()</code></td>
+            <td>Absolute URI</td>
+            <td>Generate full URL for MVC action</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="quiz-route3" class="quiz-block">
+      <div class="quiz-question">🧠 When would you use LinkGenerator instead of IUrlHelper?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-route3',false)">When generating URLs in a Razor view</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route3',true)">When generating URLs in a service or middleware</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route3',false)">When you need better performance</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-route3',false)">LinkGenerator is deprecated, use IUrlHelper</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-route3-fb"></div>
+    </div>
+  </section>
+
+   <!-- NEW SECTION: Customizing Conventions in Detail -->
+  <section class="section" id="customizing-conventions">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Customizing Conventions with Razor Pages</h2>
+    </div>
+
+    <p>Razor Pages is built on a series of conventions designed to reduce boilerplate code. You can customize these conventions to get full control of your application's URLs without manually customizing every Razor Page.</p>
+
+    <h3>Common Convention Customizations</h3>
+
+    <p>These are some of the most common changes developers make to Razor Pages routing:</p>
+
+    <ul style="margin:16px 0;padding-left:24px;line-height:1.8;">
+      <li>Making URLs <strong>lowercase</strong></li>
+      <li>Ensuring URLs always end with a <strong>trailing slash</strong> (/product-details/)</li>
+      <li>Using <strong>kebab-case</strong> instead of PascalCase (product-details instead of ProductDetails)</li>
+    </ul>
+
+    <h3>1. Lowercase URLs and Trailing Slash</h3>
+
+    <p>You can configure these using <code>RouteOptions</code> in Program.cs:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddRazorPages();
+
+builder.Services.Configure&lt;RouteOptions&gt;(options =>
+{
+    options.LowercaseUrls = true;           // /products instead of /Products
+    options.LowercaseQueryStrings = true;   // ?page=1 instead of ?Page=1
+    options.AppendTrailingSlash = true;     // /products/ instead of /products
+});
+
+WebApplication app = builder.Build();
+app.MapRazorPages();
+app.Run();</code></pre>
+    </div>
+
+    <h3>2. Kebab-Case URLs</h3>
+
+    <p>For kebab-case, you need to create a custom <strong>parameter transformer</strong>. This is more advanced but straightforward:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Routing;
+
+public class KebabCaseParameterTransformer : IOutboundParameterTransformer
+{
+    public string? TransformOutbound(object? value)
+    {
+        if (value is null) return null;
+        
+        // Replace PascalCase with kebab-case
+        return Regex.Replace(
+            value.ToString()!, 
+            "([a-z])([A-Z])", 
+            "$1-$2"
+        ).ToLower();
+    }
+}</code></pre>
+    </div>
+
+    <p>Then register it in Program.cs:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options =>
+    {
+        // Apply kebab-case transformer to all Razor Pages
+        options.Conventions.Add(
+            new PageRouteTransformerConvention(
+                new KebabCaseParameterTransformer()
+            )
+        );
+    });</code></pre>
+    </div>
+
+    <h3>3. Adding Extra Routes to Specific Pages</h3>
+
+    <p>You can add an alternative route template to a single Razor Page using <code>AddPageRoute()</code>:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options =>
+    {
+        // Add alternative route to specific page
+        options.Conventions.AddPageRoute(
+            "/Search/Products/StartSearch",  // Page path
+            "/search-products"               // Additional route
+        );
+    });</code></pre>
+    </div>
+
+    <div class="callout warning">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">AddPageRoute vs @page Directive</div>
+        <div class="callout-text">
+          Unlike customizing the route template using the <code>@page</code> directive (which <strong>replaces</strong> the default), <code>AddPageRoute()</code> <strong>adds</strong> an extra route template to the page. The default route template still works.
+        </div>
+      </div>
+    </div>
+
+    <h3>4. Custom Page Route Conventions</h3>
+
+    <p>For even more control, you can implement <code>IPageRouteModelConvention</code> to customize how route templates are generated for all pages:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class PrefixingPageRouteModelConvention : IPageRouteModelConvention
+{
+    public void Apply(PageRouteModel model)
+    {
+        // Create new selectors with "page/" prefix
+        var selectors = model.Selectors
+            .Select(selector => new SelectorModel
+            {
+                AttributeRouteModel = new AttributeRouteModel
+                {
+                    Template = AttributeRouteModel.CombineTemplates(
+                        "page",  // Prefix
+                        selector.AttributeRouteModel!.Template
+                    ),
+                }
+            })
+            .ToList();
+
+        // Add new selectors to the page
+        foreach(var newSelector in selectors)
+        {
+            model.Selectors.Add(newSelector);
+        }
+    }
+}</code></pre>
+    </div>
+
+    <p>Register it in Program.cs:</p>
+
+    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
+    .AddRazorPagesOptions(options =>
+    {
+        options.Conventions.Add(new PrefixingPageRouteModelConvention());
+    });</code></pre>
+    </div>
+
+    <h3>Available Convention Interfaces</h3>
+
+    <p>Razor Pages provides three powerful interfaces for customization:</p>
+
+    <div style="display:grid;gap:12px;margin:24px 0;">
+      <div style="background:rgba(124,106,247,0.06);border-left:4px solid var(--accent2);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--accent2);margin-bottom:6px;">IPageRouteModelConvention</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Used to customize the <strong>route templates</strong> for all Razor Pages in your app. Add prefixes, change patterns, etc.
+        </div>
+      </div>
+
+      <div style="background:rgba(45,164,78,0.06);border-left:4px solid var(--accent);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--accent);margin-bottom:6px;">IPageApplicationModelConvention</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Used to customize how the Razor Page is processed, such as to <strong>add filters</strong> to your Razor Pages automatically (covered in chapters 21-22).
+        </div>
+      </div>
+
+      <div style="background:rgba(0,212,170,0.06);border-left:4px solid #00d4aa;padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:#00d4aa;margin-bottom:6px;">IPageHandlerModelConvention</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Used to customize how <strong>page handlers are discovered and selected</strong> for Razor Pages.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📚</div>
+      <div class="callout-body">
+        <div class="callout-title">Learn More</div>
+        <div class="callout-text">
+          For more details on customizing conventions, see Microsoft's "Razor Pages route and app conventions in ASP.NET Core" documentation at <a href="http://mng.bz/A0BK" target="_blank">http://mng.bz/A0BK</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="best-practices">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Best Practices and Advice</h2>
+    </div>
+
+    <p>Based on experience with Razor Pages routing, here are some recommendations to keep your applications maintainable:</p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;margin:24px 0;">
+      <div style="background:rgba(45,164,78,0.08);border-left:4px solid var(--green);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--green);margin-bottom:6px;">✅ DO: Add route parameters to @page directive</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Use <code>@page "{name}"</code> or <code>@page "{id:int}"</code> to make your routes dynamic. This is a great use of the @page directive customization.
+        </div>
+      </div>
+
+      <div style="background:rgba(45,164,78,0.08);border-left:4px solid var(--green);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--green);margin-bottom:6px;">✅ DO: Consider global conventions for route templates</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          When you want to change route templates for all your Razor Pages (like using kebab-case), use global conventions rather than customizing each page individually.
+        </div>
+      </div>
+
+      <div style="background:rgba(210,73,57,0.08);border-left:4px solid var(--red);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--red);margin-bottom:6px;">❌ AVOID: Replacing the route template with absolute path</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Using <code>@page "/custom-route"</code> breaks the file-path convention and makes your app harder to navigate. Restructure your folders instead.
+        </div>
+      </div>
+
+      <div style="background:rgba(210,73,57,0.08);border-left:4px solid var(--red);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--red);margin-bottom:6px;">❌ AVOID: Adding literal segments to @page directive</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Don't use <code>@page "Extra/Segment"</code> to add literal path segments. Rely on the file hierarchy instead—move the page to the appropriate folder.
+        </div>
+      </div>
+
+      <div style="background:rgba(210,73,57,0.08);border-left:4px solid var(--red);padding:16px;border-radius:6px;">
+        <div style="font-weight:600;color:var(--red);margin-bottom:6px;">❌ AVOID: Multiple route templates per page</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7;">
+          Don't use <code>AddPageRoute()</code> convention to add additional URLs to a page. Having multiple URLs to access the same page is confusing and bad for SEO.
+        </div>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg, rgba(124,106,247,0.1) 0%, rgba(45,164,78,0.1) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:32px 0;">
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:20px;">🎯</span> Chapter Summary
+      </div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+        <strong>Routing in Razor Pages</strong> uses the same infrastructure as minimal APIs and MVC, but with convention-based explicit routing that maps file paths to URLs automatically.<br><br>
+        
+        <strong>File path determines URL:</strong> <code>Pages/Products/View.cshtml</code> → <code>/Products/View</code>. Routing is case-insensitive.<br><br>
+        
+        <strong>Customize routes</strong> with the <code>@page</code> directive: add parameters with <code>@page "{id}"</code>, or completely replace with <code>@page "/custom"</code>.<br><br>
+        
+        <strong>All routing features work:</strong> optional parameters (<code>{id?}</code>), defaults (<code>{page=1}</code>), constraints (<code>{id:int}</code>), and catch-all (<code>{**path}</code>).<br><br>
+        
+        <strong>Generate URLs dynamically</strong> using <code>Url.Page()</code> in views or <code>LinkGenerator</code> in services to maintain refactoring-friendly code.<br><br>
+        
+        <strong>Best practice:</strong> Rely on file hierarchy for URL structure, add route parameters when needed, avoid replacing routes completely.
+      </div>
+    </div>
+  </section>
+  <section id="github" class="section">
+<div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+  <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter14" target="_blank" 
+     style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+    </div>
+    
+    <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+      Visit this link to run and test the code for this chapter.
+    </div>
+  </a>
+</div></section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
+function answer(btn,quizId,correct){
+  const block=document.getElementById(quizId);
+  block.querySelectorAll('.quiz-option').forEach(b=>{b.disabled=true;});
+  if(correct){
+    btn.classList.add('correct');
+    const fb=document.getElementById(quizId+'-fb');
+    fb.textContent='✅ Correct!';
+    fb.className='quiz-feedback show ok';
+  }else{
+    btn.classList.add('wrong');
+    block.querySelectorAll('.quiz-option').forEach(b=>{if(b._correct)b.classList.add('reveal');});
+    const fb=document.getElementById(quizId+'-fb');
+    fb.textContent='❌ Not quite — review the section above and try to identify the correct answer.';
+    fb.className='quiz-feedback show err';
+  }
+}
+document.querySelectorAll('.quiz-option').forEach(btn=>{btn._correct=btn.getAttribute('onclick')?.includes(',true)');});
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  document.getElementById('readProgress').style.width=Math.min(pct,100)+'%';
+  document.getElementById('mobileProgressFill').style.width=Math.min(pct,100)+'%';
+});
+const observerOptions={root:null,rootMargin:'-20% 0px -20% 0px',threshold:0};
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      document.querySelectorAll('.nav-link[onclick]').forEach(link=>{link.classList.remove('active');});
+      const id=entry.target.getAttribute('id');
+      const activeLink=document.querySelector(`.nav-link[onclick*="${id}"]`);
+      if(activeLink){activeLink.classList.add('active');}
+    }
+  });
+},observerOptions);
+document.querySelectorAll('section.section').forEach(section=>{observer.observe(section);});
+(function(){
+  var overlay=document.querySelector('.sidebar-overlay');
+  var sidebar=document.querySelector('.sidebar');
+  if(!overlay||!sidebar)return;
+  window.openDrawer=function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer=function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click',closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){if(window.innerWidth<=900)closeDrawer();});
+  });
+})();
+</script>
+</body>
+</html>

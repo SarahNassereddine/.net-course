@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 12 — Saving Data with Entity Framework Core</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Definition boxes (missing from shared.css) ── */
+.definition {
+  background: rgba(124,106,247,.06);
+  border: 1px solid rgba(124,106,247,.22);
+  border-left: 3px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.definition-term {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.definition-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+/* ── pre code blocks — dark background matching ch5 style ── */
+.code-block {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin: 20px 0;
+}
+.code-block pre {
+  background: #282c34;
+  margin: 0;
+  padding: 20px;
+  overflow-x: auto;
+}
+.code-block pre code {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.8;
+  color: #abb2bf;
+  white-space: pre;
+}
+/* ── orange colour used in update-step circles ── */
+:root { --orange: #e8720c; }
+</style>
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 12 — Entity Framework Core</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+ <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+  
+  <div style="margin-bottom: 2px;">
+    <span style="opacity: 0.7;">Prepared by</span> 
+    <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+  </div>
+
+  <div>
+    <span style="opacity: 0.7;">Supervised by</span> 
+    <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+  </div>
+
+  </div>
+    <div class="chapter-label">Chapter 12</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="intro-ef-core" onclick="scrollPageTo('intro-ef-core')">
+      <span class="dot"></span>Introducing EF Core
+    </button>
+    <button class="nav-link" data-target="what-is-ef" onclick="scrollPageTo('what-is-ef')">
+      <span class="dot"></span>What is EF Core?
+    </button>
+    <button class="nav-link" data-target="why-orm" onclick="scrollPageTo('why-orm')">
+      <span class="dot"></span>Why use an ORM?
+    </button>
+    <button class="nav-link" data-target="mapping-database" onclick="scrollPageTo('mapping-database')">
+      <span class="dot"></span>Mapping database to code
+    </button>
+    <button class="nav-link" data-target="adding-ef" onclick="scrollPageTo('adding-ef')">
+      <span class="dot"></span>Adding EF Core to app
+    </button>
+    <button class="nav-link" data-target="choosing-provider" onclick="scrollPageTo('choosing-provider')">
+      <span class="dot"></span>Choosing a database provider
+    </button>
+    <button class="nav-link" data-target="data-model" onclick="scrollPageTo('data-model')">
+      <span class="dot"></span>Building a data model
+    </button>
+    <button class="nav-link" data-target="registering-context" onclick="scrollPageTo('registering-context')">
+      <span class="dot"></span>Registering DbContext
+    </button>
+    <button class="nav-link" data-target="migrations" onclick="scrollPageTo('migrations')">
+      <span class="dot"></span>Managing migrations
+    </button>
+    <button class="nav-link" data-target="first-migration" onclick="scrollPageTo('first-migration')">
+      <span class="dot"></span>Creating first migration
+    </button>
+    <button class="nav-link" data-target="second-migration" onclick="scrollPageTo('second-migration')">
+      <span class="dot"></span>Adding second migration
+    </button>
+    <button class="nav-link" data-target="querying-data" onclick="scrollPageTo('querying-data')">
+      <span class="dot"></span>Querying & saving data
+    </button>
+    <button class="nav-link" data-target="creating-record" onclick="scrollPageTo('creating-record')">
+      <span class="dot"></span>Creating a record
+    </button>
+    <button class="nav-link" data-target="loading-list" onclick="scrollPageTo('loading-list')">
+      <span class="dot"></span>Loading a list
+    </button>
+    <button class="nav-link" data-target="loading-single" onclick="scrollPageTo('loading-single')">
+      <span class="dot"></span>Loading a single record
+    </button>
+    <button class="nav-link" data-target="updating" onclick="scrollPageTo('updating')">
+      <span class="dot"></span>Updating records
+    </button>
+    <button class="nav-link" data-target="deleting" onclick="scrollPageTo('deleting')">
+      <span class="dot"></span>Deleting records
+    </button>
+    <button class="nav-link" data-target="production" onclick="scrollPageTo('production')">
+      <span class="dot"></span>Production considerations
+    </button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Examples</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link active" href="chapter12.html"><span class="dot"></span>Ch 12 — Entity Framework Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 12</div>
+    <h1 class="chapter-title">Saving Data with Entity Framework Core</h1>
+    <p class="chapter-subtitle">Learn how to use Entity Framework Core as an ORM to interact with databases in your ASP.NET Core applications, from basic CRUD operations to managing schema migrations.</p>
+  </div>
+
+  <!-- SECTION 1: Introducing EF Core -->
+  <section class="section" id="intro-ef-core">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Introducing Entity Framework Core</h2>
+    </div>
+
+    <p>Interacting with databases from application code is often a messy affair, and you can take many approaches. A task as simple as reading data from a database requires handling network connections, writing SQL statements, and managing variable result data.</p>
+
+    <p>The .NET ecosystem has a whole array of libraries you can use for database access, ranging from low-level ADO.NET libraries to higher-level abstractions such as <strong>Entity Framework Core (EF Core)</strong>.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">What This Chapter Covers</div>
+        <div class="callout-text">
+          Understanding what Entity Framework Core is and why you should use it<br>
+          Adding EF Core to an ASP.NET Core application<br>
+          Building a data model and using it to create a database<br>
+          Querying, creating, and updating data with EF Core
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: What is EF Core? -->
+  <section class="section" id="what-is-ef">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">What is EF Core?</h2>
+    </div>
+
+    <p>Entity Framework Core is a library that provides an <strong>object-oriented way to access databases</strong>. It acts as an <strong>object-relational mapper (ORM)</strong>, communicating with the database for you and mapping database responses to .NET classes and objects.</p>
+
+    <div class="definition">
+      <div class="definition-term">Object-Relational Mapper (ORM)</div>
+      <div class="definition-desc">With an ORM, you can manipulate a database with object-oriented concepts such as classes and objects by mapping them to database concepts such as tables and columns.</div>
+    </div>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px;">🗺️ EF Core Mapping</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; font-size: 13px;">
+        <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 14px;">
+          <div style="font-weight: 600; color: var(--accent2); margin-bottom: 8px;">.NET Application</div>
+          <div style="color: var(--text2); line-height: 1.6;">
+            <strong>Classes</strong> → Tables<br>
+            <strong>Properties</strong> → Columns<br>
+            <strong>Objects</strong> → Rows<br>
+            <strong>References</strong> → Foreign Keys
+          </div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px;">⟷</div>
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.2); border-radius: 6px; padding: 14px;">
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 8px;">Database</div>
+          <div style="color: var(--text2); line-height: 1.6;">
+            Tables<br>
+            Columns<br>
+            Rows<br>
+            Foreign Key Relationships
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Database Support</h3>
+    <p>The most commonly used family is <strong>relational databases</strong>, accessed via Structured Query Language (SQL). EF Core can map:</p>
+    
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li><strong>Microsoft SQL Server</strong></li>
+      <li><strong>SQLite</strong></li>
+      <li><strong>MySQL</strong></li>
+      <li><strong>PostgreSQL</strong></li>
+      <li>Many other relational databases</li>
+      <li>In-memory database (for testing)</li>
+    </ul>
+
+    <p>EF Core uses a <strong>provider model</strong>, so support for other relational databases can be plugged in later as they become available. As of .NET Core 3.0, EF Core also works with <strong>nonrelational, NoSQL, or document databases</strong> like Cosmos DB.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📚</div>
+      <div class="callout-body">
+        <div class="callout-title">Further Reading</div>
+        <div class="callout-text">
+          For an in-depth look at EF Core, check out <em>Entity Framework Core in Action, 2nd ed.</em> by Jon P. Smith, or visit the Microsoft documentation at <strong>docs.microsoft.com/ef/core</strong>
+        </div>
+      </div>
+    </div>
+    
+    <!-- EF Core Bridge Diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; text-align:center; margin-bottom: 20px;">How EF Core Works</div>
+      <div style="display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap;">
+        <!-- .NET App box -->
+        <div style="background: rgba(124,106,247,0.1); border: 2px solid rgba(124,106,247,0.4); border-radius: 12px; padding: 20px 24px; min-width: 150px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">🖥️</div>
+          <div style="font-weight: 700; color: var(--accent2); font-size: 14px;">Your .NET App</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 6px; line-height: 1.5;">C# Classes<br>LINQ Queries<br>Objects &amp; Methods</div>
+        </div>
+        <!-- Arrow + EF Core label -->
+        <div style="display: flex; flex-direction: column; align-items: center; padding: 0 12px;">
+          <div style="font-size: 11px; font-weight: 600; color: var(--accent); background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.3); border-radius: 20px; padding: 4px 12px; margin-bottom: 6px; white-space: nowrap;">EF Core ORM</div>
+          <div style="display: flex; align-items: center; gap: 4px; color: var(--text3); font-size: 22px;">← →</div>
+          <div style="font-size: 10px; color: var(--text3); margin-top: 4px; text-align: center;">translates &amp;<br>maps</div>
+        </div>
+        <!-- Database box -->
+        <div style="background: rgba(45,164,78,0.1); border: 2px solid rgba(45,164,78,0.4); border-radius: 12px; padding: 20px 24px; min-width: 150px; text-align: center;">
+          <div style="font-size: 24px; margin-bottom: 8px;">🗄️</div>
+          <div style="font-weight: 700; color: var(--green); font-size: 14px;">Database</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 6px; line-height: 1.5;">Tables &amp; Columns<br>SQL Queries<br>Rows of Data</div>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; font-size: 12px;">
+        <div style="background: rgba(124,106,247,0.07); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: var(--accent2); font-weight: 700;">C# Class</span> <span style="color: var(--text3);">→ maps to →</span> <span style="color: var(--text2);">DB Table</span>
+        </div>
+        <div style="background: rgba(124,106,247,0.07); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: var(--accent2); font-weight: 700;">Property</span> <span style="color: var(--text3);">→ maps to →</span> <span style="color: var(--text2);">DB Column</span>
+        </div>
+        <div style="background: rgba(124,106,247,0.07); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: var(--accent2); font-weight: 700;">Object (instance)</span> <span style="color: var(--text3);">→ maps to →</span> <span style="color: var(--text2);">DB Row</span>
+        </div>
+        <div style="background: rgba(124,106,247,0.07); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: var(--accent2); font-weight: 700;">Reference</span> <span style="color: var(--text3);">→ maps to →</span> <span style="color: var(--text2);">Foreign Key</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: Why use an ORM? -->
+  <section class="section" id="why-orm">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Why Use an Object-Relational Mapper?</h2>
+    </div>
+
+    <h3>Speed of Development</h3>
+    <p>One of the biggest advantages of an ORM is the <strong>speed with which it allows you to develop an application</strong>. You can stay in the familiar territory of object-oriented .NET, often without needing to manipulate a database directly or write custom SQL.</p>
+
+    <div style="background: var(--bg2); border-left: 4px solid var(--accent); padding: 16px 20px; margin: 20px 0; border-radius: 4px;">
+      <div style="font-weight: 600; color: var(--text); margin-bottom: 8px;">Without an ORM (Traditional Approach)</div>
+      <div style="color: var(--text2); font-size: 13px; line-height: 1.7;">
+        To load product details from a database, you'd have to:<br>
+        1. Open a connection to the database<br>
+        2. Write the necessary SQL with correct table and column names<br>
+        3. Read the data over the connection<br>
+        4. Create a POCO (Plain Old CLR Object) to hold the data<br>
+        5. Set properties on the object, converting data to the correct format manually
+      </div>
+    </div>
+
+    <div style="background: var(--bg2); border-left: 4px solid var(--green); padding: 16px 20px; margin: 20px 0; border-radius: 4px;">
+      <div style="font-weight: 600; color: var(--text); margin-bottom: 8px;">With EF Core</div>
+      <div style="color: var(--text2); font-size: 13px; line-height: 1.7;">
+        EF Core handles all the plumbing for you:<br>
+        • Handles database connections<br>
+        • Generates the SQL statements<br>
+        • Maps data back to your POCO objects<br>
+        • All you provide is a <strong>LINQ query</strong> describing the data you want
+      </div>
+    </div>
+
+    <h3>Change Tracking</h3>
+    <p>ORMs like EF Core keep track of which properties have changed on any objects they retrieve from the database. This lets you:</p>
+    
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li>Load an object from the database</li>
+      <li>Modify it in .NET code</li>
+      <li>Ask the ORM to update the associated record</li>
+    </ul>
+
+    <p>The ORM works out which properties have changed and issues update statements for the appropriate columns, saving you a bunch of work.</p>
+
+    <h3>Drawbacks to Consider</h3>
+    <p>Using an ORM has some tradeoffs:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: rgba(255,197,61,0.08); border: 1px solid rgba(255,197,61,0.25); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">⚠️ Database Abstraction</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">
+          The high level of abstraction can lead to problematic query patterns. A classic example is the <strong>N+1 problem</strong>, where what should be a single database request turns into separate requests for every row in a table.
+        </div>
+      </div>
+
+      <div style="background: rgba(255,197,61,0.08); border: 1px solid rgba(255,197,61,0.25); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">⚡ Performance</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">
+          ORMs are abstractions over several concepts, so they inherently do more work than handcrafted data access. However, modern EF Core uses many database tricks and crafts clean SQL queries, often outperforming handcrafted ADO.NET queries!
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">✅</div>
+      <div class="callout-body">
+        <div class="callout-title">Best of Both Worlds</div>
+        <div class="callout-text">
+          Use an ORM for quick development of the bulk of your application, and fall back to lower-level APIs like ADO.NET for those few areas that prove to be bottlenecks. This way, you get good-enough performance with EF Core while optimizing only the areas that need it.
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-block" id="quiz1">
+      <div class="quiz-question">🧠 What is the main advantage of using an ORM like EF Core?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">Faster database performance</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', true)">Faster application development</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">Lower memory usage</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz1', false)">Smaller application size</button>
+      </div>
+      <div class="quiz-feedback" id="quiz1-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: Mapping Database to Application Code -->
+  <section class="section" id="mapping-database">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Mapping a Database to Your Application Code</h2>
+    </div>
+
+    <p>Let's look at a practical example: a simple <strong>recipe app API</strong> that lists recipes and lets you retrieve a recipe's ingredients. Users can list all recipes, add new ones, edit recipes, and delete old ones.</p>
+
+    <div class="definition">
+      <div class="definition-term">Entity</div>
+      <div class="definition-desc">An entity is a .NET class that's mapped by EF Core to the database. These are classes you define, typically as POCO classes, that can be saved and loaded by mapping to database tables using EF Core.</div>
+    </div>
+
+    <!-- Entity Mapping Diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px;">POCO Entities → Database Tables</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: start;">
+        <!-- C# Entity -->
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--accent2); text-transform: uppercase; margin-bottom: 8px;">C# Entity Class</div>
+          <div style="background: #1e2535; border-radius: 8px; padding: 14px; font-family: var(--mono); font-size: 12px; line-height: 1.8; color: #abb2bf; border: 1px solid rgba(124,106,247,0.3);">
+            <span style="color: #c678dd;">public class</span> <span style="color: #e5c07b;">Recipe</span><br>
+            <span style="color: #abb2bf;">{</span><br>
+            &nbsp;&nbsp;<span style="color: #c678dd;">public int</span> <span style="color: #61afef;">RecipeId</span> { ... }<br>
+            &nbsp;&nbsp;<span style="color: #c678dd;">public string</span> <span style="color: #61afef;">Name</span> { ... }<br>
+            &nbsp;&nbsp;<span style="color: #c678dd;">public bool</span> <span style="color: #61afef;">IsDeleted</span> { ... }<br>
+            <span style="color: #abb2bf;">}</span>
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex; align-items:center; padding-top: 40px; font-size: 28px; color: var(--accent);">⟶</div>
+        <!-- DB Table -->
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; margin-bottom: 8px;">Database Table: Recipes</div>
+          <table style="width:100%; border-collapse: collapse; font-size: 12px; border: 1px solid rgba(45,164,78,0.3); border-radius: 8px; overflow: hidden;">
+            <thead>
+              <tr style="background: rgba(45,164,78,0.15);">
+                <th style="padding: 7px 10px; text-align: left; color: var(--green); font-weight: 700;">Column</th>
+                <th style="padding: 7px 10px; text-align: left; color: var(--green); font-weight: 700;">Type</th>
+                <th style="padding: 7px 10px; text-align: left; color: var(--green); font-weight: 700;">Key</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-top: 1px solid var(--border);">
+                <td style="padding: 7px 10px; color: var(--text); font-family: var(--mono);">RecipeId</td>
+                <td style="padding: 7px 10px; color: var(--text3);">INTEGER</td>
+                <td style="padding: 7px 10px;"><span style="background: rgba(255,197,61,0.2); color: #e09000; border-radius: 4px; padding: 1px 6px; font-size: 10px; font-weight: 700;">PK</span></td>
+              </tr>
+              <tr style="border-top: 1px solid var(--border);">
+                <td style="padding: 7px 10px; color: var(--text); font-family: var(--mono);">Name</td>
+                <td style="padding: 7px 10px; color: var(--text3);">TEXT</td>
+                <td style="padding: 7px 10px; color: var(--text3);">—</td>
+              </tr>
+              <tr style="border-top: 1px solid var(--border);">
+                <td style="padding: 7px 10px; color: var(--text); font-family: var(--mono);">IsDeleted</td>
+                <td style="padding: 7px 10px; color: var(--text3);">INTEGER</td>
+                <td style="padding: 7px 10px; color: var(--text3);">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 12px; text-align: center;">EF Core discovers your POCO classes and automatically maps them to database tables using its conventions</div>
+    </div>
+
+    <h3>Key Components</h3>
+    <p>When you interact with EF Core, you'll primarily use:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">POCO Entities</div>
+        <div style="font-size: 13px; color: var(--text2);">Object-oriented representations of the tables in your database</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">DbContext</div>
+        <div style="font-size: 13px; color: var(--text2);">Inherits from the DbContext EF Core class; used to configure EF Core and access the database at runtime</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Multiple DbContexts</div>
+        <div class="callout-text">
+          You can potentially have multiple DbContexts in your application and even configure them to integrate with different databases.
+        </div>
+      </div>
+    </div>
+
+    <h3>How EF Core Builds the Internal Model</h3>
+    <p>When your application first uses EF Core, it creates an internal representation of the database based on the <code>DbSet&lt;T&gt;</code> properties on your application's DbContext and the entity classes themselves.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Process</span><span class="code-label">EF Core Model Building</span></div>
+      <pre><code>1. EF Core looks for DbSet&lt;T&gt; properties on your DbContext
+   Example: DbSet&lt;Recipe&gt; Recipes
+
+2. It scans all properties on known entities for linked types
+   Example: Recipe has ICollection&lt;Ingredient&gt;
+
+3. It uses relationships between .NET classes to model 
+   relationships between database tables (foreign keys)
+
+Result: Complete internal model of your data structure</code></pre>
+    </div>
+
+    <p>For the recipe app, EF Core builds a model of the <code>Recipe</code> class because it's exposed on the <code>AppDbContext</code> as a <code>DbSet&lt;Recipe&gt;</code>. It then loops through all properties of Recipe, looking for types it doesn't know about, and adds them to its internal model.</p>
+
+    <!-- EF Core model building process diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px;">EF Core Model Discovery</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: var(--accent2); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">1</div>
+          <div style="flex: 1; background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2);">
+            EF Core looks at <code>DbSet&lt;Recipe&gt; Recipes</code> on your <strong>AppDbContext</strong> — this tells it <em>Recipe</em> is an entity to map.
+          </div>
+        </div>
+        <div style="margin-left: 13px; width: 1px; height: 12px; background: var(--border);"></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: var(--accent2); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">2</div>
+          <div style="flex: 1; background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2);">
+            It scans all properties on <em>Recipe</em>. It finds <code>ICollection&lt;Ingredient&gt;</code> — a type it doesn't know yet — so it adds <em>Ingredient</em> to the model too.
+          </div>
+        </div>
+        <div style="margin-left: 13px; width: 1px; height: 12px; background: var(--border);"></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: var(--accent2); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">3</div>
+          <div style="flex: 1; background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2);">
+            EF Core uses <code>RecipeId</code> on <em>Ingredient</em> and the navigation property on <em>Recipe</em> to model a <strong>one-to-many foreign key</strong> relationship — one Recipe has many Ingredients.
+          </div>
+        </div>
+        <div style="margin-left: 13px; width: 1px; height: 12px; background: var(--border);"></div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="background: var(--green); color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">✓</div>
+          <div style="flex: 1; background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2);">
+            Result: a complete internal model describing 2 tables (<em>Recipes</em>, <em>Ingredients</em>) and their relationship — ready for migrations and queries.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: Adding EF Core to Application -->
+  <section class="section" id="adding-ef">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Adding EF Core to an Application</h2>
+    </div>
+
+    <p>Adding EF Core to an application is a multistep process:</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Choose a database provider</div>
+            <div style="font-size: 13px; color: var(--text2);">Such as PostgreSQL, SQLite, or MS SQL Server</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Install EF Core NuGet packages</div>
+            <div style="font-size: 13px; color: var(--text2);">Database provider and design packages</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Design your data model</div>
+            <div style="font-size: 13px; color: var(--text2);">Create your app's DbContext and entity classes</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">4</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Register DbContext with DI</div>
+            <div style="font-size: 13px; color: var(--text2);">Register with ASP.NET Core DI container</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">5</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Generate migration</div>
+            <div style="font-size: 13px; color: var(--text2);">Use EF Core to describe your data model</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">6</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Apply migration to database</div>
+            <div style="font-size: 13px; color: var(--text2);">Update the database's schema</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EF Core setup workflow diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px;">Complete EF Core Setup Workflow</div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">📦</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent2);">1. Choose Provider</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">SQLite, SQL Server, PostgreSQL...</div>
+        </div>
+        <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">⬇️</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent2);">2. Install NuGet</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">Provider + Design packages</div>
+        </div>
+        <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">🧱</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--accent2);">3. Design Model</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">Create entity classes + DbContext</div>
+        </div>
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">💉</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--green);">4. Register with DI</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">AddDbContext in Program.cs</div>
+        </div>
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">📋</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--green);">5. Add Migration</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">dotnet ef migrations add</div>
+        </div>
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.2); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 6px;">🗄️</div>
+          <div style="font-size: 12px; font-weight: 700; color: var(--green);">6. Apply Migration</div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 4px;">dotnet ef database update</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: Choosing Database Provider -->
+  <section class="section" id="choosing-provider">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Choosing a Database Provider and Installing EF Core</h2>
+    </div>
+
+    <p>EF Core supports a range of databases by using a <strong>provider model</strong>. The modular nature of EF Core means that you can use the same high-level API to program against different underlying databases.</p>
+
+    <h3>Available Database Providers</h3>
+    <p>Adding support for a given database involves adding the correct NuGet package to your .csproj file:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">NuGet</span><span class="code-label">Database Provider Packages</span></div>
+      <pre><code>PostgreSQL
+  Npgsql.EntityFrameworkCore.PostgreSQL
+
+Microsoft SQL Server
+  Microsoft.EntityFrameworkCore.SqlServer
+
+MySQL
+  MySql.Data.EntityFrameworkCore
+
+SQLite
+  Microsoft.EntityFrameworkCore.SQLite</code></pre>
+    </div>
+
+    <h3>Required Packages for SQLite</h3>
+    <p>To use SQLite, you'll need two packages:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-family: var(--mono); font-size: 13px; color: var(--accent2); margin-bottom: 6px;">Microsoft.EntityFrameworkCore.SQLite</div>
+        <div style="font-size: 13px; color: var(--text2);">Main database provider package for using EF Core at runtime. Also contains a reference to the main EF Core NuGet package.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-family: var(--mono); font-size: 13px; color: var(--accent2); margin-bottom: 6px;">Microsoft.EntityFrameworkCore.Design</div>
+        <div style="font-size: 13px; color: var(--text2);">Contains shared build-time components for EF Core, required for building the EF Core data model for your app.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">XML</span><span class="code-label">Project File (.csproj)</span></div>
+      <pre><code>&lt;Project Sdk="Microsoft.NET.Sdk.Web"&gt;
+  &lt;PropertyGroup&gt;
+    &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+    &lt;Nullable&gt;enable&lt;/Nullable&gt;
+  &lt;/PropertyGroup&gt;
+
+  &lt;ItemGroup&gt;
+    &lt;PackageReference 
+      Include="Microsoft.EntityFrameworkCore.SQLite" 
+      Version="8.0.0" /&gt;
+    
+    &lt;PackageReference 
+      Include="Microsoft.EntityFrameworkCore.Design" 
+      Version="8.0.0" &gt;
+      &lt;IncludeAssets&gt;runtime; build; native; contentfiles; 
+        Analyzers; buildtransitive&lt;/IncludeAssets&gt;
+      &lt;PrivateAssets&gt;all&lt;/PrivateAssets&gt;
+    &lt;/PackageReference&gt;
+  &lt;/ItemGroup&gt;
+&lt;/Project&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- SECTION 7: Building a Data Model -->
+  <section class="section" id="data-model">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Building a Data Model</h2>
+    </div>
+
+    <p>EF Core is flexible in letting you define your entities the way you want to, as <strong>POCO (Plain Old CLR Object) classes</strong>. EF Core heavily favors a <strong>convention over configuration</strong> approach.</p>
+
+    <h3>Entity Classes Example</h3>
+    <p>Here are the Recipe and Ingredient entity classes for the recipe app:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Recipe and Ingredient Entities</span></div>
+      <pre><code>public class Recipe
+{
+    public int RecipeId { get; set; }
+    public required string Name { get; set; }
+    public TimeSpan TimeToCook { get; set; }
+    public bool IsDeleted { get; set; }
+    public required string Method { get; set; }
+    public required ICollection&lt;Ingredient&gt; Ingredients { get; set; }
+}
+
+public class Ingredient
+{
+    public int IngredientId { get; set; }
+    public int RecipeId { get; set; }
+    public required string Name { get; set; }
+    public decimal Quantity { get; set; }
+    public required string Unit { get; set; }
+}</code></pre>
+    </div>
+
+    <h3>EF Core Conventions</h3>
+    <p>These classes conform to certain default conventions that EF Core uses:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Primary Key Convention</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">
+          Properties with an <code>Id</code> suffix (e.g., <code>RecipeId</code>, <code>IngredientId</code>) are identified as the <strong>primary key</strong> of the table.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Foreign Key Convention</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.6;">
+          The <code>RecipeId</code> property on <code>Ingredient</code> is interpreted as a <strong>foreign key</strong> pointing to the Recipe class. Combined with <code>ICollection&lt;Ingredient&gt;</code> on Recipe, this represents a <strong>many-to-one relationship</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div class="definition">
+      <div class="definition-term">Primary Key</div>
+      <div class="definition-desc">A value that uniquely identifies the row among all the others in the table. It's often an int or a Guid.</div>
+    </div>
+
+    <div class="definition">
+      <div class="definition-term">Foreign Key</div>
+      <div class="definition-desc">A foreign key on a table points to the primary key of a different table, forming a link between the two rows.</div>
+    </div>
+
+    <h3>Code-First Approach</h3>
+    <p>This <strong>code-first approach</strong> is typical: you define your entities in code, and EF Core creates the database schema from them. If you have an existing database, you can also automatically generate the EF entities and DbContext instead (called "reverse engineering").</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🎨</div>
+      <div class="callout-body">
+        <div class="callout-title">Customization with DataAnnotations</div>
+        <div class="callout-text">
+          You can use <strong>DataAnnotations attributes</strong> to decorate your entity classes, controlling things like column naming and string length. EF Core will use these attributes to override the default conventions.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">AppDbContext Definition</span></div>
+      <pre><code>public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions&lt;AppDbContext&gt; options) 
+        : base(options) { }
+    
+    public DbSet&lt;Recipe&gt; Recipes { get; set; }
+}</code></pre>
+    </div>
+
+    <p>The <code>AppDbContext</code> for your app is simple, containing a list of your root entities. You'll use the <code>Recipes</code> property to query the database. Note that you didn't list <code>Ingredient</code> on AppDbContext, but EF Core models it correctly as it's exposed on the Recipe.</p>
+
+
+
+    <!-- Entity Relationship Diagram - the key new visual for this chapter -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 20px; text-align: center;">📊 Entity Relationship Diagram — Recipe App</div>
+      <div style="display: flex; align-items: flex-start; justify-content: center; gap: 24px; flex-wrap: wrap;">
+        <!-- Recipe Table -->
+        <div style="min-width: 200px;">
+          <div style="background: rgba(124,106,247,0.15); border: 2px solid rgba(124,106,247,0.5); border-radius: 8px; overflow: hidden;">
+            <div style="background: rgba(124,106,247,0.3); padding: 8px 14px; font-weight: 700; color: var(--accent2); font-size: 13px; text-align: center; letter-spacing: .04em;">Recipe</div>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.2); background: rgba(255,197,61,0.08);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">🔑 RecipeId</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INT • PK</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">Name</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">TEXT</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">TimeToCook</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">TEXT</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">Method</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">TEXT</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">IsDeleted</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INTEGER</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(124,106,247,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">IsVegetarian</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INTEGER</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">IsVegan</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INTEGER</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <!-- Relationship arrow -->
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 60px; gap: 6px;">
+          <div style="font-size: 11px; color: var(--text3); font-weight: 600; white-space: nowrap;">1</div>
+          <div style="width: 50px; height: 2px; background: var(--text3); position: relative;">
+            <div style="position: absolute; right: -6px; top: -4px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 7px solid var(--text3);"></div>
+          </div>
+          <div style="font-size: 11px; color: var(--accent); font-weight: 700; white-space: nowrap; background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); border-radius: 4px; padding: 2px 6px;">many</div>
+          <div style="font-size: 10px; color: var(--text3); white-space: nowrap; margin-top: 2px;">has many Ingredients</div>
+        </div>
+        <!-- Ingredient Table -->
+        <div style="min-width: 200px;">
+          <div style="background: rgba(45,164,78,0.1); border: 2px solid rgba(45,164,78,0.4); border-radius: 8px; overflow: hidden;">
+            <div style="background: rgba(45,164,78,0.25); padding: 8px 14px; font-weight: 700; color: var(--green); font-size: 13px; text-align: center; letter-spacing: .04em;">Ingredient</div>
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr style="border-bottom: 1px solid rgba(45,164,78,0.2); background: rgba(255,197,61,0.08);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">🔑 IngredientId</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INT • PK</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(45,164,78,0.15); background: rgba(9,105,218,0.06);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">🔗 RecipeId</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">INT • FK</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(45,164,78,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">Name</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">TEXT</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(45,164,78,0.15);">
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">Quantity</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">DECIMAL</td>
+              </tr>
+              <tr>
+                <td style="padding: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--text);">Unit</td>
+                <td style="padding: 6px 10px; font-size: 11px; color: var(--text3); text-align: right;">TEXT</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; font-size: 11px;">
+        <div style="display: flex; align-items: center; gap: 5px; color: var(--text3);"><span style="background: rgba(255,197,61,0.2); color: #e09000; border-radius: 3px; padding: 1px 6px; font-weight: 700;">🔑 PK</span> Primary Key — uniquely identifies each row</div>
+        <div style="display: flex; align-items: center; gap: 5px; color: var(--text3);"><span style="background: rgba(9,105,218,0.15); color: var(--blue); border-radius: 3px; padding: 1px 6px; font-weight: 700;">🔗 FK</span> Foreign Key — points to the PK in another table</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: Registering DbContext -->
+  <section class="section" id="registering-context">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Registering a Data Context</h2>
+    </div>
+
+    <p>As with any other service in ASP.NET Core, you should register your <code>AppDbContext</code> with the dependency injection (DI) container. When registering your context, you also configure the database provider and set the connection string.</p>
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — Registering DbContext</span></div>
+      <div style="display: grid; grid-template-columns: 1fr auto; gap: 0;">
+        <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">using</span> Microsoft.EntityFrameworkCore;
+
+<span style="color: #e5c07b;">WebApplicationBuilder</span> builder = <span style="color: #e5c07b;">WebApplication</span>.<span style="color: #61afef;">CreateBuilder</span>(args);
+
+<span style="color: #56b6c2; font-style: italic;">// ① Load connection string from appsettings.json</span>
+<span style="color: #c678dd;">var</span> connString = builder.Configuration
+    .<span style="color: #61afef;">GetConnectionString</span>(<span style="color: #98c379;">"DefaultConnection"</span>);
+
+<span style="color: #56b6c2; font-style: italic;">// ② Register AppDbContext with DI (scoped lifetime)</span>
+builder.Services.<span style="color: #61afef;">AddDbContext</span>&lt;<span style="color: #e5c07b;">AppDbContext</span>&gt;(
+    <span style="color: #56b6c2; font-style: italic;">// ③ Choose database provider — swap for UseSqlServer, UseNpgsql…</span>
+    options =&gt; options.<span style="color: #61afef;">UseSqlite</span>(connString));
+
+<span style="color: #e5c07b;">WebApplication</span> app = builder.<span style="color: #61afef;">Build</span>();
+app.<span style="color: #61afef;">Run</span>();</code></pre>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin: 16px 0;">
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">①</span>
+        <span style="color: var(--text2);"><strong>Connection string from config</strong> — loaded from <code>appsettings.json</code> (or env vars / secrets in production). The key <code>"DefaultConnection"</code> must match the name in your config file.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">②</span>
+        <span style="color: var(--text2);"><strong>AddDbContext&lt;T&gt;</strong> registers your context as a <em>Scoped</em> service — one instance per HTTP request. You can then inject <code>AppDbContext</code> into services and controllers.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">③</span>
+        <span style="color: var(--text2);"><strong>UseSqlite()</strong> sets the database provider. To switch to SQL Server or PostgreSQL later, just swap this one method — all your entity and query code stays the same.</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔒</div>
+      <div class="callout-body">
+        <div class="callout-title">Connection String as Secret</div>
+        <div class="callout-text">
+          The connection string is a typical secret, so loading it from configuration makes sense. At runtime, the correct configuration string for your current environment is used, so you can use different databases when developing locally and in production.
+        </div>
+      </div>
+    </div>
+
+    <!-- DbContext DI registration explained with annotated visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">📌 What AddDbContext does under the hood</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 12px; text-align: center;">
+        <div style="background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 18px; margin-bottom: 6px;">🔌</div>
+          <div style="font-weight: 700; color: var(--accent);">Registers as Scoped</div>
+          <div style="color: var(--text3); margin-top: 4px;">One DbContext per HTTP request — avoids concurrency issues and matches request lifetime</div>
+        </div>
+        <div style="background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 18px; margin-bottom: 6px;">⚙️</div>
+          <div style="font-weight: 700; color: var(--accent);">Configures Provider</div>
+          <div style="color: var(--text3); margin-top: 4px;">The options lambda sets which database engine to use — swap UseSqlite for UseSqlServer to change DB</div>
+        </div>
+        <div style="background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); border-radius: 8px; padding: 12px;">
+          <div style="font-size: 18px; margin-bottom: 6px;">🔑</div>
+          <div style="font-weight: 700; color: var(--accent);">Injects Connection</div>
+          <div style="color: var(--text3); margin-top: 4px;">Connection string from config — different values in dev, staging, production without code changes</div>
+        </div>
+      </div>
+    </div>
+
+    <p>Now you have a DbContext registered as a <strong>scoped service</strong> with the DI container (typical for database-related services), and a data model corresponding to your database. The next step is to create the database itself using migrations.</p>
+
+    <!-- Code-first vs DB-first visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">Two Approaches: Code-First vs Database-First</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div style="border: 2px solid rgba(45,164,78,0.4); border-radius: 10px; padding: 16px;">
+          <div style="font-weight: 700; color: var(--green); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><span style="font-size:16px;">✅</span> Code-First (Typical)</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2);">
+            <span style="background: rgba(124,106,247,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">C# Classes</span>
+            <span style="color: var(--text3);">→</span>
+            <span style="background: rgba(45,164,78,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">Migrations</span>
+            <span style="color: var(--text3);">→</span>
+            <span style="background: rgba(45,164,78,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">Database</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 8px;">You write entities in C# → EF Core creates the DB schema for you. Best for new projects.</div>
+        </div>
+        <div style="border: 2px solid rgba(255,197,61,0.4); border-radius: 10px; padding: 16px;">
+          <div style="font-weight: 700; color: var(--orange); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;"><span style="font-size:16px;">↩️</span> Database-First (Reverse Engineering)</div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2);">
+            <span style="background: rgba(45,164,78,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">Database</span>
+            <span style="color: var(--text3);">→</span>
+            <span style="background: rgba(124,106,247,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">Scaffold</span>
+            <span style="color: var(--text3);">→</span>
+            <span style="background: rgba(124,106,247,0.15); border-radius: 4px; padding: 4px 8px; font-family: var(--mono);">C# Classes</span>
+          </div>
+          <div style="font-size: 11px; color: var(--text3); margin-top: 8px;">Existing database? Run <code>dotnet ef dbcontext scaffold</code> to auto-generate entity classes. Best for legacy DBs.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 9: Managing Migrations -->
+  <section class="section" id="migrations">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Managing Changes with Migrations</h2>
+    </div>
+
+    <p>Managing schema changes for databases is notoriously difficult. Your application code is explicitly tied to a particular version of a database, and you need to make sure that the two are always in sync.</p>
+
+    <div class="definition">
+      <div class="definition-term">Schema</div>
+      <div class="definition-desc">How the data is organized in a database, including the tables, columns, and relationships among them.</div>
+    </div>
+
+    <h3>The Database Deployment Problem</h3>
+    <p>When you deploy an app:</p>
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li>You can delete old code and replace it with new code</li>
+      <li>If you need to roll back, delete the new code and deploy an old version</li>
+      <li><strong>But databases contain data!</strong> You can't just blow it away and create a new one</li>
+    </ul>
+
+    <h3>What are Migrations?</h3>
+    <p>EF Core provides its own version of schema management called <strong>migrations</strong>. Migrations provide a way to manage changes to a database schema when your EF Core data model changes.</p>
+
+    <div class="definition">
+      <div class="definition-term">Migration</div>
+      <div class="definition-desc">A C# code file in your application that defines how the data model changed—which columns were added, new entities, and so on. Migrations provide a record over time of how your database schema evolved as part of your application, so the schema is always in sync with your app's data model.</div>
+    </div>
+
+    <h3>What You Can Do with Migrations</h3>
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">✅</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">Create a new database</div>
+          <div style="font-size: 13px; color: var(--text2);">Use command-line tools to create a database from migrations</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">✅</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">Update an existing database</div>
+          <div style="font-size: 13px; color: var(--text2);">Apply new migrations to an existing database</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">⏮️</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">Roll back a migration</div>
+          <div style="font-size: 13px; color: var(--text2);">Update a database to a previous schema</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Data Loss Warning</div>
+        <div class="callout-text">
+          Applying migrations modifies the database, so you must always be aware of data loss. If you remove a table from the database using a migration and then roll back the migration, the table will be re-created, but the data it previously contained will be gone forever!
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: Creating First Migration -->
+  <section class="section" id="first-migration">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Creating Your First Migration</h2>
+    </div>
+
+    <h3>Installing Migration Tools</h3>
+    <p>Before you can create migrations, you need to install the necessary tooling. You have two primary ways:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Package Manager Console (PMC)</div>
+        <div style="font-size: 13px; color: var(--text2);">PowerShell cmdlets inside Visual Studio. Install by adding Microsoft.EntityFrameworkCore.Tools package</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">.NET Tool (Recommended)</div>
+        <div style="font-size: 13px; color: var(--text2);">Cross-platform command-line tooling that extends the .NET SDK</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Installing EF Core Tools</span></div>
+      <pre><code># Install globally for your machine
+dotnet tool install --global dotnet-ef
+
+# Verify installation ( a unicorn 🦄 should appear )
+dotnet ef</code></pre>
+    </div>
+
+    <h3>Creating Your First Migration</h3>
+<p>Once you have your data model defined and DbContext registered, you can create your first migration. You can create your first migration by running the following command from inside your web project folder (in which you registered your AppDbContext) and providing a name for the migration (in this case, InitialSchema):
+</p>
+
+<div class="code-block">
+  <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Creating First Migration</span></div>
+  <pre><code># Create a migration named "InitialCreate"
+dotnet ef migrations add InitialCreate
+
+# EF Core will scan your DbContext and entities,
+# then generate migration files in the Migrations folder</code></pre>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin: 16px 0;">
+  <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+    <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">💡</span>
+    <span style="color: var(--text2);">The migration name (<code>InitialCreate</code>) can be anything descriptive. Common names for the first migration are <code>InitialCreate</code>, <code>Initial</code>, or <code>CreateDatabase</code>. For subsequent migrations, use names like <code>AddUserTable</code> or <code>AddIsVegetarianColumn</code>.</span>
+  </div>
+</div>
+    <h3>Applying the Migration</h3>
+    <p>Adding a migration doesn't update anything in the database itself. You need to apply the migration to your database. EF Core provides <strong>four different ways</strong> to apply migrations:</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        
+        <!-- Method 1 -->
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">1</span>
+            <span style="font-weight: 700; color: var(--text); font-family: var(--mono); font-size: 14px;">.NET CLI Tool</span>
+          </div>
+          <div class="code-block" style="margin: 8px 0 8px 34px;">
+            <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Command Line</span></div>
+            <pre><code>dotnet ef database update</code></pre>
+          </div>
+          <div style="font-size: 13px; color: var(--text2); margin-left: 34px;">
+            The most common approach for development and CI/CD pipelines. Requires the <code>dotnet-ef</code> tool to be installed globally.
+          </div>
+        </div>
+
+        <!-- Method 2 -->
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">2</span>
+            <span style="font-weight: 700; color: var(--text); font-family: var(--mono); font-size: 14px;">Visual Studio Package Manager Console (PMC)</span>
+          </div>
+          <div class="code-block" style="margin: 8px 0 8px 34px;">
+            <div class="code-header"><span class="code-lang">PowerShell</span><span class="code-label">PMC Cmdlet</span></div>
+            <pre><code>Update-Database</code></pre>
+          </div>
+          <div style="font-size: 13px; color: var(--text2); margin-left: 34px;">
+            PowerShell cmdlets inside Visual Studio. Requires the <code>Microsoft.EntityFrameworkCore.Tools</code> package to be installed.
+          </div>
+        </div>
+
+        <!-- Method 3 -->
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">3</span>
+            <span style="font-weight: 700; color: var(--text); font-family: var(--mono); font-size: 14px;">In Code — Program.cs Startup</span>
+          </div>
+          <div class="code-block" style="margin: 8px 0 8px 34px;">
+            <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Applying Migrations at Startup</span></div>
+            <pre><code>using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService&lt;AppDbContext&gt;();
+    dbContext.Database.Migrate();
+}</code></pre>
+          </div>
+          <div style="font-size: 13px; color: var(--text2); margin-left: 34px;">
+            Useful for applications that need to apply migrations automatically on startup. Great for desktop apps or containers, but be careful with multiple web server instances.
+          </div>
+        </div>
+
+        <!-- Method 4 -->
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <span style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">4</span>
+            <span style="font-weight: 700; color: var(--text); font-family: var(--mono); font-size: 14px;">Migration Bundle (EF Core 6+)</span>
+          </div>
+          <div class="code-block" style="margin: 8px 0 8px 34px;">
+            <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Generate &amp; Run Bundle</span></div>
+            <pre><code># Generate a standalone executable bundle
+dotnet ef migrations bundle --self-contained
+
+# Run the bundle (no .NET SDK required on target machine)
+./efbundle --connection "Data Source=prod.db"</code></pre>
+          </div>
+          <div style="font-size: 13px; color: var(--text2); margin-left: 34px;">
+            Creates a standalone executable that applies migrations without needing the .NET SDK or source code on the target machine. Perfect for production deployments where you can't install build tools.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Which Method Should You Use?</div>
+        <div class="callout-text">
+          <strong>Development:</strong> Use the .NET CLI tool or PMC cmdlets.<br>
+          <strong>CI/CD Pipelines:</strong> Use the .NET CLI tool or migration bundles.<br>
+          <strong>Production (no SDK):</strong> Use migration bundles — they're self-contained.<br>
+          <strong>Desktop/Container Apps:</strong> Use <code>context.Database.Migrate()</code> in startup code.
+        </div>
+      </div>
+    </div>
+    <h3>Files Created</h3>
+    <p>This command creates three files in the <strong>Migrations</strong> folder in your project:</p>
+
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-family: var(--mono); font-size: 13px; color: var(--accent2); margin-bottom: 6px;">Timestamp_MigrationName.cs</div>
+        <div style="font-size: 13px; color: var(--text2);">Migration file describing the actions to take on the database (creating tables, adding columns, etc.). Commands are database-provider-specific.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-family: var(--mono); font-size: 13px; color: var(--accent2); margin-bottom: 6px;">Timestamp_MigrationName.Designer.cs</div>
+        <div style="font-size: 13px; color: var(--text2);">Describes EF Core's internal model of your data model at the point in time when the migration was generated.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-family: var(--mono); font-size: 13px; color: var(--accent2); margin-bottom: 6px;">AppDbContextModelSnapshot.cs</div>
+        <div style="font-size: 13px; color: var(--text2);">Describes EF Core's current internal model. Updated when you add another migration. Should always match the current (latest) migration.</div>
+      </div>
+    </div>
+
+    <!-- Migration folder structure diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">📁 Files Created in Your Project</div>
+      <div style="font-family: var(--mono); font-size: 13px; line-height: 2; color: var(--text2);">
+        <div style="color: var(--accent2); font-weight: 700;">MyApp/</div>
+        <div style="padding-left: 20px;">├── <span style="color: var(--text2);">Program.cs</span></div>
+        <div style="padding-left: 20px; color: var(--accent); font-weight: 600;">└── Migrations/</div>
+        <div style="padding-left: 40px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+          <span style="color: var(--green);">├── 20240101_InitialCreate.cs</span>
+          <span style="font-family: var(--sans); font-size: 11px; color: var(--text3); background: rgba(45,164,78,0.1); border-radius: 4px; padding: 1px 6px;">Up() and Down() methods — the actual schema changes</span>
+        </div>
+        <div style="padding-left: 40px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+          <span style="color: var(--text3);">├── 20240101_InitialCreate.Designer.cs</span>
+          <span style="font-family: var(--sans); font-size: 11px; color: var(--text3); background: rgba(0,0,0,0.1); border-radius: 4px; padding: 1px 6px;">Snapshot of EF Core's model at creation time (auto-generated)</span>
+        </div>
+        <div style="padding-left: 40px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
+          <span style="color: var(--accent2);">└── AppDbContextModelSnapshot.cs</span>
+          <span style="font-family: var(--sans); font-size: 11px; color: var(--text3); background: rgba(124,106,247,0.1); border-radius: 4px; padding: 1px 6px;">Current model state — always updated to match latest migration</span>
+        </div>
+      </div>
+      <div class="callout info" style="margin-top: 16px; margin-bottom: 0;">
+        <div class="callout-icon">💡</div>
+        <div class="callout-body">
+          <div class="callout-title">Up() and Down()</div>
+          <div class="callout-text">Every migration has two methods: <code>Up()</code> applies the change (e.g., creates a table), and <code>Down()</code> reverses it (e.g., drops the table). This is what makes rollbacks possible.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Applying the Migration</h3>
+    <p>Adding a migration doesn't update anything in the database itself. You need to apply the migration:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Applying Migration</span></div>
+      <pre><code>dotnet ef database update</code></pre>
+    </div>
+
+    <h3>What Happens During Update</h3>
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1; font-size: 13px; color: var(--text2);">Builds your application</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1; font-size: 13px; color: var(--text2);">Loads the services configured in Program.cs, including AppDbContext</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1; font-size: 13px; color: var(--text2);">Checks whether the database exists; if not, creates it</div>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">4</div>
+          <div style="flex: 1; font-size: 13px; color: var(--text2);">Updates the database by applying any unapplied migrations</div>
+        </div>
+      </div>
+    </div>
+
+    <p>When you apply the migrations, EF Core creates the necessary tables in the database and adds the appropriate columns and keys. It also creates the <code>__EFMigrationsHistory</code> table, which stores the names of migrations that have been applied to the database.</p>
+
+    <!-- __EFMigrationsHistory table visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🗃️ The <code style="font-size:11px; text-transform:none;">__EFMigrationsHistory</code> Table</div>
+      <p style="font-size: 13px; color: var(--text2); margin: 0 0 12px;">EF Core automatically creates and manages this special table. Each time you run <code>database update</code>, it checks this table to know which migrations are already applied and skips them.</p>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid rgba(45,164,78,0.3); border-radius: 8px; overflow: hidden;">
+        <thead>
+          <tr style="background: rgba(45,164,78,0.15);">
+            <th style="padding: 8px 12px; text-align: left; color: var(--green); font-weight: 700;">MigrationId</th>
+            <th style="padding: 8px 12px; text-align: left; color: var(--green); font-weight: 700;">ProductVersion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-top: 1px solid var(--border);">
+            <td style="padding: 8px 12px; font-family: var(--mono); color: var(--text);">20240101120000_InitialCreate</td>
+            <td style="padding: 8px 12px; color: var(--text3);">8.0.0</td>
+          </tr>
+          <tr style="border-top: 1px solid var(--border); background: rgba(124,106,247,0.04);">
+            <td style="padding: 8px 12px; font-family: var(--mono); color: var(--text);">20240115093000_ExtraRecipeFields</td>
+            <td style="padding: 8px 12px; color: var(--text3);">8.0.0</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 10px;">When you run <code>dotnet ef database update</code>, EF Core compares your migration files against this table and only applies <strong>new</strong> ones — so it's safe to run repeatedly.</div>
+    </div>
+
+    <div class="quiz-block" id="quiz2">
+      <div class="quiz-question">🧠 What command creates a new migration named "AddUserTable"?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">dotnet ef create AddUserTable</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', true)">dotnet ef migrations add AddUserTable</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">dotnet ef add migration AddUserTable</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz2', false)">dotnet ef update AddUserTable</button>
+      </div>
+      <div class="quiz-feedback" id="quiz2-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: Adding Second Migration -->
+  <section class="section" id="second-migration">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Adding a Second Migration</h2>
+    </div>
+
+    <p>Most applications inevitably evolve. Adding properties to your entities, adding new entities, and removing obsolete classes are all likely. EF Core migrations make this evolution simple.</p>
+
+    <h3>Example: Adding Properties to Recipe</h3>
+    <p>Suppose you decide to highlight vegetarian and vegan dishes in your recipe app by adding <code>IsVegetarian</code> and <code>IsVegan</code> properties:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Updated Recipe Entity</span></div>
+      <pre><code>public class Recipe
+{
+    public int RecipeId { get; set; }
+    public required string Name { get; set; }
+    public TimeSpan TimeToCook { get; set; }
+    public bool IsDeleted { get; set; }
+    public required string Method { get; set; }
+    public bool IsVegetarian { get; set; }  // NEW
+    public bool IsVegan { get; set; }       // NEW
+    public required ICollection&lt;Ingredient&gt; Ingredients { get; set; }
+}</code></pre>
+    </div>
+
+    <!-- Before/after entity comparison -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">What Changes in the Database</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 8px; text-align: center;">Recipes Table — Before</div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden;">
+            <tr style="background: rgba(0,0,0,0.05);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">RecipeId</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">INT PK</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">Name</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">TimeToCook</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">Method</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">IsDeleted</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">INTEGER</td></tr>
+          </table>
+        </div>
+        <div style="text-align: center; font-size: 24px; color: var(--accent);">→</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--green); margin-bottom: 8px; text-align: center;">Recipes Table — After Migration</div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid rgba(45,164,78,0.35); border-radius: 6px; overflow: hidden;">
+            <tr style="background: rgba(0,0,0,0.05);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">RecipeId</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">INT PK</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">Name</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">TimeToCook</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">Method</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">TEXT</td></tr>
+            <tr style="border-top: 1px solid var(--border);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--text2);">IsDeleted</td><td style="padding: 6px 10px; font-size: 11px; color: var(--text3);">INTEGER</td></tr>
+            <tr style="border-top: 1px solid rgba(45,164,78,0.4); background: rgba(45,164,78,0.1);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--green); font-weight: 700;">IsVegetarian ✨</td><td style="padding: 6px 10px; font-size: 11px; color: var(--green);">INTEGER new</td></tr>
+            <tr style="border-top: 1px solid rgba(45,164,78,0.4); background: rgba(45,164,78,0.1);"><td style="padding: 6px 10px; font-family: var(--mono); color: var(--green); font-weight: 700;">IsVegan ✨</td><td style="padding: 6px 10px; font-size: 11px; color: var(--green);">INTEGER new</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h3>Process for Updating</h3>
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Update your entities</div>
+            <div style="font-size: 13px; color: var(--text2);">Add new properties or relationships</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Create a new migration</div>
+            <div style="font-size: 13px; color: var(--text2);">EF Core detects the changes and generates the appropriate migration</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--accent2); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Apply the migration</div>
+            <div style="font-size: 13px; color: var(--text2);">Update the database schema</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Creating and Applying Migration</span></div>
+      <pre><code># Create the migration
+dotnet ef migrations add ExtraRecipeFields
+
+# Apply it to the database
+dotnet ef database update</code></pre>
+    </div>
+
+    <p>EF Core compares the migrations in your application with the <code>__EFMigrationsHistory</code> table to see which migrations are outstanding, then runs them. In this case, it adds the <code>IsVegetarian</code> and <code>IsVegan</code> fields to the Recipes table.</p>
+
+    <!-- How EF Core determines which migrations to apply -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">⚡ How <code style="font-size:11px;text-transform:none;">dotnet ef database update</code> Decides What to Run</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 8px; align-items: center; font-size: 12px;">
+        <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.25); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-weight: 700; color: var(--accent2); margin-bottom: 6px;">📁 Migration Files</div>
+          <div style="font-family: var(--mono); font-size: 11px; color: var(--text3); line-height: 1.8;">InitialCreate<br>ExtraRecipeFields</div>
+        </div>
+        <div style="text-align: center; color: var(--text3); font-size: 18px;">—</div>
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-weight: 700; color: var(--green); margin-bottom: 6px;">🗃️ Already Applied</div>
+          <div style="font-family: var(--mono); font-size: 11px; color: var(--text3); line-height: 1.8; text-decoration: line-through;">InitialCreate</div>
+          <div style="font-size: 10px; color: var(--text3);">(in __EFMigrationsHistory)</div>
+        </div>
+        <div style="text-align: center; color: var(--text3); font-size: 18px;">=</div>
+        <div style="background: rgba(0,212,170,0.1); border: 2px solid rgba(0,212,170,0.4); border-radius: 8px; padding: 12px; text-align: center;">
+          <div style="font-weight: 700; color: var(--accent); margin-bottom: 6px;">🚀 Runs Now</div>
+          <div style="font-family: var(--mono); font-size: 11px; color: var(--accent); line-height: 1.8; font-weight: 600;">ExtraRecipeFields</div>
+          <div style="font-size: 10px; color: var(--text3);">Adds IsVegetarian, IsVegan</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Migration file Up/Down anatomy -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔬 Inside a Migration File</div>
+      <div style="background: #282c34; border-radius: 8px; padding: 16px; font-family: var(--mono); font-size: 12px; line-height: 1.9; color: #abb2bf; margin-bottom: 12px;">
+        <span style="color: #c678dd;">public partial class</span> <span style="color: #e5c07b;">InitialCreate</span> : <span style="color: #e5c07b;">Migration</span><br>
+        {<br>
+        &nbsp;&nbsp;<span style="color: #5c6370; font-style: italic;">// ① Called when applying the migration (going forward)</span><br>
+        &nbsp;&nbsp;<span style="color: #c678dd;">protected override void</span> <span style="color: #61afef;">Up</span>(<span style="color: #e5c07b;">MigrationBuilder</span> migrationBuilder)<br>
+        &nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;migrationBuilder.<span style="color: #61afef;">CreateTable</span>(<span style="color: #98c379;">"Recipes"</span>, ...);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;migrationBuilder.<span style="color: #61afef;">CreateTable</span>(<span style="color: #98c379;">"Ingredients"</span>, ...);<br>
+        &nbsp;&nbsp;}<br><br>
+        &nbsp;&nbsp;<span style="color: #5c6370; font-style: italic;">// ② Called when rolling back the migration (going backward)</span><br>
+        &nbsp;&nbsp;<span style="color: #c678dd;">protected override void</span> <span style="color: #61afef;">Down</span>(<span style="color: #e5c07b;">MigrationBuilder</span> migrationBuilder)<br>
+        &nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;migrationBuilder.<span style="color: #61afef;">DropTable</span>(<span style="color: #98c379;">"Ingredients"</span>);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;migrationBuilder.<span style="color: #61afef;">DropTable</span>(<span style="color: #98c379;">"Recipes"</span>);<br>
+        &nbsp;&nbsp;}<br>
+        }
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: var(--green); font-weight: 700;">① Up()</span> — applied when you run <code>database update</code>. Describes the <em>forward</em> change: CREATE TABLE, ADD COLUMN, etc.
+        </div>
+        <div style="background: rgba(255,100,100,0.08); border: 1px solid rgba(255,100,100,0.25); border-radius: 6px; padding: 10px 12px;">
+          <span style="color: #e06c75; font-weight: 700;">② Down()</span> — applied when you roll back. Reverses the change: DROP TABLE, DROP COLUMN, etc. This is how rollbacks work.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <div class="callout-title">Version Control Benefits</div>
+        <div class="callout-text">
+          Using migrations is a great way to ensure that your database is versioned along with your app code in source control. You can easily check out your app's source code for a historical point in time and re-create the database schema your application used at that point.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 12: Querying and Saving Data -->
+  <section class="section" id="querying-data">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Querying Data From and Saving Data To the Database</h2>
+    </div>
+
+    <p>Now that you have EF Core configured and a database created, it's time to use it in your application code. You'll build the business logic for your application by creating a <code>RecipeService</code> that handles:</p>
+
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li>Querying the database for recipes</li>
+      <li>Creating new recipes</li>
+      <li>Modifying existing recipes</li>
+      <li>Deleting (soft-delete) recipes</li>
+    </ul>
+
+    <div class="callout info">
+      <div class="callout-icon">🏗️</div>
+      <div class="callout-body">
+        <div class="callout-title">Separation of Concerns</div>
+        <div class="callout-text">
+          While you may be tempted to move this logic into your endpoint handlers or Razor Pages for simple apps, extracting your business logic to other services <strong>decouples the HTTP-centric nature of your handlers from the underlying business logic</strong>, making your business logic easier to test and more reusable.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 13: Creating a Record -->
+  <section class="section" id="creating-record">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Creating a Record</h2>
+    </div>
+
+    <p>All interactions with EF Core and the database start with an instance of <code>AppDbContext</code>, which is typically DI-injected via the constructor. Creating a new entity requires three steps:</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Create the entities</div>
+            <div style="font-size: 13px; color: var(--text2);">Create the Recipe and Ingredient entities with their properties</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Add to tracked entities</div>
+            <div style="font-size: 13px; color: var(--text2);">Use <code>_context.Add(entity)</code> to tell EF Core to track the new entities</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--green); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Save to database</div>
+            <div style="font-size: 13px; color: var(--text2);">Call <code>_context.SaveChangesAsync()</code> to execute SQL INSERT statements</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create record workflow -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔄 CREATE Lifecycle</div>
+      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px;">
+        <div style="background: rgba(124,106,247,0.12); border: 1px solid rgba(124,106,247,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 100px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">🏗️</div>
+          <div style="font-weight: 700; color: var(--accent2);">new Recipe{}</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">Build entity in C#</div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px; padding: 0 2px;">→</div>
+        <div style="background: rgba(255,197,61,0.1); border: 1px solid rgba(255,197,61,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 100px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">👁️</div>
+          <div style="font-weight: 700; color: #e09000;">_context.Add()</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">EF Core tracks it (Added state)</div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px; padding: 0 2px;">→</div>
+        <div style="background: rgba(45,164,78,0.1); border: 1px solid rgba(45,164,78,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 100px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">💾</div>
+          <div style="font-weight: 700; color: var(--green);">SaveChangesAsync()</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">Executes SQL INSERT</div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px; padding: 0 2px;">→</div>
+        <div style="background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 100px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">🔑</div>
+          <div style="font-weight: 700; color: var(--accent);">ID Populated</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">RecipeId set by database</div>
+        </div>
+      </div>
+    </div>
+    
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.CreateRecipe()</span></div>
+      <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">readonly</span> <span style="color: #e5c07b;">AppDbContext</span> _context;  <span style="color: #5c6370; font-style:italic;">// ① injected by DI</span>
+
+<span style="color: #c678dd;">public async</span> <span style="color: #e5c07b;">Task</span>&lt;<span style="color: #c678dd;">int</span>&gt; <span style="color: #61afef;">CreateRecipe</span>(<span style="color: #e5c07b;">CreateRecipeCommand</span> cmd)
+{
+    <span style="color: #56b6c2; font-style:italic;">// ② Build entity from the command/DTO — NOT from raw input (avoids overposting)</span>
+    <span style="color: #c678dd;">var</span> recipe = <span style="color: #c678dd;">new</span> <span style="color: #e5c07b;">Recipe</span>
+    {
+        Name = cmd.Name,
+        TimeToCook = <span style="color: #c678dd;">new</span> <span style="color: #e5c07b;">TimeSpan</span>(cmd.TimeToCookHrs, cmd.TimeToCookMins, <span style="color: #d19a66;">0</span>),
+        Method = cmd.Method,
+        IsVegetarian = cmd.IsVegetarian,
+        IsVegan = cmd.IsVegan,
+        <span style="color: #56b6c2; font-style:italic;">// ③ Map child collection inline — EF Core handles INSERT for both tables</span>
+        Ingredients = cmd.Ingredients.<span style="color: #61afef;">Select</span>(i =&gt; <span style="color: #c678dd;">new</span> <span style="color: #e5c07b;">Ingredient</span>
+        {
+            Name = i.Name,
+            Quantity = i.Quantity,
+            Unit = i.Unit,
+        }).<span style="color: #61afef;">ToList</span>()
+    };
+
+    _context.<span style="color: #61afef;">Add</span>(recipe);              <span style="color: #5c6370; font-style:italic;">// ④ tells EF Core to track this as "Added"</span>
+    <span style="color: #c678dd;">await</span> _context.<span style="color: #61afef;">SaveChangesAsync</span>();  <span style="color: #5c6370; font-style:italic;">// ⑤ executes INSERT for Recipe + all Ingredients</span>
+
+    <span style="color: #c678dd;">return</span> recipe.RecipeId;             <span style="color: #5c6370; font-style:italic;">// ⑥ ID was 0 before save, now populated by DB</span>
+}</code></pre>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin: 16px 0;">
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">①–②</span>
+        <span style="color: var(--text2);">The service receives a <code>CreateRecipeCommand</code> DTO, not a raw <code>Recipe</code> entity. This prevents <strong>overposting</strong> — a user can't set <code>IsDeleted=true</code> or other fields they shouldn't control.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">③</span>
+        <span style="color: var(--text2);">Setting <code>Ingredients</code> on the <code>Recipe</code> is enough — EF Core detects the child collection and generates INSERT statements for both the <code>Recipes</code> and <code>Ingredients</code> tables automatically.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">④–⑥</span>
+        <span style="color: var(--text2);"><code>Add()</code> marks the entity as "Added" in the change tracker. <code>SaveChangesAsync()</code> executes the INSERT and the database returns the generated ID, which EF Core writes back into <code>recipe.RecipeId</code> — no extra SELECT needed.</span>
+      </div>
+    </div>
+
+    <!-- ID auto-population callout -->
+    <div class="callout info">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <div class="callout-title">EF Core Auto-Populates IDs After Save</div>
+        <div class="callout-text">
+          Before <code>SaveChangesAsync()</code>, <code>recipe.RecipeId</code> is <code>0</code>. After the call, the database assigns a real ID (e.g., <code>42</code>), and EF Core writes it back into your in-memory object automatically. That's why you can return <code>recipe.RecipeId</code> after saving — without a separate SELECT query.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">🛡️</div>
+      <div class="callout-body">
+        <div class="callout-title">Avoid Overposting</div>
+        <div class="callout-text">
+          Many simple sample applications allow you to bind directly to the Recipe entity in your endpoint. This approach exposes a security vulnerability known as <strong>overposting</strong>. Always use command/DTO objects for binding and map to your entities manually or using a library like AutoMapper.
+        </div>
+      </div>
+    </div>
+    <p>In professional applications, we don't expose our Database Entities (like <code>Ingredient</code>) directly to the API users. Instead, we use a <strong>Command</strong> or <strong>DTO</strong> (Data Transfer Object) to filter and validate input.</p>
+
+    <div class="code-block">
+        <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Models/CreateIngredientCommand.cs</span></div>
+        <pre><code class="language-csharp">
+using System.ComponentModel.DataAnnotations;
+using RecipeApp.Models;
+
+public class CreateIngredientCommand
+{
+    [Required, StringLength(100)]
+    public required string Name { get; set; }
+
+    [Range(0, int.MaxValue)]
+    public decimal Quantity { get; set; }
+
+    [Required, StringLength(20)]
+    public required string Unit { get; set; }
+
+    // Logic to convert DTO back to a Database Entity
+    public Ingredient ToIngredient()
+    {
+        return new Ingredient
+        {
+            Name = this.Name,
+            Quantity = this.Quantity,
+            Unit = this.Unit
+            // ID is handled by Database (Auto-increment)
+        };
+    }
+}</code></pre></div>
+
+    <p>If a problem occurs when EF Core tries to interact with your database, this code throws an exception. It's important to handle these exceptions in your application so you don't present an ugly error message to users.</p>
+
+    <p>Assuming all goes well, EF Core updates all the autogenerated IDs of your entities (<code>RecipeId</code> on Recipe, and both <code>RecipeId</code> and <code>IngredientId</code> on Ingredient).</p>
+  </section>
+
+  <!-- SECTION 14: Loading a List of Records -->
+  <section class="section" id="loading-list">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <h2 class="section-title">Loading a List of Records</h2>
+    </div>
+
+    <p>Loading data is simple in EF Core, relying heavily on <strong>LINQ methods</strong> to control the fields you need. EF Core uses a fluent chain of LINQ commands to define the query.</p>
+
+    <h3>Three Parts of an EF Core Query</h3>
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div style="background: var(--accent2); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text);">DbSet Property Access</div>
+            <div style="font-size: 13px; color: var(--text2); font-family: var(--mono);">_context.Recipes</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div style="background: var(--accent2); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text);">LINQ Commands to Modify Data</div>
+            <div style="font-size: 13px; color: var(--text2); font-family: var(--mono);">.Where(), .Select(), .OrderBy(), etc.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <div style="background: var(--accent2); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text);">Execute Query Command</div>
+            <div style="font-size: 13px; color: var(--text2); font-family: var(--mono);">.ToListAsync(), .SingleAsync(), .FirstAsync(), etc.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINQ query pipeline visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔗 LINQ Query Pipeline → SQL</div>
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div style="display: flex; align-items: stretch; gap: 0;">
+          <div style="width: 3px; background: rgba(124,106,247,0.5); border-radius: 3px; margin-right: 12px; flex-shrink: 0;"></div>
+          <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 8px 12px; flex: 1; font-size: 12px; display: flex; gap: 10px; align-items: center;">
+            <code style="color: var(--accent2); font-size: 13px;">_context.Recipes</code>
+            <span style="color: var(--text3);">→ <em>Start: the full Recipes table</em></span>
+          </div>
+        </div>
+        <div style="margin-left: 7px; width: 1px; height: 8px; background: rgba(124,106,247,0.3);"></div>
+        <div style="display: flex; align-items: stretch; gap: 0;">
+          <div style="width: 3px; background: rgba(0,212,170,0.5); border-radius: 3px; margin-right: 12px; flex-shrink: 0;"></div>
+          <div style="background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.2); border-radius: 6px; padding: 8px 12px; flex: 1; font-size: 12px; display: flex; gap: 10px; align-items: center;">
+            <code style="color: var(--accent); font-size: 13px;">.Where(r =&gt; !r.IsDeleted)</code>
+            <span style="color: var(--text3);">→ <em>Filter: only non-deleted recipes</em></span>
+          </div>
+        </div>
+        <div style="margin-left: 7px; width: 1px; height: 8px; background: rgba(0,212,170,0.3);"></div>
+        <div style="display: flex; align-items: stretch; gap: 0;">
+          <div style="width: 3px; background: rgba(255,197,61,0.6); border-radius: 3px; margin-right: 12px; flex-shrink: 0;"></div>
+          <div style="background: rgba(255,197,61,0.08); border: 1px solid rgba(255,197,61,0.25); border-radius: 6px; padding: 8px 12px; flex: 1; font-size: 12px; display: flex; gap: 10px; align-items: center;">
+            <code style="color: #e09000; font-size: 13px;">.Select(r =&gt; new RecipeSummaryViewModel…)</code>
+            <span style="color: var(--text3);">→ <em>Project: pick only needed columns (efficient!)</em></span>
+          </div>
+        </div>
+        <div style="margin-left: 7px; width: 1px; height: 8px; background: rgba(45,164,78,0.4);"></div>
+        <div style="display: flex; align-items: stretch; gap: 0;">
+          <div style="width: 3px; background: rgba(45,164,78,0.6); border-radius: 3px; margin-right: 12px; flex-shrink: 0;"></div>
+          <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 8px 12px; flex: 1; font-size: 12px; display: flex; gap: 10px; align-items: center;">
+            <code style="color: var(--green); font-size: 13px;">.ToListAsync()</code>
+            <span style="color: var(--text3);">→ <em>Execute: sends SQL to DB, materialises results</em></span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 12px; padding: 10px 12px; background: #282c34; border-radius: 6px; font-family: var(--mono); font-size: 11px; color: #5c6370;">
+        <span style="color: #56b6c2;">-- Generated SQL (roughly):</span><br>
+        <span style="color: #c678dd;">SELECT</span> <span style="color: #abb2bf;">RecipeId, Name, TimeToCook</span><br>
+        <span style="color: #c678dd;">FROM</span> <span style="color: #e5c07b;">Recipes</span><br>
+        <span style="color: #c678dd;">WHERE</span> <span style="color: #abb2bf;">IsDeleted = 0</span>
+      </div>
+    </div>
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.GetRecipes()</span></div>
+      <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">public async</span> <span style="color: #e5c07b;">Task</span>&lt;<span style="color: #e5c07b;">ICollection</span>&lt;<span style="color: #e5c07b;">RecipeSummaryViewModel</span>&gt;&gt; <span style="color: #61afef;">GetRecipes</span>()
+{
+    <span style="color: #c678dd;">return await</span> _context.Recipes           <span style="color: #5c6370; font-style:italic;">// ① start: full Recipes table</span>
+        .<span style="color: #61afef;">Where</span>(r =&gt; !r.IsDeleted)           <span style="color: #5c6370; font-style:italic;">// ② filter: skip soft-deleted rows</span>
+        .<span style="color: #61afef;">Select</span>(r =&gt; <span style="color: #c678dd;">new</span> <span style="color: #e5c07b;">RecipeSummaryViewModel</span>
+        {
+            Id = r.RecipeId,
+            Name = r.Name,
+            TimeToCook = <span style="color: #98c379;">$"{r.TimeToCook.TotalMinutes}mins"</span>  <span style="color: #5c6370; font-style:italic;">// ③ project: only needed columns + C# formatting</span>
+        })
+        .<span style="color: #61afef;">ToListAsync</span>();                     <span style="color: #5c6370; font-style:italic;">// ④ execute: send SQL → get results</span>
+}</code></pre>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin: 16px 0;">
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">①</span>
+        <span style="color: var(--text2);"><code>_context.Recipes</code> — accesses the <code>DbSet&lt;Recipe&gt;</code>. No SQL runs yet; LINQ builds up a query description in memory.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">②</span>
+        <span style="color: var(--text2);"><code>.Where(r =&gt; !r.IsDeleted)</code> — translated to <code>WHERE IsDeleted = 0</code> in SQL. Filtering happens on the database server, not in C# memory.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">③</span>
+        <span style="color: var(--text2);"><code>.Select()</code> maps each row to a <code>RecipeSummaryViewModel</code>. EF Core generates a <code>SELECT</code> with only the columns referenced here — not <code>SELECT *</code>. The string interpolation (<code>$"..."</code>) runs client-side.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">④</span>
+        <span style="color: var(--text2);"><code>.ToListAsync()</code> is the trigger — this is when EF Core finalises the SQL, sends it to the database, awaits the response, and materialises each row into a view model object.</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔄</div>
+      <div class="callout-body">
+        <div class="callout-title">Client-Side Evaluation</div>
+        <div class="callout-text">
+          Notice the string interpolation in the Select method. EF Core can't convert some expressions to SQL, so it evaluates them on the client side. It finds the fields it needs from the database, selects them, and then runs the expression in C#. This powerful feature combines database performance with C# functionality, but use it carefully to avoid performance issues.
+        </div>
+      </div>
+    </div>
+
+    <!-- Client-side evaluation note visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px;">⚡ EF Core Execution Split</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px;">
+        <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 8px; padding: 12px;">
+          <div style="font-weight: 700; color: var(--green); margin-bottom: 6px;">🗄️ Executed in SQL (server-side)</div>
+          <div style="color: var(--text2); line-height: 1.6;"><code>.Where()</code>, <code>.OrderBy()</code>, <code>.Skip()</code>, <code>.Take()</code> — EF Core translates these to SQL <em>before</em> fetching data. Only matching rows travel over the network.</div>
+        </div>
+        <div style="background: rgba(255,197,61,0.08); border: 1px solid rgba(255,197,61,0.25); border-radius: 8px; padding: 12px;">
+          <div style="font-weight: 700; color: #e09000; margin-bottom: 6px;">🖥️ Executed in C# (client-side)</div>
+          <div style="color: var(--text2); line-height: 1.6;">String interpolation and custom C# logic inside <code>.Select()</code> that can't be translated to SQL — EF Core fetches required columns and runs these expressions in memory.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 15: Loading a Single Record -->
+  <section class="section" id="loading-single">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <h2 class="section-title">Loading a Single Record</h2>
+    </div>
+
+    <p>Loading a single record follows the same pattern as loading a list, but typically uses a <code>Where</code> clause that restricts the data to a single entity and an execute command like <code>SingleOrDefaultAsync()</code>.</p>
+
+    <!-- FindAsync vs SingleOrDefaultAsync comparison -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔍 Ways to Load a Single Record</div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--border);">
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">Method</th>
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">Finds by</th>
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">Checks cache?</th>
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">Best for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border); background: rgba(45,164,78,0.04);">
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--green); font-weight: 700;">FindAsync(id)</td>
+            <td style="padding: 8px 10px; color: var(--text2);">Primary key only</td>
+            <td style="padding: 8px 10px; color: var(--green);">✅ Yes — may skip DB</td>
+            <td style="padding: 8px 10px; color: var(--text2);">Loading by PK, updates</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--accent2);">SingleOrDefaultAsync()</td>
+            <td style="padding: 8px 10px; color: var(--text2);">Any <code>.Where()</code> clause</td>
+            <td style="padding: 8px 10px; color: var(--text3);">❌ Always hits DB</td>
+            <td style="padding: 8px 10px; color: var(--text2);">Complex filters, projections</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3);">FirstOrDefaultAsync()</td>
+            <td style="padding: 8px 10px; color: var(--text2);">Any <code>.Where()</code> clause</td>
+            <td style="padding: 8px 10px; color: var(--text3);">❌ Always hits DB</td>
+            <td style="padding: 8px 10px; color: var(--text2);">When &gt;1 result is OK</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 10px;">💡 <strong>SingleOrDefaultAsync</strong> throws if more than one match is found — useful as a safety net. <strong>FindAsync</strong> is faster when you already have a tracked entity in the same request.</div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.GetRecipeDetail()</span></div>
+      <pre><code>public async Task&lt;RecipeDetailViewModel&gt; GetRecipeDetail(int id)
+{
+    return await _context.Recipes
+        .Where(x => x.RecipeId == id)
+        .Select(x => new RecipeDetailViewModel
+        {
+            Id = x.RecipeId,
+            Name = x.Name,
+            Method = x.Method,
+            Ingredients = x.Ingredients
+                .Select(item => new RecipeDetailViewModel.Item
+                {
+                    Name = item.Name,
+                    Quantity = $"{item.Quantity} {item.Unit}"
+                })
+        })
+        .SingleOrDefaultAsync();
+}</code></pre>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">SingleOrDefaultAsync Behavior</div>
+        <div class="callout-text">
+          <code>SingleOrDefaultAsync()</code> throws an exception if the previous Where clause returns more than one record. It returns <code>null</code> if no records are found.
+        </div>
+      </div>
+    </div>
+
+    <p>Notice that you can map the related <code>Ingredients</code> for a Recipe as though you're working with the objects directly in memory. One advantage of using an ORM is that you can easily map child objects and let EF Core decide how best to build the underlying queries to fetch the data.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📊</div>
+      <div class="callout-body">
+        <div class="callout-title">Viewing Generated SQL</div>
+        <div class="callout-text">
+          EF Core logs all the SQL statements it runs as <code>LogLevel.Information</code> events by default, so you can easily see what queries are running against the database. This is invaluable for understanding and optimizing your database access patterns.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 16: Updating Records -->
+  <section class="section" id="updating">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <h2 class="section-title">Updating a Model with Changes</h2>
+    </div>
+
+    <p>Updating entities is generally the hardest part of CRUD operations. For web applications, when you update an entity you typically follow three steps:</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--orange); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">1</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Read the entity from the database</div>
+            <div style="font-size: 13px; color: var(--text2);">Load the current state of the entity</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--orange); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">2</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Modify the entity's properties</div>
+            <div style="font-size: 13px; color: var(--text2);">Update the values you want to change</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: start;">
+          <div style="background: var(--orange); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0;">3</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 600; color: var(--text); margin-bottom: 4px;">Save the changes to the database</div>
+            <div style="font-size: 13px; color: var(--text2);">Call SaveChangesAsync() to persist</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPDATE lifecycle visual -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔄 UPDATE Lifecycle</div>
+      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12px;">
+        <div style="background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 110px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">📥</div>
+          <div style="font-weight: 700; color: var(--accent2);">FindAsync(id)</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">Load + start tracking</div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px;">→</div>
+        <div style="background: rgba(255,197,61,0.1); border: 1px solid rgba(255,197,61,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 110px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">✏️</div>
+          <div style="font-weight: 700; color: #e09000;">recipe.Name = …</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">Modify properties</div>
+        </div>
+        <div style="color: var(--text3); font-size: 20px;">→</div>
+        <div style="background: rgba(45,164,78,0.1); border: 1px solid rgba(45,164,78,0.3); border-radius: 8px; padding: 10px 14px; text-align: center; min-width: 110px;">
+          <div style="font-size: 18px; margin-bottom: 4px;">💾</div>
+          <div style="font-weight: 700; color: var(--green);">SaveChangesAsync()</div>
+          <div style="color: var(--text3); font-size: 11px; margin-top: 2px;">EF Core diffs &amp; runs UPDATE</div>
+        </div>
+      </div>
+      <div style="font-size: 11px; color: var(--text3); margin-top: 12px; background: rgba(0,0,0,0.05); border-radius: 6px; padding: 8px 12px;">
+        🎯 <strong>No explicit "mark as modified" needed.</strong> EF Core took a snapshot when you loaded the entity. On SaveChanges it compares current values to the snapshot and generates an UPDATE statement that only includes <em>changed columns</em>.
+      </div>
+    </div>
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.UpdateRecipe()</span></div>
+      <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">public async</span> <span style="color: #e5c07b;">Task</span> <span style="color: #61afef;">UpdateRecipe</span>(<span style="color: #e5c07b;">UpdateRecipeCommand</span> cmd)
+{
+    <span style="color: #56b6c2; font-style:italic;">// ① Load from DB — EF Core starts tracking this entity and takes a snapshot</span>
+    <span style="color: #c678dd;">var</span> recipe = <span style="color: #c678dd;">await</span> _context.Recipes.<span style="color: #61afef;">FindAsync</span>(cmd.Id);
+
+    <span style="color: #56b6c2; font-style:italic;">// ② Guard: null check before modifying (404 if not found)</span>
+    <span style="color: #c678dd;">if</span> (recipe <span style="color: #c678dd;">is null</span>) {
+        <span style="color: #c678dd;">throw new</span> <span style="color: #e5c07b;">Exception</span>(<span style="color: #98c379;">"Unable to find the recipe"</span>);
+    }
+
+    <span style="color: #61afef;">UpdateRecipe</span>(recipe, cmd);           <span style="color: #5c6370; font-style:italic;">// ③ mutate properties via helper method</span>
+    <span style="color: #c678dd;">await</span> _context.<span style="color: #61afef;">SaveChangesAsync</span>();  <span style="color: #5c6370; font-style:italic;">// ④ EF Core diffs snapshot vs current, runs UPDATE</span>
+}
+
+<span style="color: #5c6370; font-style:italic;">// Private helper keeps the mapping logic separate and easy to test</span>
+<span style="color: #c678dd;">static void</span> <span style="color: #61afef;">UpdateRecipe</span>(<span style="color: #e5c07b;">Recipe</span> recipe, <span style="color: #e5c07b;">UpdateRecipeCommand</span> cmd)
+{
+    recipe.Name = cmd.Name;
+    recipe.TimeToCook = <span style="color: #c678dd;">new</span> <span style="color: #e5c07b;">TimeSpan</span>(cmd.TimeToCookHrs, cmd.TimeToCookMins, <span style="color: #d19a66;">0</span>);
+    recipe.Method = cmd.Method;
+    recipe.IsVegetarian = cmd.IsVegetarian;
+    recipe.IsVegan = cmd.IsVegan;
+}</code></pre>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; margin: 16px 0;">
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">①</span>
+        <span style="color: var(--text2);"><code>FindAsync(id)</code> checks EF Core's in-memory cache first — if the same entity was already loaded in this request, no database round-trip occurs. Otherwise, it runs <code>SELECT … WHERE RecipeId = @id</code>.</span>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: flex-start; background: rgba(86,182,194,0.07); border-left: 3px solid #56b6c2; padding: 8px 12px; border-radius: 0 6px 6px 0;">
+        <span style="font-weight: 700; color: #56b6c2; flex-shrink:0;">③–④</span>
+        <span style="color: var(--text2);">Simply assigning new values to the loaded entity's properties is enough. EF Core compares the new values against its snapshot and generates a targeted <code>UPDATE</code> that only touches the columns that actually changed.</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">The FindAsync Method</div>
+        <div class="callout-text">
+          <code>FindAsync(id)</code> is a simple helper method exposed by DbSet that loads an entity by its ID. It first checks to see whether the entity is already being tracked in EF Core's DbContext. If so, the entity is returned immediately without calling the database, which can be faster.
+        </div>
+      </div>
+    </div>
+
+    <!-- Change tracking diagram -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🔬 How Change Tracking Works Internally</div>
+      <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: start; font-size: 12px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text3); margin-bottom: 8px; text-align: center;">Snapshot (at load time)</div>
+          <div style="background: rgba(124,106,247,0.08); border: 1px solid rgba(124,106,247,0.2); border-radius: 6px; padding: 10px; font-family: var(--mono);">
+            <div style="color: var(--text2);">Name: <span style="color: #98c379;">"Pasta"</span></div>
+            <div style="color: var(--text2);">Method: <span style="color: #98c379;">"Boil water…"</span></div>
+            <div style="color: var(--text2);">IsVegetarian: <span style="color: #d19a66;">true</span></div>
+          </div>
+        </div>
+        <div style="text-align: center; padding-top: 30px;">
+          <div style="font-size: 20px; color: var(--text3);">vs</div>
+        </div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--green); margin-bottom: 8px; text-align: center;">Current Values (after edit)</div>
+          <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.2); border-radius: 6px; padding: 10px; font-family: var(--mono);">
+            <div style="color: var(--text2);">Name: <span style="color: #98c379;">"Pasta"</span></div>
+            <div style="color: var(--text2);">Method: <span style="color: #98c379;">"Boil water…"</span></div>
+            <div style="color: var(--green); font-weight: 700;">IsVegetarian: <span style="color: #d19a66;">false</span> ← changed</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top: 12px; padding: 10px 12px; background: #282c34; border-radius: 6px; font-family: var(--mono); font-size: 11px; color: #5c6370;">
+        <span style="color: #56b6c2;">-- EF Core generates only what changed:</span><br>
+        <span style="color: #c678dd;">UPDATE</span> <span style="color: #e5c07b;">Recipes</span> <span style="color: #c678dd;">SET</span> <span style="color: #abb2bf;">IsVegetarian = 0</span> <span style="color: #c678dd;">WHERE</span> <span style="color: #abb2bf;">RecipeId = 42</span>
+      </div>
+    </div>
+
+    <h3>How Change Tracking Works</h3>
+    <p>EF Core internally tracks the state of any entities it loads from the database and creates a snapshot of all the entity's property values. When you call <code>SaveChanges()</code>, EF Core:</p>
+
+    <ul style="margin: 16px 0; padding-left: 24px; line-height: 1.8;">
+      <li>Compares the state of any tracked entities with the tracking snapshot</li>
+      <li>Identifies which properties have changed</li>
+      <li>Includes only changed properties in the UPDATE statement</li>
+      <li>Ignores unchanged properties</li>
+    </ul>
+
+    <div class="callout tip">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">Viewing Change Tracker</div>
+        <div class="callout-text">
+          You can view which details the DbContext is tracking by accessing <code>DbContext.ChangeTracker.DebugView</code>. This is useful for debugging and understanding what EF Core is doing behind the scenes.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 17: Deleting Records -->
+  <section class="section" id="deleting">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <h2 class="section-title">Deleting Records</h2>
+    </div>
+
+    <p>When it comes to deleting data, you have two options: <strong>hard delete</strong> (permanently remove from database) or <strong>soft delete</strong> (mark as deleted but keep in database). In most cases, soft delete is preferred.</p>
+
+    <h3>Why Soft Delete?</h3>
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">🔄</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">Reversible</div>
+          <div style="font-size: 13px; color: var(--text2);">Can undo accidental deletions</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">🔗</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">No referential integrity issues</div>
+          <div style="font-size: 13px; color: var(--text2);">Avoids foreign key constraint problems</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(45,164,78,0.08); border: 1px solid rgba(45,164,78,0.25); border-radius: 6px; padding: 14px; display: flex; gap: 12px;">
+        <div style="font-size: 20px;">📊</div>
+        <div>
+          <div style="font-weight: 600; color: var(--green); margin-bottom: 4px;">Audit trail</div>
+          <div style="font-size: 13px; color: var(--text2);">Maintains historical data for analysis</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Implementing Soft Delete</h3>
+    <p>A common approach is to include an <code>IsDeleted</code> flag on your entity:</p>
+
+    <!-- Soft delete vs hard delete comparison -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 24px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">🗑️ Soft Delete vs Hard Delete</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
+        <!-- Soft delete -->
+        <div style="border: 2px solid rgba(45,164,78,0.4); border-radius: 10px; padding: 14px;">
+          <div style="font-weight: 700; color: var(--green); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">✅ Soft Delete (recommended)</div>
+          <div style="background: #282c34; border-radius: 6px; padding: 10px; font-family: var(--mono); font-size: 11px; color: #abb2bf; margin-bottom: 10px;">
+            <span style="color: #56b6c2;">-- Not an actual DELETE</span><br>
+            <span style="color: #c678dd;">UPDATE</span> Recipes<br>
+            <span style="color: #c678dd;">SET</span> IsDeleted = <span style="color: #d19a66;">1</span><br>
+            <span style="color: #c678dd;">WHERE</span> RecipeId = <span style="color: #d19a66;">42</span>
+          </div>
+          <div style="color: var(--text2); line-height: 1.7;">
+            ✔ Data is recoverable<br>
+            ✔ No FK violations<br>
+            ✔ Audit trail preserved<br>
+            ⚠ Must filter <code>IsDeleted</code> everywhere
+          </div>
+        </div>
+        <!-- Hard delete -->
+        <div style="border: 2px solid rgba(255,100,100,0.35); border-radius: 10px; padding: 14px;">
+          <div style="font-weight: 700; color: #e06c75; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">⚠️ Hard Delete (permanent)</div>
+          <div style="background: #282c34; border-radius: 6px; padding: 10px; font-family: var(--mono); font-size: 11px; color: #abb2bf; margin-bottom: 10px;">
+            <span style="color: #56b6c2;">-- Permanent removal</span><br>
+            <span style="color: #c678dd;">DELETE FROM</span> Recipes<br>
+            <span style="color: #c678dd;">WHERE</span> RecipeId = <span style="color: #d19a66;">42</span>
+          </div>
+          <div style="color: var(--text2); line-height: 1.7;">
+            ✔ Clean, simple<br>
+            ✔ Required for GDPR compliance<br>
+            ✗ Unrecoverable<br>
+            ✗ May break FK references
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.DeleteRecipe() — Soft Delete</span></div>
+      <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">public async</span> <span style="color: #e5c07b;">Task</span> <span style="color: #61afef;">DeleteRecipe</span>(<span style="color: #c678dd;">int</span> recipeId)
+{
+    <span style="color: #c678dd;">var</span> recipe = <span style="color: #c678dd;">await</span> _context.Recipes.<span style="color: #61afef;">FindAsync</span>(recipeId);
+
+    <span style="color: #c678dd;">if</span> (recipe <span style="color: #c678dd;">is null</span>) {
+        <span style="color: #c678dd;">throw new</span> <span style="color: #e5c07b;">Exception</span>(<span style="color: #98c379;">"Unable to find the recipe"</span>);
+    }
+
+    recipe.IsDeleted = <span style="color: #d19a66;">true</span>;             <span style="color: #5c6370; font-style:italic;">// ① just flip the flag — no context.Remove()</span>
+    <span style="color: #c678dd;">await</span> _context.<span style="color: #61afef;">SaveChangesAsync</span>();  <span style="color: #5c6370; font-style:italic;">// ② EF Core runs UPDATE, not DELETE</span>
+}
+
+<span style="color: #56b6c2; font-style:italic;">// Every query must exclude deleted records:</span>
+_context.Recipes.<span style="color: #61afef;">Where</span>(r =&gt; !r.IsDeleted)…   <span style="color: #5c6370; font-style:italic;">// ③ or use a global query filter</span></code></pre>
+    </div>
+
+    <p>With this approach, you need to make sure that you have <code>Where()</code> clauses in all your other methods to ensure you can't return a deleted Recipe:</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🔧</div>
+      <div class="callout-body">
+        <div class="callout-title">Global Query Filters — The Clean Solution</div>
+        <div class="callout-text">
+          Instead of adding <code>.Where(r =&gt; !r.IsDeleted)</code> to every query, EF Core's <strong>global query filters</strong> let you define this once on the model. EF Core automatically appends the filter to every query against that entity — you can't accidentally forget it. Also useful for multi-tenant apps.
+        </div>
+      </div>
+    </div>
+
+    <h3>Hard Delete (When Necessary)</h3>
+    <p>For cases where you truly need to delete data (such as complying with data protection regulations), EF Core provides the <code>Remove</code> method:</p>
+
+    <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Hard Delete — _context.Remove()</span></div>
+      <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">var</span> recipe = <span style="color: #c678dd;">await</span> _context.Recipes.<span style="color: #61afef;">FindAsync</span>(recipeId);
+<span style="color: #c678dd;">if</span> (recipe <span style="color: #c678dd;">is not null</span>)
+{
+    _context.<span style="color: #61afef;">Remove</span>(recipe);            <span style="color: #5c6370; font-style:italic;">// marks entity as "Deleted" in change tracker</span>
+    <span style="color: #c678dd;">await</span> _context.<span style="color: #61afef;">SaveChangesAsync</span>();  <span style="color: #5c6370; font-style:italic;">// runs: DELETE FROM Recipes WHERE RecipeId = @id</span>
+}</code></pre>
+    </div>
+
+    <!-- CRUD cheat-sheet -->
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin: 28px 0;">
+      <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 14px;">📋 CRUD Quick Reference</div>
+      <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--border);">
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">Operation</th>
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">EF Core Pattern</th>
+            <th style="padding: 8px 10px; text-align: left; color: var(--text); font-weight: 700;">SQL Generated</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border); background: rgba(45,164,78,0.04);">
+            <td style="padding: 8px 10px; font-weight: 700; color: var(--green);">CREATE</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">_context.Add(entity)<br>await SaveChangesAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">INSERT INTO …</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 10px; font-weight: 700; color: var(--accent2);">READ (list)</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">.Where(…).Select(…).ToListAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">SELECT … WHERE …</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 10px; font-weight: 700; color: var(--accent2);">READ (one)</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">FindAsync(id) <em>or</em> SingleOrDefaultAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">SELECT … WHERE id = @id</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border); background: rgba(255,197,61,0.04);">
+            <td style="padding: 8px 10px; font-weight: 700; color: #e09000;">UPDATE</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">Load → modify props → SaveChangesAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">UPDATE … SET changed_cols</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border); background: rgba(45,164,78,0.04);">
+            <td style="padding: 8px 10px; font-weight: 700; color: var(--green);">SOFT DELETE</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">entity.IsDeleted = true → SaveChangesAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">UPDATE … SET IsDeleted=1</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 10px; font-weight: 700; color: #e06c75;">HARD DELETE</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text2); font-size: 11px;">_context.Remove(entity) → SaveChangesAsync()</td>
+            <td style="padding: 8px 10px; font-family: var(--mono); color: var(--text3); font-size: 11px;">DELETE FROM … WHERE …</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">GDPR and Personal Data</div>
+        <div class="callout-text">
+          The main exception to soft delete is when you're storing users' personally identifying information. In these cases, you may be duty-bound (and potentially legally bound) to scrub their information from your database on request to comply with regulations like GDPR.
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-block" id="quiz3">
+      <div class="quiz-question">🧠 What is the main advantage of soft delete over hard delete?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this, 'quiz3', false)">It's faster to execute</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz3', true)">Data can be recovered and no referential integrity issues</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz3', false)">It requires less code</button>
+        <button class="quiz-option" onclick="answer(this, 'quiz3', false)">It uses less database storage</button>
+      </div>
+      <div class="quiz-feedback" id="quiz3-fb"></div>
+    </div>
+  </section>
+
+  <!-- SECTION 18: Production Considerations -->
+  <section class="section" id="production">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <h2 class="section-title">Using EF Core in Production Applications</h2>
+    </div>
+
+    <p>Before using EF Core in a production application, you need to consider several important topics beyond the basics covered in this chapter.</p>
+
+    <h3>Data Model Considerations</h3>
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Scaffolding of columns</div>
+        <div style="font-size: 13px; color: var(--text2);">EF Core uses conservative values for string columns (large or unlimited length). In practice, you may want to restrict these to sensible values.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Validation</div>
+        <div style="font-size: 13px; color: var(--text2);">You can decorate your entities with DataAnnotations validation attributes, but EF Core won't validate values automatically before saving (unlike EF 6.x).</div>
+      </div>
+    </div>
+
+    <h3>Runtime Considerations</h3>
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Handling concurrency</div>
+        <div style="font-size: 13px; color: var(--text2);">EF Core provides ways to handle when multiple users attempt to update an entity at the same time. One solution is to use Timestamp columns.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Handling errors</div>
+        <div style="font-size: 13px; color: var(--text2);">Databases and networks are inherently flaky. EF Core includes features to maintain connection resiliency by retrying on network failures.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--accent2); margin-bottom: 6px;">Synchronous vs. asynchronous</div>
+        <div style="font-size: 13px; color: var(--text2);">EF Core provides both sync and async commands. Often, async is better for web apps, but this has nuances that make it impossible to recommend one approach universally.</div>
+      </div>
+    </div>
+
+    <h3>Deployment Considerations</h3>
+    <div style="display: grid; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">Automatic migrations</div>
+        <div style="font-size: 13px; color: var(--text2);">For automated deployment pipelines, you need a way to apply migrations automatically. Options include scripting the .NET tool, applying migrations in startup code, using EF Core bundles, or custom tools.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">Multiple web hosts</div>
+        <div style="font-size: 13px; color: var(--text2);">If you have multiple web servers pointing to the same database, ensure that only one app can migrate the database at a time.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">Backward-compatible schema changes</div>
+        <div style="font-size: 13px; color: var(--text2);">When deploying with multiple web hosts, you'll often have apps accessing a database with a newer schema. Endeavor to make schema changes backward-compatible wherever possible.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">Storing migrations in different assembly</div>
+        <div style="font-size: 13px; color: var(--text2);">In larger apps, data access is often in a different project from the web app. You must use slightly different commands when using .NET CLI or PowerShell cmdlets.</div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: 6px; padding: 14px;">
+        <div style="font-weight: 600; color: var(--orange); margin-bottom: 6px;">Seeding data</div>
+        <div style="font-size: 13px; color: var(--text2);">When you first create a database, you often want initial seed data (like a default user). EF Core requires you to seed your database explicitly yourself.</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📚</div>
+      <div class="callout-body">
+        <div class="callout-title">Learning More</div>
+        <div class="callout-text">
+          This chapter provides a quick overview to get you started with EF Core. Before using it in production, read <em>Entity Framework Core in Action, 2nd ed.</em> by Jon P. Smith, or explore the comprehensive EF Core documentation at <strong>docs.microsoft.com/ef/core</strong>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: linear-gradient(135deg, rgba(124,106,247,0.1) 0%, rgba(45,164,78,0.1) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 32px 0;">
+      <div style="font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 20px;">🎯</span> Chapter Summary
+      </div>
+      <div style="font-size: 13px; color: var(--text2); line-height: 1.8;">
+        <strong>EF Core is an ORM</strong> that maps .NET classes to database tables, reducing SQL and database knowledge needed to be productive.<br><br>
+        
+        <strong>Database providers</strong> let you change the underlying database without changing your code. Support for SQL Server, SQLite, PostgreSQL, MySQL, and more.<br><br>
+        
+        <strong>Code-first approach</strong> is typical: define entities in code, and EF Core creates the database schema via migrations.<br><br>
+        
+        <strong>Migrations</strong> track changes to your data model and update the database schema accordingly. Use <code>dotnet ef migrations add</code> to create and <code>dotnet ef database update</code> to apply.<br><br>
+        
+        <strong>CRUD operations</strong> use LINQ queries: Add entities with <code>Add()</code>, query with <code>Where()</code> and <code>Select()</code>, update by modifying tracked entities, and delete with <code>Remove()</code> or soft delete.<br><br>
+        
+        <strong>Production considerations</strong> include validation, concurrency, error handling, deployment strategies, and migration management for multiple servers.
+      </div>
+    </div>
+  </section>
+  <section id="github" class="section">
+<div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+  <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter12" target="_blank" 
+     style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+    </div>
+    
+    <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+      Visit this link to run and test the code for this chapter.
+    </div>
+  </a>
+</div></section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+const feedbackOk = {
+  'quiz1': "Correct! The primary advantage of an ORM is developer productivity — you work in familiar object-oriented code without writing manual SQL, connection management, or data mapping.",
+  'quiz2': "Correct! Migrations are C# code files that record how your data model changed over time. They allow you to create, update, or roll back your database schema while keeping it in sync with your application.",
+  'quiz3': "Correct! Soft delete keeps data recoverable (undo accidental deletions), avoids foreign key constraint violations, and maintains an audit trail. Hard delete is permanent and can cause referential integrity issues."
+};
+const feedbackErr = {
+  'quiz1': "Not quite. While EF Core is reasonably performant, that's not its primary benefit. The main advantage is faster development — you stay in C# without writing SQL, managing connections, or mapping data manually.",
+  'quiz2': "Not quite. A schema defines the database structure (tables, columns, relationships). A migration is a C# file that records how your EF Core data model changed, letting you apply or roll back those changes to the database.",
+  'quiz3': "Not quite. Soft delete is slightly more code (you need IsDeleted checks everywhere), uses the same storage, and isn't necessarily faster. Its real advantage is that data is recoverable and no referential integrity is broken."
+};
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal');
+    });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('mobileProgressFill').style.width = Math.min(pct, 100) + '%';
+});
+const observerOptions = {
+  root: null,
+  rootMargin: '-20% 0px -20% 0px',
+  threshold: 0
+};
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.nav-link[onclick]').forEach(link => {
+        link.classList.remove('active');
+      });
+      const id = entry.target.getAttribute('id');
+      const activeLink = document.querySelector(`.nav-link[onclick*="${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('section.section').forEach(section => {
+  observer.observe(section);
+});
+
+// Mobile drawer
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if(!overlay||!sidebar) return;
+  window.openDrawer = function(){sidebar.classList.add('open');overlay.classList.add('show');};
+  window.closeDrawer = function(){sidebar.classList.remove('open');overlay.classList.remove('show');};
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click',function(){ if(window.innerWidth<=900) closeDrawer(); });
+  });
+})();
+
+// ── Read progress ──
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  const rp = document.getElementById('readProgress');
+  if (rp) rp.style.width = Math.min(pct, 100) + '%';
+  const mp = document.getElementById('mobileProgressFill');
+  if (mp) mp.style.width = Math.min(pct, 100) + '%';
+});
+
+// ── Syntax highlighter for <pre><code> blocks ──
+(function(){
+  const escMap = { '&lt;':'<','&gt;':'>','&amp;':'&' };
+  function esc(s){ return s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+
+  const kw = /\b(public|private|protected|internal|static|async|await|new|return|var|using|class|interface|record|void|bool|string|int|decimal|readonly|required|if|else|foreach|throw|null|true|false|is|not|in)\b/g;
+  const tp = /\b(Task|List|ICollection|DbContext|DbSet|AppDbContext|Recipe|Ingredient|RecipeSummaryViewModel|RecipeDetailViewModel|UpdateRecipeCommand|CreateRecipeCommand|TimeSpan|ILogger|WebApplicationBuilder|WebApplication|Exception|DbContextOptions)\b/g;
+  const fn = /\b(Add|SaveChangesAsync|FindAsync|Remove|ToListAsync|SingleOrDefaultAsync|Where|Select|OrderBy|GetConnectionString|AddDbContext|UseSqlite|CreateBuilder|Build|Run|GetRecipes|GetRecipeDetail|UpdateRecipe|CreateRecipe|DeleteRecipe|MapRazorPages|UseStaticFiles|UseRouting|UseAuthorization)\b(?=\s*[(<])/g;
+  const str = /(["'`])(?:\\.|(?!\1)[^\\])*\1/g;
+  const cm  = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/g;
+
+  document.querySelectorAll('.code-block pre code').forEach(el => {
+    let raw = el.innerHTML;
+    // Already highlighted? skip
+    if (raw.includes('<span class="kw"')) return;
+    // decode html entities first
+    let t = raw.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+
+    // tokenise — comments first, then strings, then keywords
+    let out = '';
+    let i = 0;
+    // We'll do a simple line-by-line pass
+    const lines = t.split('\n');
+    const result = lines.map(line => {
+      // comments
+      let lcm = line.match(/^(.*?)(\/\/.*)$/);
+      if (lcm) {
+        return highlight(lcm[1]) + '<span class="cm">' + esc(lcm[2]) + '</span>';
+      }
+      return highlight(line);
+    });
+    el.innerHTML = result.join('\n');
+  });
+
+  function highlight(s) {
+    // strings
+    s = s.replace(/"([^"\\]|\\.)*"/g, m => '<span class="str">' + esc(m) + '</span>');
+    // keywords
+    s = s.replace(/\b(public|private|protected|internal|static|async|await|new|return|var|using|class|interface|record|void|bool|string|int|decimal|readonly|required|if|else|foreach|throw|null|true|false|is|not|in)\b/g,
+      '<span class="kw">$1</span>');
+    // types
+    s = s.replace(/\b(Task|List|ICollection|DbContext|DbSet|AppDbContext|Recipe|Ingredient|RecipeSummaryViewModel|RecipeDetailViewModel|UpdateRecipeCommand|CreateRecipeCommand|TimeSpan|ILogger|WebApplicationBuilder|WebApplication|Exception|DbContextOptions)\b/g,
+      '<span class="tp">$1</span>');
+    // method calls
+    s = s.replace(/\b([A-Z][a-zA-Z]+)(?=\s*\()/g, m => '<span class="fn">' + m + '</span>');
+    return s;
+  }
+})();
+</script>
+</body>
+</html>

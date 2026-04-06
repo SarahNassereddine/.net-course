@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 10 — Configuring an ASP.NET Core Application</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ── Definition boxes ── */
+.definition {
+  background: rgba(124,106,247,.06);
+  border: 1px solid rgba(124,106,247,.22);
+  border-left: 3px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin: 16px 0;
+}
+.definition-term {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent2);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.definition-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+}
+/* ── orange for warning circles ── */
+:root { --orange: #e8720c; }
+</style>
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Chapter 10 — Configuration</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span>
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span>
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Chapter 10</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="intro" onclick="scrollPageTo('intro')">
+      <span class="dot"></span>Intro to Configuration
+    </button>
+    <button class="nav-link" data-target="providers" onclick="scrollPageTo('providers')">
+      <span class="dot"></span>Adding providers in Program.cs
+    </button>
+    <button class="nav-link" data-target="multiple-providers" onclick="scrollPageTo('multiple-providers')">
+      <span class="dot"></span>Multiple providers &amp; overriding
+    </button>
+    <button class="nav-link" data-target="secrets" onclick="scrollPageTo('secrets')">
+      <span class="dot"></span>Storing secrets safely
+    </button>
+    <button class="nav-link" data-target="reload" onclick="scrollPageTo('reload')">
+      <span class="dot"></span>Reloading config on change
+    </button>
+    <button class="nav-link" data-target="options" onclick="scrollPageTo('options')">
+      <span class="dot"></span>Strongly typed options
+    </button>
+    <button class="nav-link" data-target="ioptions" onclick="scrollPageTo('ioptions')">
+      <span class="dot"></span>IOptions&lt;T&gt; interface
+    </button>
+    <button class="nav-link" data-target="isnapshot" onclick="scrollPageTo('isnapshot')">
+      <span class="dot"></span>IOptionsSnapshot&lt;T&gt; reloading
+    </button>
+    <button class="nav-link" data-target="binding-rules" onclick="scrollPageTo('binding-rules')">
+      <span class="dot"></span>Options binding rules
+    </button>
+    <button class="nav-link" data-target="no-ioptions" onclick="scrollPageTo('no-ioptions')">
+      <span class="dot"></span>Binding without IOptions
+    </button>
+    <button class="nav-link" data-target="environments" onclick="scrollPageTo('environments')">
+      <span class="dot"></span>Hosting environments
+    </button>
+    <button class="nav-link" data-target="env-files" onclick="scrollPageTo('env-files')">
+      <span class="dot"></span>Environment-specific files
+    </button>
+    <button class="nav-link" data-target="launch-settings" onclick="scrollPageTo('launch-settings')">
+      <span class="dot"></span>launchSettings.json
+    </button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')">
+      <span class="dot"></span>GitHub Examples
+    </button>
+  </div>
+
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link active" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuration</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Entity Framework Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Generating Responses with Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating Requests</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Rendering HTML Using Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Building Forms with Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Chapter 10</div>
+    <h1 class="chapter-title">Configuring an ASP.NET Core Application</h1>
+    <p class="chapter-subtitle">
+      Load settings from JSON files, environment variables, and command-line arguments.
+      Store secrets safely. Use strongly typed options objects. Adapt behavior per hosting environment.
+    </p>
+  </div>
+
+
+  <!-- ══ SECTION 1 ══ -->
+  <section class="section" id="intro">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Introducing the ASP.NET Core Configuration Model</h2>
+    </div>
+
+    <p><strong>Configuration</strong> is the set of external parameters that control your application's behavior at runtime — without recompiling your code. It's one of the most elegant parts of ASP.NET Core.</p>
+
+    <div class="definition">
+      <div class="definition-term">Setting vs Secret</div>
+      <div class="definition-desc">A <strong>setting</strong> is any value that changes your application's behavior (e.g., a default zoom level or page title). A <strong>secret</strong> is a special, sensitive setting — passwords, API keys, connection strings — that must never be committed to source control.</div>
+    </div>
+
+    <h3>Why externalize configuration?</h3>
+    <div style="display:grid;gap:12px;margin:20px 0;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;gap:12px;">
+        <div style="font-size:20px;flex-shrink:0;">🔄</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px;">No recompilation</div>
+          <div style="font-size:13px;color:var(--text2);">Change a database connection string or API key at deploy time without touching code.</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;gap:12px;">
+        <div style="font-size:20px;flex-shrink:0;">🔒</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px;">Security</div>
+          <div style="font-size:13px;color:var(--text2);">Hardcoded secrets can be extracted from compiled binaries and end up in source control. Externalizing them reduces this risk.</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px;display:flex;gap:12px;">
+        <div style="font-size:20px;flex-shrink:0;">🌍</div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px;">Multiple environments</div>
+          <div style="font-size:13px;color:var(--text2);">Use a local SQLite database in development and a production SQL Server in production, with no code change.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="definition">
+      <div class="definition-term">Configuration Provider</div>
+      <div class="definition-desc">ASP.NET Core uses <strong>configuration providers</strong> to load key-value pairs from a variety of sources. Applications can use multiple providers simultaneously. Examples: JSON files, environment variables, command-line arguments, Azure Key Vault.</div>
+    </div>
+
+    <p>Unlike the old <code>ConfigurationManager</code> in ASP.NET Framework (which read from a single <code>web.config</code> file), ASP.NET Core lets you aggregate settings from <strong>many sources</strong>, with later providers able to override values from earlier ones.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <div class="callout-title">ConfigurationManager (new in .NET 6)</div>
+        <div class="callout-text">
+          The <code>ConfigurationManager</code> class implements <strong>both</strong> <code>IConfigurationBuilder</code> (describes how to build configuration) and <code>IConfigurationRoot</code> (holds the values). When you add a provider, values are loaded <strong>immediately</strong> — no need to call <code>Build()</code> first. You interact with it mostly through the <code>IConfiguration</code> interface.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 2 ══ -->
+  <section class="section" id="providers">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Adding a Configuration Provider in Program.cs</h2>
+    </div>
+
+    <p><code>WebApplicationBuilder</code> creates a <code>ConfigurationManager</code> instance and exposes it as <code>builder.Configuration</code>. By default it already registers several providers — but you can add your own or start from scratch.</p>
+
+    <h3>Default providers added by WebApplicationBuilder</h3>
+    <div style="display:grid;gap:10px;margin:20px 0;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:center;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:220px;">appsettings.json</div>
+        <div style="font-size:13px;color:var(--text2);">Base settings file, loaded first. Optional by default.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:center;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:220px;">appsettings.ENVIRONMENT.json</div>
+        <div style="font-size:13px;color:var(--text2);">Environment-specific overrides (e.g., appsettings.Development.json). Optional.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:center;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:220px;">User Secrets</div>
+        <div style="font-size:13px;color:var(--text2);">Per-app secrets stored outside the project folder. Development only.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:center;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:220px;">Environment variables</div>
+        <div style="font-size:13px;color:var(--text2);">OS-level key-value pairs. Great for storing secrets in production.</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;display:flex;gap:10px;align-items:center;">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--accent2);min-width:220px;">Command-line arguments</div>
+        <div style="font-size:13px;color:var(--text2);">Values passed when running <code>dotnet run</code>. Highest priority by default.</div>
+      </div>
+    </div>
+
+    <h3>The default appsettings.json</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON</span><span class="code-label">appsettings.json — default from the Empty template</span></div>
+      <div class="code-body">{
+  <span class="str">"Logging"</span>: {
+    <span class="str">"LogLevel"</span>: {
+      <span class="str">"Default"</span>: <span class="str">"Information"</span>,
+      <span class="str">"Microsoft.AspNetCore"</span>: <span class="str">"Warning"</span>
+    }
+  },
+  <span class="str">"AllowedHosts"</span>: <span class="str">"*"</span>
+}</div>
+    </div>
+
+    <h3>Adding your own settings</h3>
+    <p>Nest your settings under a named section to keep them organized. Values can be any JSON type (numbers, strings, booleans, objects) — they are all stored internally as strings.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON</span><span class="code-label">appsettings.json — adding MapSettings section</span></div>
+      <div class="code-body">{
+  <span class="str">"Logging"</span>: { <span class="cm">/* ... */</span> },
+  <span class="str">"AllowedHosts"</span>: <span class="str">"*"</span>,
+  <span class="str">"MapSettings"</span>: {                    <span class="cm">// ← namespace your settings</span>
+    <span class="str">"DefaultZoomLevel"</span>: 9,            <span class="cm">// ← numbers are stored as strings internally</span>
+    <span class="str">"DefaultLocation"</span>: {              <span class="cm">// ← deeply nested structures are fine</span>
+      <span class="str">"Latitude"</span>: 50.500,
+      <span class="str">"Longitude"</span>: -4.000
+    }
+  }
+}</div>
+    </div>
+
+    <h3>Loading and reading values in Program.cs</h3>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — loading from a single JSON file manually</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+builder.Configuration.Sources.<span class="fn">Clear</span>();    <span class="cm">// remove all defaults</span>
+builder.Configuration.<span class="fn">AddJsonFile</span>(<span class="str">"appsettings.json"</span>, optional: <span class="kw">true</span>); <span class="cm">// won't throw if missing</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Access by key — colon (:) denotes section separator</span>
+<span class="kw">var</span> zoom = builder.Configuration[<span class="str">"MapSettings:DefaultZoomLevel"</span>];         <span class="cm">// "9"</span>
+<span class="kw">var</span> lat  = builder.Configuration[<span class="str">"MapSettings:DefaultLocation:Latitude"</span>];  <span class="cm">// "50.5"</span>
+
+<span class="cm">// Or grab a whole section:</span>
+<span class="kw">var</span> lat2 = builder.Configuration
+    .<span class="fn">GetSection</span>(<span class="str">"MapSettings"</span>)[<span class="str">"DefaultLocation:Latitude"</span>]; <span class="cm">// same result</span>
+
+<span class="cm">// You can also inject IConfiguration directly into endpoint handlers:</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/"</span>, (<span class="tp">IConfiguration</span> config) => config.<span class="fn">AsEnumerable</span>());
+
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Keys are NOT case-sensitive, values are always strings</div>
+        <div class="callout-text">
+          Configuration keys are case-insensitive — <code>MapSettings:DefaultZoomLevel</code> and <code>mapsettings:defaultzoomlevel</code> refer to the same key. All values, including numbers and booleans in JSON, are stored internally as strings. You must parse them yourself when using raw <code>IConfiguration</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">🚫</div>
+      <div class="callout-body">
+        <div class="callout-title">Never store secrets in appsettings.json!</div>
+        <div class="callout-text">
+          <code>appsettings.json</code> is typically committed to source control. Never put passwords, API keys, or connection strings in it. Use <strong>User Secrets</strong> in development and <strong>environment variables</strong> in production. You'll learn how in section 4.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg1" class="quiz-block">
+      <div class="quiz-question">🧠 You have a setting <code>"MapSettings:DefaultZoomLevel": 9</code> in appsettings.json. What does <code>builder.Configuration["MapSettings:DefaultZoomLevel"]</code> return?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg1',false)">The integer <code>9</code></button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg1',true)">The string <code>"9"</code> — all values are stored as strings internally</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg1',false)"><code>null</code> — you must use <code>GetSection()</code> for nested keys</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg1',false)">A <code>JsonElement</code> object</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg1-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 3 ══ -->
+  <section class="section" id="multiple-providers">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Using Multiple Providers to Override Configuration Values</h2>
+    </div>
+
+    <p>When you add providers to <code>ConfigurationManager</code>, the <strong>order matters</strong>. Think of providers as stacking layers: each new layer can add new keys or overwrite values from a previous layer.</p>
+
+    <div class="callout danger">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <div class="callout-title">Golden Rule — Order determines priority</div>
+        <div class="callout-text">
+          <strong>Later providers win.</strong> If two providers define the same key, the value from the provider added <em>last</em> is used. The <code>ConfigurationManager</code> is essentially a dictionary — adding a second provider can add new keys or overwrite old values.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — loading from three providers (order matters)</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+builder.Configuration.Sources.<span class="fn">Clear</span>();
+builder.Configuration.<span class="fn">AddJsonFile</span>(<span class="str">"sharedSettings.json"</span>, optional: <span class="kw">true</span>); <span class="cm">// layer 1 — base</span>
+builder.Configuration.<span class="fn">AddJsonFile</span>(<span class="str">"appsettings.json"</span>,    optional: <span class="kw">true</span>); <span class="cm">// layer 2 — overrides</span>
+builder.Configuration.<span class="fn">AddEnvironmentVariables</span>();                         <span class="cm">// layer 3 — wins</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <h3>Concrete override example</h3>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">appsettings.json</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">{
+  <span class="str">"MyAppConnString"</span>: <span class="str">"localDB;"</span>,
+  <span class="str">"MapSettings"</span>: {
+    <span class="str">"DefaultZoomLevel"</span>: 5
+  }
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">Environment Variables (added after)</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;"><span class="cm">// Environment variables on the machine:</span>
+MyAppConnString=<span class="str">"productionDB;"</span>
+GoogleMapsApiKey=<span class="str">"123456ABCD"</span>
+
+<span class="cm">// Result in IConfiguration:</span>
+<span class="cm">// MyAppConnString → "productionDB;" ← overwritten!</span>
+<span class="cm">// GoogleMapsApiKey → "123456ABCD"   ← new key added</span>
+<span class="cm">// MapSettings:DefaultZoomLevel → 5  ← unchanged</span></div>
+      </div>
+    </div>
+
+    <h3>Hierarchical keys in environment variables</h3>
+    <p>To represent nested JSON keys in environment variables, use <strong>colon (:)</strong> or <strong>double underscore (__)</strong> as the separator:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">Setting hierarchical config via environment variables</span></div>
+      <div class="code-body"><span class="cm"># Equivalent to JSON: { "MapSettings": { "DefaultZoomLevel": 5 } }</span>
+
+<span class="cm"># Using colon — works on Windows and macOS</span>
+MapSettings:DefaultZoomLevel=5
+
+<span class="cm"># Using double underscore — required on Linux (colon not allowed in env var names)</span>
+MapSettings__DefaultZoomLevel=5
+
+<span class="cm"># Both are converted to "MapSettings:DefaultZoomLevel" in IConfiguration</span></div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Avoid env var collisions with a prefix</div>
+        <div class="callout-text">
+          If you only want to load env variables that belong to your app, use
+          <code>AddEnvironmentVariables("MYAPP_")</code>. The prefix is stripped from the key, so
+          <code>MYAPP_DatabaseName</code> becomes <code>DatabaseName</code> in <code>IConfiguration</code>.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg2" class="quiz-block">
+      <div class="quiz-question">🧠 You have <code>MyKey=A</code> in appsettings.json and <code>MyKey=B</code> as an environment variable. Both are added in that order. What value does <code>IConfiguration["MyKey"]</code> return?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg2',false)"><code>"A"</code> — appsettings.json has priority as the primary config file</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg2',true)"><code>"B"</code> — the environment variable provider was added later and overwrites the earlier value</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg2',false)">An exception — duplicate keys are not allowed</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg2',false)"><code>null</code> — conflicting values are discarded</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg2-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 4 ══ -->
+  <section class="section" id="secrets">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Storing Configuration Secrets Safely</h2>
+    </div>
+
+    <p>Sensitive values — passwords, connection strings, API keys — should <strong>never</strong> be stored in <code>appsettings.json</code>, which gets committed to source control. ASP.NET Core provides two approaches depending on where your app is running.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">Development: User Secrets Manager</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;"><span class="cm">// Stored OUTSIDE the project folder</span>
+<span class="cm">// in your OS user profile</span>
+<span class="cm">// Won't be committed to git</span>
+
+<span class="cm">// Setup:</span>
+dotnet user-secrets init
+
+<span class="cm">// Add a secret:</span>
+dotnet user-secrets set \
+  <span class="str">"MapSettings:GoogleMapsApiKey"</span> <span class="str">"F5RJT9"</span>
+
+<span class="cm">// In .csproj — auto-generated:</span>
+<span class="str">&lt;UserSecretsId&gt;</span>96eb2a39...<span class="str">&lt;/UserSecretsId&gt;</span></div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">Production: Environment Variables</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;"><span class="cm">// Set on the server / Docker container</span>
+<span class="cm">// Never in source control</span>
+<span class="cm">// Added by default in WebApplicationBuilder</span>
+
+<span class="cm">// On Linux server:</span>
+export MyAppConnString=<span class="str">"Server=prod;..."</span>
+
+<span class="cm">// Docker compose:</span>
+environment:
+  - MyAppConnString=Server=prod;...
+
+<span class="cm">// Azure App Service: set in portal UI</span></div>
+      </div>
+    </div>
+
+    <h3>Adding User Secrets in Program.cs</h3>
+    <p><code>WebApplicationBuilder</code> adds the User Secrets provider automatically in development. If you cleared sources and need to add it manually:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — conditionally adding User Secrets</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="kw">if</span> (builder.Environment.<span class="fn">IsDevelopment</span>())
+{
+    <span class="cm">// Only in development — not in staging or production</span>
+    <span class="cm">// Program class is used to locate the UserSecretsId in the .csproj</span>
+    builder.Configuration.<span class="fn">AddUserSecrets</span>&lt;<span class="tp">Program</span>&gt;();
+}
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Secrets are NOT encrypted</div>
+        <div class="callout-text">
+          Neither User Secrets nor environment variables encrypt their values — they are stored as plain text. Their benefit is keeping secrets <strong>outside your project folder</strong> so they don't end up in source control. For true encryption, use <strong>Azure Key Vault</strong> or <strong>HashiCorp Vault</strong>.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg3" class="quiz-block">
+      <div class="quiz-question">🧠 Where does the User Secrets Manager store secrets?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg3',false)">In the <code>appsettings.json</code> file in the project folder</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg3',false)">In an encrypted file inside the <code>bin/Debug</code> folder</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg3',true)">Outside the project folder, in the OS user profile directory</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg3',false)">In environment variables on the machine</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg3-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 5 ══ -->
+  <section class="section" id="reload">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Reloading Configuration Values When They Change</h2>
+    </div>
+
+    <p>File-based configuration providers can <strong>watch for file changes</strong> and rebuild <code>IConfiguration</code> automatically — no restart required. This is especially useful for toggling log levels in production without downtime.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — enabling reloadOnChange</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+builder.Configuration.Sources.<span class="fn">Clear</span>();
+
+builder.Configuration.<span class="fn">AddJsonFile</span>(
+    <span class="str">"appsettings.json"</span>,
+    optional: <span class="kw">true</span>,
+    reloadOnChange: <span class="kw">true</span>);  <span class="cm">// ← IConfiguration rebuilt when file changes on disk</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <div class="callout-title">reloadOnChange is ON by default</div>
+        <div class="callout-text">
+          <code>WebApplicationBuilder</code> adds <code>appsettings.json</code> with <code>reloadOnChange: true</code> by default. You only need to set it explicitly if you cleared all sources and are adding providers manually. Note: <strong>environment variable and command-line providers cannot reload</strong> — only file-based providers support this feature.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">File watchers have a cost</div>
+        <div class="callout-text">
+          ASP.NET Core sets up a background file watcher for each file with <code>reloadOnChange: true</code>. This is normally fine, but watching thousands of files could cause issues. Stick to watching a small number of critical config files.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 6 ══ -->
+  <section class="section" id="options">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Strongly Typed Settings with the Options Pattern</h2>
+    </div>
+
+    <p>Accessing config via <code>builder.Configuration["MapSettings:DefaultZoomLevel"]</code> is error-prone: typos in key strings, manual type conversion, no IntelliSense. The <strong>options pattern</strong> solves this by binding config sections to <strong>typed POCO classes</strong>.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Raw IConfiguration — messy</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">app.<span class="fn">MapGet</span>(<span class="str">"/settings"</span>, (<span class="tp">IConfiguration</span> cfg) =>
+{
+    <span class="cm">// Strings everywhere — typos silently return null</span>
+    <span class="tp">string</span> title = cfg[<span class="str">"AppDisplaySettings:Title"</span>];
+    <span class="cm">// Manual type conversion — ugly</span>
+    <span class="kw">bool</span> show = <span class="tp">bool</span>.<span class="fn">Parse</span>(
+        cfg[<span class="str">"AppDisplaySettings:ShowCopyright"</span>]);
+    <span class="kw">return new</span> { title, show };
+});</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Strongly typed options — clean</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">app.<span class="fn">MapGet</span>(<span class="str">"/settings"</span>,
+    (<span class="tp">IOptions</span>&lt;<span class="tp">AppDisplaySettings</span>&gt; opts) =>
+{
+    <span class="tp">AppDisplaySettings</span> s = opts.Value;
+    <span class="cm">// Fully typed, IntelliSense, no parsing</span>
+    <span class="tp">string</span> title = s.Title;
+    <span class="kw">bool</span> show = s.ShowCopyright;
+    <span class="kw">return new</span> { title, show };
+});</div>
+      </div>
+    </div>
+
+    <h3>1. Define your POCO options class</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">AppDisplaySettings.cs — a simple options POCO</span></div>
+      <div class="code-body"><span class="kw">public class</span> <span class="tp">AppDisplaySettings</span>
+{
+    <span class="cm">// Must be: nonabstract, public, parameterless constructor, public properties</span>
+    <span class="kw">public</span> <span class="tp">string</span> Title { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="kw">bool</span> ShowCopyright { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="tp">MapSettings</span>
+{
+    <span class="kw">public</span> <span class="kw">int</span> DefaultZoomLevel { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="tp">LocationSettings</span> DefaultLocation { <span class="kw">get</span>; <span class="kw">set</span>; }
+}
+
+<span class="kw">public class</span> <span class="tp">LocationSettings</span>
+{
+    <span class="kw">public</span> <span class="kw">double</span> Latitude  { <span class="kw">get</span>; <span class="kw">set</span>; }
+    <span class="kw">public</span> <span class="kw">double</span> Longitude { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</div>
+    </div>
+
+    <h3>2. Register with Configure&lt;T&gt; in Program.cs</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — binding config sections to POCO options</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="cm">// Bind the "MapSettings" section to the MapSettings POCO class</span>
+builder.Services.<span class="fn">Configure</span>&lt;<span class="tp">MapSettings</span>&gt;(
+    builder.Configuration.<span class="fn">GetSection</span>(<span class="str">"MapSettings"</span>));        <span class="cm">// ❶</span>
+
+<span class="cm">// Bind "AppDisplaySettings" section to AppDisplaySettings POCO</span>
+builder.Services.<span class="fn">Configure</span>&lt;<span class="tp">AppDisplaySettings</span>&gt;(
+    builder.Configuration.<span class="fn">GetSection</span>(<span class="str">"AppDisplaySettings"</span>)); <span class="cm">// ❷</span>
+
+<span class="cm">// ❶ Registers IOptions&lt;MapSettings&gt; as a singleton in the DI container</span>
+<span class="cm">// ❷ The section name doesn't have to match the class name, but it's good convention</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Use nameof() to avoid typos</div>
+        <div class="callout-text">
+          You can call <code>GetSection(nameof(MapSettings))</code> instead of <code>GetSection("MapSettings")</code>. The <code>nameof()</code> operator is evaluated at compile time, so a renamed class will produce a compile error instead of a silent runtime mismatch.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg4" class="quiz-block">
+      <div class="quiz-question">🧠 You forgot to call <code>builder.Services.Configure&lt;MapSettings&gt;()</code> but still inject <code>IOptions&lt;MapSettings&gt;</code> into a handler. What happens?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg4',false)">A runtime exception is thrown when the handler is first called</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg4',false)">A startup exception is thrown when <code>Build()</code> is called</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg4',true)">No errors — the options object is injected but all its properties have default values (0, null, false)</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg4',false)">A compile-time error</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg4-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 7 ══ -->
+  <section class="section" id="ioptions">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">The IOptions&lt;T&gt; Interface</h2>
+    </div>
+
+    <p><code>IOptions&lt;T&gt;</code> is a simple wrapper interface with a single <code>Value</code> property that holds your typed settings POCO. It is registered as a <strong>singleton</strong> in the DI container — the options object is created once and never changes, even if the underlying config file is edited.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Injecting IOptions&lt;T&gt; into an endpoint handler</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/display-settings"</span>,
+    (<span class="tp">IOptions</span>&lt;<span class="tp">AppDisplaySettings</span>&gt; options) =>  <span class="cm">// ← injected by DI</span>
+{
+    <span class="tp">AppDisplaySettings</span> settings = options.Value;  <span class="cm">// ← access your POCO here</span>
+    <span class="kw">return new</span>
+    {
+        title         = settings.Title,           <span class="cm">// ← fully typed, no parsing</span>
+        showCopyright = settings.ShowCopyright
+    };
+});</div>
+    </div>
+
+    <h3>What Configure&lt;T&gt; does internally</h3>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:20px 0;">
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;gap:14px;align-items:start;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">1</div>
+          <div style="flex:1;font-size:13px;color:var(--text2);line-height:1.7;">Creates a <code>ConfigureOptions&lt;T&gt;</code> instance that holds the binding instructions.</div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:start;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">2</div>
+          <div style="flex:1;font-size:13px;color:var(--text2);line-height:1.7;">When first requested, the binder reads the <code>IConfigurationSection</code> and sets all matching public properties on a new instance of your POCO class.</div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:start;">
+          <div style="background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;">3</div>
+          <div style="flex:1;font-size:13px;color:var(--text2);line-height:1.7;">The bound POCO is stored inside <code>IOptions&lt;T&gt;</code> as a <strong>singleton</strong>. It is never re-created, even if you edit <code>appsettings.json</code> at runtime.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">IOptions&lt;T&gt; does not reload</div>
+        <div class="callout-text">
+          Even if you set <code>reloadOnChange: true</code> on the JSON provider, <code>IOptions&lt;T&gt;</code> will <strong>not</strong> pick up the new values. The underlying <code>IConfiguration</code> is rebuilt, but the singleton options object stays frozen at its original values. Use <code>IOptionsSnapshot&lt;T&gt;</code> (next section) to get reloading behaviour.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 8 ══ -->
+  <section class="section" id="isnapshot">
+    <div class="section-header">
+      <div class="section-number">8</div>
+      <h2 class="section-title">Reloading with IOptionsSnapshot&lt;T&gt;</h2>
+    </div>
+
+    <p><code>IOptionsSnapshot&lt;T&gt;</code> is conceptually identical to <code>IOptions&lt;T&gt;</code>, but is registered as a <strong>scoped</strong> service — a new instance is created per request, and it reflects any configuration changes since the last request.</p>
+
+    <div class="data-table" style="margin:20px 0;">
+      <table class="data-table">
+        <tr><th>Interface</th><th>Lifetime</th><th>Reloads on config change?</th><th>Use when</th></tr>
+        <tr>
+          <td><strong>IOptions&lt;T&gt;</strong></td>
+          <td>Singleton</td>
+          <td>❌ No</td>
+          <td>Settings don't change at runtime (most cases)</td>
+        </tr>
+        <tr>
+          <td><strong>IOptionsSnapshot&lt;T&gt;</strong></td>
+          <td>Scoped</td>
+          <td>✅ Yes (per request)</td>
+          <td>Settings may change and you want the latest value</td>
+        </tr>
+        <tr>
+          <td><strong>IOptionsMonitor&lt;T&gt;</strong></td>
+          <td>Singleton</td>
+          <td>✅ Yes (event-driven)</td>
+          <td>Singleton services that need live config updates</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Using IOptionsSnapshot&lt;T&gt; — always reflects latest config</span></div>
+      <div class="code-body">app.<span class="fn">MapGet</span>(<span class="str">"/display-settings"</span>,
+    (<span class="tp">IOptionsSnapshot</span>&lt;<span class="tp">AppDisplaySettings</span>&gt; options) => <span class="cm">// ← scoped, reloads automatically</span>
+{
+    <span class="tp">AppDisplaySettings</span> settings = options.Value;  <span class="cm">// ← current config at this request</span>
+    <span class="kw">return new</span>
+    {
+        title         = settings.Title,
+        showCopyright = settings.ShowCopyright
+    };
+});</div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Cannot inject IOptionsSnapshot into a Singleton</div>
+        <div class="callout-text">
+          Because <code>IOptionsSnapshot&lt;T&gt;</code> is scoped, injecting it into a singleton service creates a <strong>captive dependency</strong> — the singleton would hold a scoped object beyond its intended lifetime. Use <code>IOptionsMonitor&lt;T&gt;</code> for singleton services that need live config updates.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg5" class="quiz-block">
+      <div class="quiz-question">🧠 You inject <code>IOptionsSnapshot&lt;AppDisplaySettings&gt;</code> and edit <code>appsettings.json</code> between two requests. What happens on the second request?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg5',false)">The app needs to restart to pick up the new config</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg5',false)">The second request still sees the old values — snapshot is frozen at startup</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg5',true)">The second request sees the updated values — IOptionsSnapshot creates a new instance per request using the latest IConfiguration</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg5',false)">An exception is thrown because the config changed at runtime</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg5-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 9 ══ -->
+  <section class="section" id="binding-rules">
+    <div class="section-header">
+      <div class="section-number">9</div>
+      <h2 class="section-title">Options Binding Rules — What Gets Bound and What Doesn't</h2>
+    </div>
+
+    <p>The options binder uses reflection to populate your POCO. Your class must be <strong>non-abstract</strong> with a <strong>public parameterless constructor</strong>. The binder then loops through all properties and binds those that qualify.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Bindable properties</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;"><span class="kw">public class</span> <span class="tp">BindableOptions</span>
+{
+  <span class="cm">// Simple built-in types</span>
+  <span class="kw">public</span> <span class="tp">string</span>   Name   { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="kw">public</span> <span class="kw">int</span>      Count  { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="cm">// Complex nested types</span>
+  <span class="kw">public</span> <span class="tp">SubClass</span> Child  { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="cm">// Read-only with default value</span>
+  <span class="kw">public</span> <span class="tp">SubClass</span> RO    { <span class="kw">get</span>; } = <span class="kw">new</span>();
+  <span class="cm">// Collections (interface or concrete)</span>
+  <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">SubClass</span>&gt;             List  { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="kw">public</span> <span class="tp">Dictionary</span>&lt;<span class="tp">string</span>,<span class="tp">SubClass</span>&gt; Dict  { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="kw">public</span> <span class="tp">IEnumerable</span>&lt;<span class="tp">SubClass</span>&gt;       IEnum { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ NOT bindable</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;"><span class="kw">public class</span> <span class="tp">UnbindableOptions</span>
+{
+  <span class="cm">// Not public</span>
+  <span class="kw">internal</span> <span class="tp">string</span> Hidden { <span class="kw">get</span>; <span class="kw">set</span>; }
+  <span class="cm">// No getter</span>
+  <span class="kw">public</span> <span class="tp">string</span> SetOnly { <span class="kw">set</span>; }
+  <span class="cm">// Null read-only — binder can't write to it</span>
+  <span class="kw">public</span> <span class="tp">SubClass</span> NullRO { <span class="kw">get</span>; } = <span class="kw">null</span>;
+  <span class="cm">// Indexer</span>
+  <span class="kw">public</span> <span class="tp">string</span> <span class="kw">this</span>[<span class="kw">int</span> i] { <span class="kw">get</span> =&gt; ...; }
+  <span class="cm">// Non-string dictionary key</span>
+  <span class="kw">public</span> <span class="tp">Dictionary</span>&lt;<span class="kw">int</span>,<span class="tp">SubClass</span>&gt; Bad { <span class="kw">get</span>; <span class="kw">set</span>; }
+}</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <div class="callout-title">Collection binding rules</div>
+        <div class="callout-text">
+          If a collection property is already initialized, the binder <strong>adds to it</strong>. If it is null, the binder creates a new <code>List&lt;&gt;</code> for <code>IEnumerable&lt;&gt;</code>, <code>ICollection&lt;&gt;</code>, etc. <strong>Exception:</strong> an initialized <code>IEnumerable&lt;&gt;</code> cannot be added to (it has no <code>Add()</code> method) — leave it null if you need the binder to populate it. Dictionary keys must be <code>string</code>, <code>enum</code>, or an integer type.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 10 ══ -->
+  <section class="section" id="no-ioptions">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <h2 class="section-title">Binding Strongly Typed Settings Without IOptions</h2>
+    </div>
+
+    <p>Some developers find the <code>IOptions&lt;T&gt;</code> wrapper annoying — services must take a dependency on it just to call <code>.Value</code> immediately. You can bind a POCO directly and register it in the DI container, allowing direct injection.</p>
+
+    <div class="tab-group">
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="tab(this,'nopt1')">Approach 1 — Bind manually</button>
+        <button class="tab-btn" onclick="tab(this,'nopt2')">Approach 2 — Delegate to IOptions</button>
+      </div>
+
+      <div id="nopt1" class="tab-panel active">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — create, bind, and register as singleton</span></div>
+          <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+<span class="kw">var</span> settings = <span class="kw">new</span> <span class="tp">MapSettings</span>();                             <span class="cm">// ❶ create instance</span>
+builder.Configuration.<span class="fn">GetSection</span>(<span class="str">"MapSettings"</span>).<span class="fn">Bind</span>(settings); <span class="cm">// ❷ bind section to it</span>
+builder.Services.<span class="fn">AddSingleton</span>(settings);                       <span class="cm">// ❸ register directly in DI</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Now inject MapSettings directly — no IOptions wrapper needed!</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/"</span>, (<span class="tp">MapSettings</span> map) => map);
+
+app.<span class="fn">Run</span>();</div>
+        </div>
+      </div>
+
+      <div id="nopt2" class="tab-panel">
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — delegate to IOptions registration</span></div>
+          <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+
+builder.Services.<span class="fn">Configure</span>&lt;<span class="tp">MapSettings</span>&gt;(                        <span class="cm">// ❶ register IOptions normally</span>
+    builder.Configuration.<span class="fn">GetSection</span>(<span class="str">"MapSettings"</span>));
+
+builder.Services.<span class="fn">AddSingleton</span>(provider =>                       <span class="cm">// ❷ also register MapSettings directly</span>
+    provider.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IOptions</span>&lt;<span class="tp">MapSettings</span>&gt;&gt;().Value); <span class="cm">//    by extracting from IOptions</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Inject MapSettings directly — no wrapper</span>
+app.<span class="fn">MapGet</span>(<span class="str">"/"</span>, (<span class="tp">MapSettings</span> map) => map);
+
+app.<span class="fn">Run</span>();</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Trade-off: no automatic reloading</div>
+        <div class="callout-text">
+          Both approaches register the POCO as a singleton. This means you lose the automatic reloading capability of <code>IOptionsSnapshot&lt;T&gt;</code>. In most production apps that's fine, but factor this in before using direct injection.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 11 ══ -->
+  <section class="section" id="environments">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <h2 class="section-title">Configuring an App for Multiple Environments</h2>
+    </div>
+
+    <p>Almost every real app runs in multiple environments — a local dev machine, a staging server, and production. ASP.NET Core has built-in support for detecting the current environment and loading the right configuration for it.</p>
+
+    <div class="definition">
+      <div class="definition-term">Hosting Environment</div>
+      <div class="definition-desc">The current running context of your application. ASP.NET Core reads the <code>ASPNETCORE_ENVIRONMENT</code> environment variable to determine this. If not set, it defaults to <strong>Production</strong>. The value is exposed as <code>IHostEnvironment.EnvironmentName</code>.</div>
+    </div>
+
+    <h3>The three standard environments</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:20px 0;">
+      <div style="background:rgba(45,164,78,.08);border:1px solid rgba(45,164,78,.25);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-weight:700;color:var(--green);font-size:15px;margin-bottom:6px;">Development</div>
+        <div style="font-size:12px;color:var(--text2);">Your local machine. Developer exception page on. Verbose logging. User Secrets for sensitive config.</div>
+      </div>
+      <div style="background:rgba(124,106,247,.08);border:1px solid rgba(124,106,247,.25);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-weight:700;color:var(--accent2);font-size:15px;margin-bottom:6px;">Staging</div>
+        <div style="font-size:12px;color:var(--text2);">Pre-production testing. Mimics production config. Error handling on. Environment variables for secrets.</div>
+      </div>
+      <div style="background:rgba(247,140,108,.08);border:1px solid rgba(247,140,108,.25);border-radius:var(--radius);padding:14px;text-align:center;">
+        <div style="font-weight:700;color:var(--accent3);font-size:15px;margin-bottom:6px;">Production</div>
+        <div style="font-size:12px;color:var(--text2);">Live server. Strict error handling. Minimal logging. Azure Key Vault or environment vars for secrets.</div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — using IHostEnvironment to customize behavior</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+<span class="tp">IHostEnvironment</span> env = builder.Environment;  <span class="cm">// ← access current environment</span>
+
+<span class="cm">// Use helper methods — always case-insensitive</span>
+<span class="kw">if</span> (env.<span class="fn">IsDevelopment</span>())  { <span class="cm">/* dev-only setup */</span> }
+<span class="kw">if</span> (env.<span class="fn">IsStaging</span>())      { <span class="cm">/* staging-only setup */</span> }
+<span class="kw">if</span> (env.<span class="fn">IsProduction</span>())  { <span class="cm">/* production-only setup */</span> }
+
+<span class="cm">// Or check by name for custom environments:</span>
+<span class="kw">if</span> (env.<span class="fn">IsEnvironment</span>(<span class="str">"UAT"</span>)) { <span class="cm">/* user acceptance testing */</span> }
+
+builder.Services.<span class="fn">AddProblemDetails</span>();
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+
+<span class="cm">// Customize the middleware pipeline per environment</span>
+<span class="kw">if</span> (!builder.Environment.<span class="fn">IsDevelopment</span>())
+{
+    app.<span class="fn">UseExceptionHandler</span>();  <span class="cm">// friendly error page in staging/production</span>
+}
+
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Default is Production — deploy safely</div>
+        <div class="callout-text">
+          If <code>ASPNETCORE_ENVIRONMENT</code> is not set, ASP.NET Core defaults to <strong>Production</strong>. This means that on a freshly configured server where you forgot to set the variable, your app will still behave safely (no developer exceptions, minimal logging). The current environment is also logged to the console at startup so you can verify it.
+        </div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg6" class="quiz-block">
+      <div class="quiz-question">🧠 Your production server doesn't have <code>ASPNETCORE_ENVIRONMENT</code> set. Which environment will ASP.NET Core use?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg6',false)">Development — it falls back to the most permissive environment</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg6',false)">Staging — a safe middle ground</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg6',true)">Production — the default when the environment variable is not set</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg6',false)">An exception is thrown — the environment variable is required</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg6-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 12 ══ -->
+  <section class="section" id="env-files">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <h2 class="section-title">Loading Environment-Specific Configuration Files</h2>
+    </div>
+
+    <p>A common pattern is to have a base <code>appsettings.json</code> (shared across all environments) and additional optional files per environment. Any key in the environment-specific file <strong>overwrites</strong> the same key from the base file.</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs — environment-specific JSON files (WebApplicationBuilder does this by default)</span></div>
+      <div class="code-body"><span class="tp">WebApplicationBuilder</span> builder = <span class="tp">WebApplication</span>.<span class="fn">CreateBuilder</span>(args);
+<span class="tp">IHostEnvironment</span> env = builder.Environment;
+
+builder.Configuration.Sources.<span class="fn">Clear</span>();
+builder.Configuration
+    .<span class="fn">AddJsonFile</span>(<span class="str">"appsettings.json"</span>, optional: <span class="kw">false</span>)           <span class="cm">// ← base, required</span>
+    .<span class="fn">AddJsonFile</span>($<span class="str">"appsettings.{env.EnvironmentName}.json"</span>,         <span class="cm">// ← e.g. appsettings.Development.json</span>
+                 optional: <span class="kw">true</span>);                                 <span class="cm">// ← optional — skip if missing</span>
+
+<span class="kw">if</span> (env.<span class="fn">IsDevelopment</span>())
+{
+    builder.Configuration.<span class="fn">AddUserSecrets</span>&lt;<span class="tp">Program</span>&gt;();             <span class="cm">// ← secrets only in dev</span>
+}
+
+builder.Configuration.<span class="fn">AddEnvironmentVariables</span>();                <span class="cm">// ← always last (highest priority)</span>
+
+<span class="tp">WebApplication</span> app = builder.<span class="fn">Build</span>();
+app.<span class="fn">Run</span>();</div>
+    </div>
+
+    <h3>File loading order (later overrides earlier)</h3>
+    <div style="display:flex;flex-direction:column;gap:0;margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(124,106,247,.06);border-bottom:1px solid var(--border);">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text3);min-width:20px;">①</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--accent2);">appsettings.json</div>
+        <div style="font-size:12px;color:var(--text3);margin-left:auto;">base config — lowest priority</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(124,106,247,.09);border-bottom:1px solid var(--border);">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text3);min-width:20px;">②</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--accent2);">appsettings.{Environment}.json</div>
+        <div style="font-size:12px;color:var(--text3);margin-left:auto;">overrides base</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(124,106,247,.12);border-bottom:1px solid var(--border);">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text3);min-width:20px;">③</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--accent2);">User Secrets</div>
+        <div style="font-size:12px;color:var(--text3);margin-left:auto;">development only</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(0,212,170,.08);">
+        <div style="font-family:var(--mono);font-size:12px;color:var(--text3);min-width:20px;">④</div>
+        <div style="font-family:var(--mono);font-size:13px;color:var(--accent);">Environment Variables</div>
+        <div style="font-size:12px;color:var(--text3);margin-left:auto;">highest priority — always wins</div>
+      </div>
+    </div>
+
+    <div id="quiz-cfg7" class="quiz-block">
+      <div class="quiz-question">🧠 <code>appsettings.json</code> sets <code>"LogLevel": "Warning"</code>. <code>appsettings.Development.json</code> sets <code>"LogLevel": "Debug"</code>. You're running in Development. What is the effective log level?</div>
+      <div class="quiz-options">
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg7',false)"><code>"Warning"</code> — the base file has priority as it's the primary config file</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg7',true)"><code>"Debug"</code> — the environment-specific file is loaded after the base file and overwrites the same key</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg7',false)">An exception — duplicate keys across files are not allowed</button>
+        <button class="quiz-option" onclick="answer(this,'quiz-cfg7',false)"><code>"Warning"</code> — environment-specific files only add new keys, never override existing ones</button>
+      </div>
+      <div class="quiz-feedback" id="quiz-cfg7-fb"></div>
+    </div>
+  </section>
+
+
+  <!-- ══ SECTION 13 ══ -->
+  <section class="section" id="launch-settings">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <h2 class="section-title">Setting the Environment with launchSettings.json</h2>
+    </div>
+
+    <p><code>launchSettings.json</code> (in the <code>Properties</code> folder) lets you define <strong>profiles</strong> — named run configurations for local development. Each profile can set its own environment variables, URLs, and launch behavior.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">📌</div>
+      <div class="callout-body">
+        <div class="callout-title">Development only — not deployed to production</div>
+        <div class="callout-text">
+          <code>launchSettings.json</code> is for local development. It is <strong>not deployed</strong> to production servers. Use actual OS environment variables on your servers.
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">JSON</span><span class="code-label">Properties/launchSettings.json — typical three-profile setup</span></div>
+      <div class="code-body">{
+  <span class="str">"profiles"</span>: {
+    <span class="str">"http"</span>: {                                          <span class="cm">// ← used on macOS by default</span>
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,                      <span class="cm">// ← equivalent to dotnet run</span>
+      <span class="str">"launchBrowser"</span>: <span class="kw">true</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"http://localhost:5063"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>       <span class="cm">// ← sets env for this profile only</span>
+      }
+    },
+    <span class="str">"https"</span>: {                                         <span class="cm">// ← used by Visual Studio on Windows</span>
+      <span class="str">"commandName"</span>: <span class="str">"Project"</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kw">true</span>,
+      <span class="str">"applicationUrl"</span>: <span class="str">"https://localhost:7202;http://localhost:5063"</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    },
+    <span class="str">"IIS Express"</span>: {                                  <span class="cm">// ← Windows only, behind IIS Express</span>
+      <span class="str">"commandName"</span>: <span class="str">"IISExpress"</span>,
+      <span class="str">"launchBrowser"</span>: <span class="kw">true</span>,
+      <span class="str">"environmentVariables"</span>: {
+        <span class="str">"ASPNETCORE_ENVIRONMENT"</span>: <span class="str">"Development"</span>
+      }
+    }
+  }
+}</div>
+    </div>
+
+    <h3>Running with a specific profile</h3>
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Bash</span><span class="code-label">CLI profile commands</span></div>
+      <div class="code-body"><span class="cm"># Run with the "https" profile</span>
+dotnet run --launch-profile https
+
+<span class="cm"># Run ignoring launchSettings.json entirely</span>
+dotnet run --no-launch-profile
+
+<span class="cm"># Set environment via command-line argument (no launchSettings.json needed)</span>
+dotnet run --no-launch-profile --environment Staging</div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Per-project environment isolation</div>
+        <div class="callout-text">
+          <code>launchSettings.json</code> scopes environment variables to a single project. If you set <code>ASPNETCORE_ENVIRONMENT=Development</code> in <code>launchSettings.json</code>, it applies only when running <em>this</em> project — unlike a system-level environment variable that would affect all apps on your machine.
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── Chapter Summary ── -->
+  <div style="background:linear-gradient(135deg,rgba(124,106,247,0.1) 0%,rgba(45,164,78,0.1) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin:32px 0;">
+    <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:20px;">🎯</span> Chapter Summary
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;">
+      <strong>Configuration providers</strong> load key-value string pairs from JSON files, environment variables, command-line args, User Secrets, and more. You add them to <code>ConfigurationManager</code> and later providers <strong>override</strong> earlier ones with the same key.<br><br>
+      <strong>Never commit secrets to appsettings.json.</strong> Use <strong>User Secrets</strong> locally and <strong>environment variables</strong> (or Azure Key Vault) in production.<br><br>
+      <strong>Strongly typed options</strong> (POCO classes + <code>Configure&lt;T&gt;</code>) are preferred over raw <code>IConfiguration</code> string keys. Use <code>IOptions&lt;T&gt;</code> (singleton) for stable config and <code>IOptionsSnapshot&lt;T&gt;</code> (scoped) when you need live reloading.<br><br>
+      <strong>Hosting environments</strong> are determined by the <code>ASPNETCORE_ENVIRONMENT</code> variable. Default is <strong>Production</strong>. Use <code>IsDevelopment()</code>, <code>IsStaging()</code>, <code>IsProduction()</code> helper methods for case-insensitive checks.<br><br>
+      <strong>Environment-specific JSON files</strong> (e.g., <code>appsettings.Development.json</code>) are loaded after the base file and override matching keys, allowing per-environment configuration without code changes.<br><br>
+      <strong>launchSettings.json</strong> scopes environment variables to individual projects during local development and is never deployed to production.
+    </div>
+  </div>
+  <section id="github" class="section">
+<div style="margin-top: auto; padding: 15px; border-top: 1px solid var(--border);">
+  <a href="https://github.com/SarahNassereddine/.net-examples-solutions/tree/main/asp-dot-net-core-in-action-3e-main/Chapter10" target="_blank" 
+     style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+    
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      <span style="font-size: 13px; color: var(--text); font-weight: 600;">Chapter Examples</span>
+    </div>
+    
+    <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">
+      Visit this link to run and test the code for this chapter.
+    </div>
+  </a>
+</div></section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Quiz feedback ──
+const feedbackOk = {
+  'quiz-cfg1': "Correct! All configuration values are stored as strings internally, regardless of their type in the source JSON. You must parse or convert them yourself when using raw IConfiguration. The options pattern avoids this by binding to typed POCO properties automatically.",
+  'quiz-cfg2': "Correct! This is the golden rule: later providers win. The ConfigurationManager is essentially a dictionary — when you add the environment variable provider after the JSON provider, it overwrites any keys that already exist with the same name.",
+  'quiz-cfg3': "Correct! User Secrets are stored in a per-app folder inside your OS user profile directory (e.g., %APPDATA%\\Microsoft\\UserSecrets on Windows). The key point: it is completely outside your project folder, so it can never be accidentally committed to source control.",
+  'quiz-cfg4': "Correct! There are no errors — IOptions<T> is always registered (it's created automatically). But without Configure<T>(), the binder has no configuration section to bind to, so the POCO object will have all its default values (0 for numbers, null for strings, false for booleans). This is a subtle bug that's easy to miss.",
+  'quiz-cfg5': "Correct! IOptionsSnapshot<T> is a scoped service — a new instance is created per HTTP request. Before creating the new instance, it checks whether the underlying IConfiguration has changed. If the file was edited and reloadOnChange is true, the new instance gets the updated values.",
+  'quiz-cfg6': "Correct! If ASPNETCORE_ENVIRONMENT is not set, ASP.NET Core defaults to Production. This is a deliberate safety net — a server with a missing environment variable will behave safely (strict error handling, minimal logging) rather than exposing developer details.",
+  'quiz-cfg7': "Correct! The environment-specific file is added AFTER the base file, so it wins on any key it defines. The effective value of LogLevel will be Debug when running in Development — perfect for verbose local debugging without changing the production config."
+};
+const feedbackErr = {
+  'quiz-cfg1': "Not quite. Configuration values are always strings internally, even if the source JSON has a number like 9. The indexer syntax returns a string. To get a typed value, use the options pattern with a POCO class — the binder handles type conversion automatically.",
+  'quiz-cfg2': "Not quite. The order is crucial here. Because the environment variable provider is added AFTER the JSON provider, its value for MyKey overwrites the JSON value. Think of it as a dictionary: the last writer wins.",
+  'quiz-cfg3': "Not quite. User Secrets are stored outside the project folder in your OS user profile (e.g., %APPDATA%\\Microsoft\\UserSecrets on Windows, ~/.microsoft/usersecrets on Linux/macOS). They are never in the project directory itself, which is exactly what prevents them from being committed to git.",
+  'quiz-cfg4': "Not quite. ASP.NET Core doesn't throw exceptions for missing Configure<T>() calls. The IOptions<T> infrastructure is always registered; without a binding source, the POCO just gets default values silently. This is an easy source of bugs — always double-check that Configure<T>() is called.",
+  'quiz-cfg5': "Not quite. IOptionsSnapshot<T> is specifically designed for this scenario. As a scoped service, it creates a new instance per request. If the underlying JSON file changed and reloadOnChange is true, the new instance reflects those changes. The first request after the file edit will see the new values.",
+  'quiz-cfg6': "Not quite. The default is Production, not Development. This is intentional — an unconfigured server should fail safe (no developer exception pages, no verbose logging). Always explicitly set ASPNETCORE_ENVIRONMENT on your servers.",
+  'quiz-cfg7': "Not quite. The key principle: later providers overwrite earlier ones for the same key. The environment-specific file is loaded after appsettings.json, so its LogLevel=Debug replaces the base Warning value. This is how you configure more verbose logging in development without affecting production."
+};
+
+function answer(btn, quizId, correct) {
+  const options = btn.closest('.quiz-options').querySelectorAll('.quiz-option');
+  options.forEach(o => { o.disabled = true; });
+  const fb = document.getElementById(quizId + '-fb');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className = 'quiz-feedback show ok';
+    fb.textContent = '✓  ' + feedbackOk[quizId];
+  } else {
+    btn.classList.add('wrong');
+    options.forEach(o => {
+      if (o.getAttribute('onclick').includes('true')) o.classList.add('reveal');
+    });
+    fb.className = 'quiz-feedback show err';
+    fb.textContent = '✗  ' + feedbackErr[quizId];
+  }
+}
+
+// ── Tabs ──
+function tab(btn, panelId) {
+  const group = btn.closest('.tab-group');
+  group.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  group.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ── Sidebar nav active state ──
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.nav-link[data-target]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector(`.nav-link[data-target="${e.target.id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -20% 0px' });
+sections.forEach(s => observer.observe(s));
+
+// ── Read progress ──
+window.addEventListener('scroll', () => {
+  const main = document.getElementById('mainContent');
+  const pct = (window.scrollY / (main.scrollHeight - window.innerHeight)) * 100;
+  const rp = document.getElementById('readProgress');
+  if (rp) rp.style.width = Math.min(pct, 100) + '%';
+  const mp = document.getElementById('mobileProgressFill');
+  if (mp) mp.style.width = Math.min(pct, 100) + '%';
+});
+
+// ── Mobile drawer ──
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer  = function(){ sidebar.classList.add('open');    overlay.classList.add('show');    };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(function(l){
+    l.addEventListener('click', function(){ if (window.innerWidth <= 900) closeDrawer(); });
+  });
+})();
+</script>
+</body>
+</html>

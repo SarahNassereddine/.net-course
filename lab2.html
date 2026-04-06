@@ -72,6 +72,7 @@
     <div class="nav-section-title">Labs</div>
     <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
     <a class="nav-link active" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce API</a>
   </div>
 </nav>
 
@@ -400,36 +401,6 @@
           • Email must be from domains: gmail.com or ul.edu.lb
         </div>
       </div>
-    </div>
-
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">User.cs (with IValidatableObject)</span></div>
-      <div class="code-body" style="color: #abb2bf;">
-<span class="kw">public class</span> <span class="tp">User</span> : <span class="tp">IValidatableObject</span>
-{
-    <span class="kw">public string</span> Username { <span class="kw">get</span>; <span class="kw">set</span>; }
-    <span class="kw">public string</span> Email { <span class="kw">get</span>; <span class="kw">set</span>; }
-    <span class="kw">public int</span> Age { <span class="kw">get</span>; <span class="kw">set</span>; }
-    
-    <span class="kw">public</span> IEnumerable&lt;<span class="tp">ValidationResult</span>&gt; Validate(
-        <span class="tp">ValidationContext</span> validationContext)
-    {
-        <span class="kw">if</span> (Age % <span class="nm">2</span> != <span class="nm">0</span>)
-        {
-            <span class="kw">yield return new</span> ValidationResult(
-                <span class="str">"Age must be a multiple of 2"</span>);
-        }
-        
-        <span class="kw">var</span> validDomains = <span class="kw">new</span>[] { <span class="str">"gmail.com"</span>, <span class="str">"ul.edu.lb"</span> };
-        <span class="kw">var</span> domain = Email?.Split(<span class="str">'@'</span>)[<span class="nm">1</span>];
-        
-        <span class="kw">if</span> (!validDomains.Contains(domain))
-        {
-            <span class="kw">yield return new</span> ValidationResult(
-                <span class="str">"Email must be from gmail.com or ul.edu.lb"</span>);
-        }
-    }
-}</div>
     </div>
 
     <h3 style="font-size: 16px; font-weight: 600; color: var(--text); margin: 24px 0 12px;">Task 18: BindAsync Investigation</h3>
