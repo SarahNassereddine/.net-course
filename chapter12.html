@@ -1572,6 +1572,13 @@ dotnet ef database update</code></pre>
     <div style="background: #282c34; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
       <div class="code-header"><span class="code-lang">C#</span><span class="code-label">RecipeService.CreateRecipe()</span></div>
       <pre style="margin:0; padding: 20px; background: #282c34; overflow-x: auto;"><code style="font-family: var(--mono); font-size: 13px; line-height: 1.9; color: #abb2bf; white-space: pre;"><span style="color: #c678dd;">readonly</span> <span style="color: #e5c07b;">AppDbContext</span> _context;  <span style="color: #5c6370; font-style:italic;">// ① injected by DI</span>
+    
+<span style="color: #c678dd;">readonly</span><span style="color: #e5c07b;">  ILogger</span>  _logger;
+    public RecipeService(AppDbContext context, ILoggerFactory factory)
+    {
+        _context = context;
+        _logger = factory.CreateLogger<RecipeService>();
+    }
 
 <span style="color: #c678dd;">public async</span> <span style="color: #e5c07b;">Task</span>&lt;<span style="color: #c678dd;">int</span>&gt; <span style="color: #61afef;">CreateRecipe</span>(<span style="color: #e5c07b;">CreateRecipeCommand</span> cmd)
 {

@@ -346,7 +346,10 @@ dotnet sln add WebApplication1</code></pre>
     </div>
 
     <h3>Running the Application</h3>
-    <p>Build and run your application by pressing <strong>F5</strong> in Visual Studio, or use <code>dotnet run</code> in the project folder. The browser will open and display a Welcome page with navigation links to <strong>Home</strong> and <strong>Privacy</strong> pages.</p>
+    <p>Build and run your application by pressing <strong>F5</strong> in Visual Studio, or use <code>dotnet run</code> in the project folder. The browser will open and display a Welcome page with navigation links to <strong>Home</strong> and <strong>Privacy</strong> pages.
+    At this point, you should notice a couple of things:<strong> The header containing the links and the application title, WebApplication1, is the same on both pages.</strong>
+The title of the page, as shown in the tab of the browser, changes to match the current page.
+</p>
   </section>
 
   <!-- ══ SECTION 3 ══ -->
@@ -578,13 +581,13 @@ app.Run();</code></pre>
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Privacy.cshtml</span></div>
-      <pre><code>@page                          // ← marks this file as a Razor Page (MUST be first line)
+   <pre><code class="no-highlight">@page                          // ← marks this file as a Razor Page (MUST be first line)
 @model PrivacyModel            // ← links to the PageModel class
 @{
     ViewData["Title"] = "Privacy Policy";   // ← C# code block (no output)
 }
-&amp;lt;h1&amp;gt;@ViewData["Title"]&amp;lt;/h1&amp;gt;   // ← @ writes C# value into the HTML
-&lt;p&gt;Use this page to detail your site's privacy policy.&lt;/p&gt;</code></pre>
+&lt;h1&gt;@ViewData["Title"]&lt;/h1&gt;   // ← @ writes C# value into the HTML
+&lt;p&gt;Use this page to detail your site's privacy policy.&lt;/p&gt;</p></code></pre>
     </div>
 
     <!-- DIAGRAM: Razor syntax annotated -->
@@ -823,26 +826,26 @@ namespace WebApplication1.Pages
 
     <div class="code-block">
       <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Products.cshtml — the View</span></div>
-      <pre><code>@page
+      <pre><code class="no-highlight">@page
 @model ProductsModel          // ← binds this view to ProductsModel
 
-&amp;lt;h1&amp;gt;Our Products&amp;lt;/h1&amp;gt;
+&lt;h1&gt;Our Products&lt;/h1&gt;
 
 @if (Model.Products.Count == 0)   // ← access PageModel properties via Model
 {
-    &amp;lt;p&amp;gt;No products found.&amp;lt;/p&amp;gt;
+    &lt;p&gt;No products found.&lt;/p&gt;
 }
 else
 {
-    &amp;lt;div class="product-grid"&amp;gt;
+    &lt;div class="product-grid"&gt;
         @foreach (var product in Model.Products)   // ← iterate over list from PageModel
         {
-            &amp;lt;div class="product-card"&amp;gt;
-                &amp;lt;h3&amp;gt;@product.Name&amp;lt;/h3&amp;gt;
-                &amp;lt;p&amp;gt;@product.Price.ToString("C")&amp;lt;/p&amp;gt;
-            &amp;lt;/div&amp;gt;
+            &lt;div class="product-card"&gt;
+                &lt;h3&gt;@product.Name&lt;/h3&gt;
+                &lt;p&gt;@product.Price.ToString("C")&lt;/p&gt;
+            &lt;/div&gt;
         }
-    &amp;lt;/div&amp;gt;
+    &lt;/div&gt;
 }</code></pre>
     </div>
 
@@ -1678,7 +1681,7 @@ document.querySelectorAll('section.section').forEach(section => {
 // Syntax highlighter
 (function(){
   function esc(s){ return s.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
-  document.querySelectorAll('.code-block pre code').forEach(el => {
+document.querySelectorAll('.code-block pre code:not(.no-highlight)').forEach(el => {
     let raw = el.innerHTML;
     if (raw.includes('<span class="kw"')) return;
     let t = raw.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
