@@ -639,3 +639,105 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     max-height: 350px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════
+   DIAGRAM RESPONSIVE FIXES — applies to all chapters
+   These target the inline-style diagram patterns used in
+   lecture content without touching any other components.
+══════════════════════════════════════════════════════ */
+
+/* 1. Any div that uses display:grid AND grid-template-columns
+      inside a .section — make it horizontally scrollable on
+      narrow screens so nothing gets clipped.
+      overflow:hidden on .section is NOT set, so this is safe. */
+.section [style*="grid-template-columns"] {
+  min-width: 0;
+}
+
+/* 2. Dark code boxes inside diagrams — always scrollable, never overflow */
+.section [style*="background:#282c34"] {
+  overflow-x: auto !important;
+  max-width: 100%;
+}
+
+/* 3. The outer diagram wrapper divs (the ones with a border + border-radius
+      that wrap each visual) — clip internally, never bleed out */
+.section > div[style*="border:1px solid var(--border)"],
+.section > div[style*="border: 1px solid var(--border)"] {
+  overflow: hidden;
+  max-width: 100%;
+}
+
+@media (max-width: 700px) {
+
+  /* ── Collapse ALL multi-column inline-grid diagrams ── */
+
+  /* 3-col: A → B → C  (pipeline / template-to-HTML diagrams) */
+  .section [style*="grid-template-columns: 1fr auto 1fr auto 1fr"],
+  .section [style*="grid-template-columns:1fr auto 1fr auto 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* 3-col: A → B  (code + arrow + browser) */
+  .section [style*="grid-template-columns: 1fr auto 1fr"],
+  .section [style*="grid-template-columns:1fr auto 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* 2-col: side-by-side diagrams */
+  .section [style*="grid-template-columns: 1fr 1fr"],
+  .section [style*="grid-template-columns:1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* 3-col fixed-width: browser sidebar layouts (80px 1fr 90px) */
+  .section [style*="grid-template-columns:80px"],
+  .section [style*="grid-template-columns: 80px"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Arrow separators between columns — hide horizontal arrows,
+     they become irrelevant when stacked */
+  .section [style*="font-size:20px"][style*="color:var(--border)"],
+  .section [style*="font-size: 20px"][style*="color:var(--border)"] {
+    text-align: center;
+    padding: 4px 0 !important;
+    font-size: 16px !important;
+  }
+
+  /* "+" separators in layout composition diagrams */
+  .section [style*="font-size:16px"][style*="color:var(--text3)"],
+  .section [style*="font-size: 16px"][style*="color:var(--text3)"] {
+    text-align: center;
+    padding: 4px 0 !important;
+  }
+
+  /* Pipeline diagram inner rows: cap max-width */
+  .section [style*="max-width:600px"],
+  .section [style*="max-width: 600px"] {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Diagram body padding: reduce on mobile */
+  .section > div[style*="border:1px solid var(--border)"] > div[style*="padding:20px"],
+  .section > div[style*="border: 1px solid var(--border)"] > div[style*="padding:20px"],
+  .section > div[style*="border:1px solid var(--border)"] > div[style*="padding: 20px"],
+  .section > div[style*="border: 1px solid var(--border)"] > div[style*="padding: 20px"] {
+    padding: 14px !important;
+  }
+
+  /* XSS demo two-column grid */
+  .section [style*="grid-template-columns:1fr 1fr;gap:12px"],
+  .section [style*="grid-template-columns: 1fr 1fr; gap: 12px"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
