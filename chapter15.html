@@ -581,7 +581,73 @@
 }</div>
     </div>
 
-    <!-- Visual Flow for RedirectToPageResult (POST-Redirect-GET) -->
+    <!-- DIAGRAM: Full POST-Redirect-GET sequence like in the lecture slide -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">POST-Redirect-GET — Full Sequence (e.g. Checkout → Payment → Order Complete)</div>
+      <div style="display:grid;grid-template-columns:1fr 2px 1fr;gap:0 0;align-items:start;">
+        <!-- Left: Browser -->
+        <div style="font-weight:700;color:var(--blue);font-size:12px;text-align:center;padding:8px;border-bottom:1px solid var(--border);background:rgba(9,105,218,0.06);">Browser</div>
+        <div style="background:var(--border);"></div>
+        <!-- Right: Server -->
+        <div style="font-weight:700;color:var(--accent2);font-size:12px;text-align:center;padding:8px;border-bottom:1px solid var(--border);background:rgba(124,106,247,0.06);">ASP.NET Core Application</div>
+
+        <!-- Step 1: GET /checkout -->
+        <div style="font-size:11px;color:var(--text2);padding:10px 10px 0;line-height:1.5;">User navigates to the checkout page, which sends a GET request to the ASP.NET Core application.</div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:10px 10px 0;"></div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--blue);display:inline-block;">GET /checkout →</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;font-size:11px;color:var(--text2);">The request for the Checkout page is handled by the app, generating an HTML page and returning it to the browser.</div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(45,164,78,0.10);border:1px solid rgba(45,164,78,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--green);display:inline-block;">← 200 OK (HTML)</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;"></div>
+
+        <!-- Step 2: POST /checkout -->
+        <div style="font-size:11px;color:var(--text2);padding:12px 10px 0;line-height:1.5;border-top:1px dashed var(--border);">The user clicks the <strong>Buy</strong> button on the checkout page, which sends a POST to the web application.</div>
+        <div style="background:var(--border);border-top:1px dashed var(--border);"></div>
+        <div style="padding:12px 10px 0;border-top:1px dashed var(--border);"></div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(232,114,12,0.10);border:1px solid rgba(232,114,12,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--orange);display:inline-block;">POST /checkout →</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;font-size:11px;color:var(--text2);">The ASP.NET Core application begins the checkout process and sends a <strong>302 redirect</strong> response to the payment page.</div>
+
+        <div style="font-size:11px;color:var(--text2);padding:4px 10px;line-height:1.5;">The user's browser automatically follows the redirect to the payment page.</div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(207,34,46,0.10);border:1px solid rgba(207,34,46,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--red);display:inline-block;">← 302 REDIRECT to /payment</div></div>
+
+        <!-- Step 3: GET /payment -->
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--blue);display:inline-block;">GET /payment →</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;font-size:11px;color:var(--text2);">The request for the payment page is handled by the app, generating an HTML page and returning it to the browser.</div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(45,164,78,0.10);border:1px solid rgba(45,164,78,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--green);display:inline-block;">← 200 OK (HTML)</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;"></div>
+
+        <!-- Step 4: POST /payment -->
+        <div style="font-size:11px;color:var(--text2);padding:12px 10px 0;line-height:1.5;border-top:1px dashed var(--border);">The user fills in the payment form and clicks Submit, which sends a POST to the web application.</div>
+        <div style="background:var(--border);border-top:1px dashed var(--border);"></div>
+        <div style="padding:12px 10px 0;border-top:1px dashed var(--border);"></div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(232,114,12,0.10);border:1px solid rgba(232,114,12,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--orange);display:inline-block;">POST /payment →</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;font-size:11px;color:var(--text2);">The ASP.NET Core application processes the payment and sends a 302 redirect response to the Order Complete page.</div>
+
+        <div style="font-size:11px;color:var(--text2);padding:4px 10px;line-height:1.5;">The user's browser automatically follows the redirect to the Order Complete page.</div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(207,34,46,0.10);border:1px solid rgba(207,34,46,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--red);display:inline-block;">← 302 REDIRECT to /order-complete</div></div>
+
+        <div style="padding:4px 10px;text-align:right;"><div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--blue);display:inline-block;">GET /order-complete →</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px;font-size:11px;color:var(--text2);">The request for the Order Complete page is handled by generating an HTML page and returning it to the browser.</div>
+
+        <div style="padding:4px 10px 8px;text-align:right;"><div style="background:rgba(45,164,78,0.10);border:1px solid rgba(45,164,78,0.3);border-radius:4px;padding:4px 10px;font-family:var(--mono);font-size:11px;color:var(--green);display:inline-block;">← 200 OK (HTML) ✓</div></div>
+        <div style="background:var(--border);"></div>
+        <div style="padding:4px 10px 8px;font-size:11px;color:var(--green);">The user views the HTML Order Complete page. Now refreshing is safe — it only re-GETs this confirmation page.</div>
+      </div>
+    </div>
     <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin: 24px 0;">
       <div style="font-size: 12px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px; text-align: center;">🔄 RedirectToPageResult Flow — POST-Redirect-GET Pattern</div>
       
@@ -617,7 +683,7 @@
       <!-- Step 2: Redirect Response -->
       <div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 2px dashed var(--border);">
         <div style="text-align: center;">
-          <div style="background: rgba(255,197,61,0.15); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--orange);">3</div>
+          <div style="background: rgba(255,197,61,0.15); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--orange);">4</div>
           <div style="font-size: 24px; margin-bottom: 8px;">⚙️</div>
           <div style="font-weight: 700; color: var(--text); margin-bottom: 6px;">Server Response</div>
           <div style="background: rgba(255,197,61,0.1); border: 1px solid rgba(255,197,61,0.3); border-radius: 6px; padding: 10px; font-family: var(--mono); font-size: 11px; color: var(--text2); text-align: left;">
@@ -630,7 +696,7 @@
         <div style="font-size: 24px; color: var(--accent);">←</div>
 
         <div style="text-align: center;">
-          <div style="background: rgba(124,106,247,0.15); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--accent2);">4</div>
+          <div style="background: rgba(124,106,247,0.15); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 0 auto 8px; font-weight: 700; color: var(--accent2);">3</div>
           <div style="font-size: 24px; margin-bottom: 8px;">🌐</div>
           <div style="font-weight: 700; color: var(--text); margin-bottom: 6px;">Browser</div>
           <div style="font-size: 11px; color: var(--text3); margin-bottom: 12px;">Automatically follows redirect</div>
@@ -757,6 +823,7 @@
         </div>
       </div>
     </div>
+      <div id="quiz-handler2" class="quiz-block">
       <div class="quiz-question">🧠 Why should you redirect after a successful POST request?</div>
       <div class="quiz-options">
         <button class="quiz-option" onclick="answer(this,'quiz-handler2',false)">It's required by HTTP specification</button>
@@ -764,7 +831,7 @@
         <button class="quiz-option" onclick="answer(this,'quiz-handler2',false)">To improve performance</button>
         <button class="quiz-option" onclick="answer(this,'quiz-handler2',false)">To avoid validation errors</button>
       </div>
-      <div class="quiz-feedback" id="quiz-handler2-fb"></div>
+      <div class="quiz-feedback" id="quiz-handler2-fb"></div></div>
 
   </section>
 
@@ -864,6 +931,61 @@ app.<span class="fn">MapRazorPages</span>();
 app.<span class="fn">Run</span>();</div>
     </code></div>
 
+    <!-- DIAGRAM: How UseStatusCodePagesWithReExecute works step by step -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">How UseStatusCodePagesWithReExecute Works — Step by Step</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+
+        <!-- Step 1 -->
+        <div style="display:flex;gap:12px;align-items:stretch;">
+          <div style="background:rgba(9,105,218,0.15);border:1.5px solid rgba(9,105,218,0.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--blue);min-width:32px;text-align:center;display:flex;align-items:center;justify-content:center;">1</div>
+          <div style="flex:1;">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:6px;">
+              <div style="background:rgba(0,212,170,0.10);border:1px solid rgba(0,212,170,0.3);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:600;color:#009e80;">Status code middleware</div>
+              <div style="font-size:11px;color:var(--text3);">ignores request initially</div>
+            </div>
+            <div style="background:rgba(9,105,218,0.08);border:1px solid rgba(9,105,218,0.2);border-radius:5px;padding:4px 10px;font-size:11px;font-weight:600;color:var(--blue);display:inline-block;">Endpoint middleware</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px;">The endpoint middleware returns an error status code. In this case a <strong>404</strong> response.</div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="display:flex;gap:12px;align-items:stretch;">
+          <div style="background:rgba(232,114,12,0.15);border:1.5px solid rgba(232,114,12,0.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--orange);min-width:32px;text-align:center;display:flex;align-items:center;justify-content:center;">2</div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;">The response propagates up the pipeline and is <strong>intercepted by the StatusCodePagesMiddleware</strong>. This changes the path of the request to the error path <code>/404</code> and sends the request down the middleware pipeline again.</div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="display:flex;gap:12px;align-items:stretch;">
+          <div style="background:rgba(124,106,247,0.15);border:1.5px solid rgba(124,106,247,0.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--accent2);min-width:32px;text-align:center;display:flex;align-items:center;justify-content:center;">3</div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;">The middleware pipeline executes the <strong>new error path</strong> <code>/404</code> and generates a response as usual. The endpoint middleware generates an <strong>HTML response</strong> from your <code>Pages/404.cshtml</code> page.</div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div style="display:flex;gap:12px;align-items:stretch;">
+          <div style="background:rgba(45,164,78,0.15);border:1.5px solid rgba(45,164,78,0.3);border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;color:var(--green);min-width:32px;text-align:center;display:flex;align-items:center;justify-content:center;">✓</div>
+          <div style="flex:1;">
+            <div style="font-size:12px;color:var(--text2);line-height:1.6;">The StatusCodePagesMiddleware uses the new response but <strong>updates the status code to 404</strong>. This tells the browser that an error occurred, but the user sees a friendly web page indicating that something went wrong.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
+      <div style="font-weight:600;color:var(--text);margin-bottom:12px;font-size:13px;">How it looks to the user</div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px 16px;font-family:var(--mono);font-size:12px;line-height:1.8;">
+        <div style="color:var(--text3);">Browser URL: <span style="color:var(--text2);">/missing-product</span> <span style="color:var(--text3);">(original URL stays — not changed)</span></div>
+        <div style="color:var(--red);font-weight:700;font-size:16px;margin:8px 0;">404 Error</div>
+        <div style="color:var(--accent2);">Oops! We couldn't find the page you requested.</div>
+        <div style="color:var(--text3);font-size:11px;margin-top:4px;">Please check the URL you entered and try again.</div>
+      </div>
+    </div>
+      
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
       <div style="font-weight:600;color:var(--text);margin-bottom:12px;">How Re-execution Works</div>
       <div style="font-size:13px;color:var(--text2);line-height:1.8;">
@@ -874,6 +996,7 @@ app.<span class="fn">Run</span>();</div>
         5. Custom error page is displayed to the user
       </div>
     </div>
+
 
     <h3>Redirecting vs. Re-executing</h3>
     <p>Instead of re-executing the pipeline, you can <strong>redirect</strong> the browser to the error page:</p>

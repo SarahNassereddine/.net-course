@@ -661,29 +661,27 @@
     <h3>Using Url.Action() for MVC Controllers</h3>
 
     <p>The main difference from Razor Pages is that you provide an <strong>action name</strong> and <strong>controller name</strong> instead of a page path:</p>
-
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class CurrencyController : Controller
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;"><span style="color:#c678dd;">public class</span> <span style="color:#e5c07b;">CurrencyController</span> : <span style="color:#e5c07b;">Controller</span>
 {
-    [HttpGet("currency/index")]
-    public IActionResult Index()
+    [<span style="color:#61afef;">HttpGet</span>(<span style="color:#98c379;">"currency/index"</span>)]
+    <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">Index</span>()
     {
-        // Generate URL to the View action in this controller
-        var url = Url.Action("View", "Currency", new { code = "USD" });
+        <span style="color:#5c6370; font-style: italic;">// Generate URL to the View action in this controller</span>
+        <span style="color:#c678dd;">var</span> url = <span style="color:#e5c07b;">Url</span>.<span style="color:#61afef;">Action</span>(<span style="color:#98c379;">"View"</span>, <span style="color:#98c379;">"Currency"</span>, <span style="color:#c678dd;">new</span> { code = <span style="color:#98c379;">"USD"</span> });
         
-        return Content($"The URL is {url}");
-        // Returns: "The URL is /Currency/View/USD"
+        <span style="color:#c678dd;">return</span> <span style="color:#61afef;">Content</span>(<span style="color:#98c379;">$"The URL is {url}"</span>);
+        <span style="color:#5c6370; font-style: italic;">// Returns: "The URL is /Currency/View/USD"</span>
     }
 
-    [HttpGet("currency/view/{code}")]
-    public IActionResult View(string code)
+    [<span style="color:#61afef;">HttpGet</span>(<span style="color:#98c379;">"currency/view/{code}"</span>)]
+    <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">View</span>(<span style="color:#c678dd;">string</span> code)
     {
-        // This action is the target of the generated URL
-        return View();
+        <span style="color:#5c6370; font-style: italic;">// This action is the target of the generated URL</span>
+        <span style="color:#c678dd;">return</span> <span style="color:#61afef;">View</span>();
     }
 }</code></pre>
-    </div>
-
+</div>
     <h3>Method Signature Breakdown</h3>
 
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin:24px 0;">
@@ -727,24 +725,22 @@
 
     <p>If you're routing to an action in the <strong>same controller</strong>, you can use a different overload that omits the controller name:</p>
 
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class CurrencyController : Controller
+  <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;"><span style="color:#c678dd;">public class</span> <span style="color:#e5c07b;">CurrencyController</span> : <span style="color:#e5c07b;">Controller</span>
 {
-    public IActionResult Index()
+    <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">Index</span>()
     {
-        // Omit controller name when targeting same controller
-        var url = Url.Action(nameof(View), new { code = "USD" });
-        return Content($"The URL is {url}");
+        <span style="color:#5c6370; font-style: italic;">// Omit controller name when targeting same controller</span>
+        <span style="color:#c678dd;">var</span> url = <span style="color:#e5c07b;">Url</span>.<span style="color:#61afef;">Action</span>(<span style="color:#c678dd;">nameof</span>(<span style="color:#61afef;">View</span>), <span style="color:#c678dd;">new</span> { code = <span style="color:#98c379;">"USD"</span> });
+        <span style="color:#c678dd;">return</span> <span style="color:#61afef;">Content</span>(<span style="color:#98c379;">$"The URL is {url}"</span>);
     }
 
-    public IActionResult View(string code)
+    <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">View</span>(<span style="color:#c678dd;">string</span> code)
     {
-        return View();
+        <span style="color:#c678dd;">return</span> <span style="color:#61afef;">View</span>();
     }
 }</code></pre>
-    </div>
-
-    <p>The <code>IUrlHelper</code> uses <strong>ambient values</strong> from the current request and overrides them with any specific values you provide.</p>
+</div>   <p>The <code>IUrlHelper</code> uses <strong>ambient values</strong> from the current request and overrides them with any specific values you provide.</p>
 
     <div style="background:rgba(255,165,0,0.08);border-left:4px solid orange;padding:16px;border-radius:6px;margin:24px 0;">
       <div style="font-weight:600;color:orange;margin-bottom:6px;">⚠️ Definition: Ambient Values</div>
@@ -831,6 +827,8 @@
       </table>
     </div>
 
+   
+
     <div id="quiz-route3" class="quiz-block">
       <div class="quiz-question">🧠 When would you use LinkGenerator instead of IUrlHelper?</div>
       <div class="quiz-options">
@@ -840,6 +838,16 @@
         <button class="quiz-option" onclick="answer(this,'quiz-route3',false)">LinkGenerator is deprecated, use IUrlHelper</button>
       </div>
       <div class="quiz-feedback" id="quiz-route3-fb"></div>
+    </div>
+            <div class="callout info">
+      <div class="callout-icon"></div>
+      <div class="callout-body">
+        <div class="callout-title">Note </div>
+        <div class="callout-text">
+        If you need to generate URLs from parts of your application outside the Razor Page or MVC infrastructure, you won’t be able to use the IUrlHelper helper. Instead, you can use the LinkGenerator class
+        
+      <br>By contrast with IUrlHelper, LinkGenerator requires that you always provide sufficient arguments to uniquely define the URL to generate. This makes it more verbose but also more consistent and has the advantage that it can be used anywhere in your application. This differs from IUrlHelper, which should be used only inside the context of a request.</div>
+      </div>
     </div>
   </section>
 
@@ -865,80 +873,73 @@
     <h3>1. Lowercase URLs and Trailing Slash</h3>
 
     <p>You can configure these using <code>RouteOptions</code> in Program.cs:</p>
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;"><span style="color:#e5c07b;">WebApplicationBuilder</span> builder = <span style="color:#e5c07b;">WebApplication</span>.<span style="color:#61afef;">CreateBuilder</span>(args);
 
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.<span style="color:#e5c07b;">Services</span>.<span style="color:#61afef;">AddRazorPages</span>();
 
-builder.Services.AddRazorPages();
-
-builder.Services.Configure&lt;RouteOptions&gt;(options =>
+builder.<span style="color:#e5c07b;">Services</span>.<span style="color:#61afef;">Configure</span>&lt;<span style="color:#e5c07b;">RouteOptions</span>&gt;(options =>
 {
-    options.LowercaseUrls = true;           // /products instead of /Products
-    options.LowercaseQueryStrings = true;   // ?page=1 instead of ?Page=1
-    options.AppendTrailingSlash = true;     // /products/ instead of /products
+    options.<span style="color:#e5c07b;">LowercaseUrls</span> = <span style="color:#d19a66;">true</span>;           <span style="color:#5c6370; font-style: italic;">// /products instead of /Products</span>
+    options.<span style="color:#e5c07b;">LowercaseQueryStrings</span> = <span style="color:#d19a66;">true</span>;   <span style="color:#5c6370; font-style: italic;">// ?page=1 instead of ?Page=1</span>
+    options.<span style="color:#e5c07b;">AppendTrailingSlash</span> = <span style="color:#d19a66;">true</span>;     <span style="color:#5c6370; font-style: italic;">// /products/ instead of /products</span>
 });
 
-WebApplication app = builder.Build();
-app.MapRazorPages();
-app.Run();</code></pre>
-    </div>
-
+<span style="color:#e5c07b;">WebApplication</span> app = builder.<span style="color:#61afef;">Build</span>();
+app.<span style="color:#61afef;">MapRazorPages</span>();
+app.<span style="color:#61afef;">Run</span>();</code></pre>
+</div>
     <h3>2. Kebab-Case URLs</h3>
 
     <p>For kebab-case, you need to create a custom <strong>parameter transformer</strong>. This is more advanced but straightforward:</p>
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;"><span style="color:#c678dd;">using</span> <span style="color:#e5c07b;">System</span>.<span style="color:#e5c07b;">Text</span>.<span style="color:#e5c07b;">RegularExpressions</span>;
+<span style="color:#c678dd;">using</span> <span style="color:#e5c07b;">Microsoft</span>.<span style="color:#e5c07b;">AspNetCore</span>.<span style="color:#e5c07b;">Routing</span>;
 
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Routing;
-
-public class KebabCaseParameterTransformer : IOutboundParameterTransformer
+<span style="color:#c678dd;">public class</span> <span style="color:#e5c07b;">KebabCaseParameterTransformer</span> : <span style="color:#e5c07b;">IOutboundParameterTransformer</span>
 {
-    public string? TransformOutbound(object? value)
+    <span style="color:#c678dd;">public string</span>? <span style="color:#61afef;">TransformOutbound</span>(<span style="color:#c678dd;">object</span>? value)
     {
-        if (value is null) return null;
+        <span style="color:#c678dd;">if</span> (value <span style="color:#c678dd;">is null</span>) <span style="color:#c678dd;">return null</span>;
         
-        // Replace PascalCase with kebab-case
-        return Regex.Replace(
-            value.ToString()!, 
-            "([a-z])([A-Z])", 
-            "$1-$2"
-        ).ToLower();
+        <span style="color:#5c6370; font-style: italic;">// Replace PascalCase with kebab-case</span>
+        <span style="color:#c678dd;">return</span> <span style="color:#e5c07b;">Regex</span>.<span style="color:#61afef;">Replace</span>(
+            value.<span style="color:#61afef;">ToString</span>()!, 
+            <span style="color:#98c379;">"([a-z])([A-Z])"</span>, 
+            <span style="color:#98c379;">"$1-$2"</span>
+        ).<span style="color:#61afef;">ToLower</span>();
     }
 }</code></pre>
-    </div>
-
-    <p>Then register it in Program.cs:</p>
-
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
-    .AddRazorPagesOptions(options =>
+</div>    <p>Then register it in Program.cs:</p>
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.<span style="color:#e5c07b;">Services</span>.<span style="color:#61afef;">AddRazorPages</span>()
+    .<span style="color:#61afef;">AddRazorPagesOptions</span>(options =>
     {
-        // Apply kebab-case transformer to all Razor Pages
-        options.Conventions.Add(
-            new PageRouteTransformerConvention(
-                new KebabCaseParameterTransformer()
+        <span style="color:#5c6370; font-style: italic;">// Apply kebab-case transformer to all Razor Pages</span>
+        options.<span style="color:#e5c07b;">Conventions</span>.<span style="color:#61afef;">Add</span>(
+            <span style="color:#c678dd;">new</span> <span style="color:#e5c07b;">PageRouteTransformerConvention</span>(
+                <span style="color:#c678dd;">new</span> <span style="color:#e5c07b;">KebabCaseParameterTransformer</span>()
             )
         );
     });</code></pre>
-    </div>
+</div>
 
     <h3>3. Adding Extra Routes to Specific Pages</h3>
 
     <p>You can add an alternative route template to a single Razor Page using <code>AddPageRoute()</code>:</p>
 
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
-    .AddRazorPagesOptions(options =>
+   <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.<span style="color:#e5c07b;">Services</span>.<span style="color:#61afef;">AddRazorPages</span>()
+    .<span style="color:#61afef;">AddRazorPagesOptions</span>(options =>
     {
-        // Add alternative route to specific page
-        options.Conventions.AddPageRoute(
-            "/Search/Products/StartSearch",  // Page path
-            "/search-products"               // Additional route
+        <span style="color:#5c6370; font-style: italic;">// Add alternative route to specific page</span>
+        options.<span style="color:#e5c07b;">Conventions</span>.<span style="color:#61afef;">AddPageRoute</span>(
+            <span style="color:#98c379;">"/Search/Products/StartSearch"</span>,  <span style="color:#5c6370; font-style: italic;">// Page path</span>
+            <span style="color:#98c379;">"/search-products"</span>               <span style="color:#5c6370; font-style: italic;">// Additional route</span>
         );
     });</code></pre>
-    </div>
-
-    <div class="callout warning">
+</div>
+ <div class="callout warning">
       <div class="callout-icon">⚠️</div>
       <div class="callout-body">
         <div class="callout-title">AddPageRoute vs @page Directive</div>
@@ -951,45 +952,42 @@ public class KebabCaseParameterTransformer : IOutboundParameterTransformer
     <h3>4. Custom Page Route Conventions</h3>
 
     <p>For even more control, you can implement <code>IPageRouteModelConvention</code> to customize how route templates are generated for all pages:</p>
-
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">public class PrefixingPageRouteModelConvention : IPageRouteModelConvention
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;"><span style="color:#c678dd;">public class</span> <span style="color:#e5c07b;">PrefixingPageRouteModelConvention</span> : <span style="color:#e5c07b;">IPageRouteModelConvention</span>
 {
-    public void Apply(PageRouteModel model)
+    <span style="color:#c678dd;">public void</span> <span style="color:#61afef;">Apply</span>(<span style="color:#e5c07b;">PageRouteModel</span> model)
     {
-        // Create new selectors with "page/" prefix
-        var selectors = model.Selectors
-            .Select(selector => new SelectorModel
+        <span style="color:#5c6370; font-style: italic;">// Create new selectors with "page/" prefix</span>
+        <span style="color:#c678dd;">var</span> selectors = model.<span style="color:#e5c07b;">Selectors</span>
+            .<span style="color:#61afef;">Select</span>(selector => <span style="color:#c678dd;">new</span> <span style="color:#e5c07b;">SelectorModel</span>
             {
-                AttributeRouteModel = new AttributeRouteModel
+                <span style="color:#e5c07b;">AttributeRouteModel</span> = <span style="color:#c678dd;">new</span> <span style="color:#e5c07b;">AttributeRouteModel</span>
                 {
-                    Template = AttributeRouteModel.CombineTemplates(
-                        "page",  // Prefix
-                        selector.AttributeRouteModel!.Template
+                    <span style="color:#e5c07b;">Template</span> = <span style="color:#e5c07b;">AttributeRouteModel</span>.<span style="color:#61afef;">CombineTemplates</span>(
+                        <span style="color:#98c379;">"page"</span>,  <span style="color:#5c6370; font-style: italic;">// Prefix</span>
+                        selector.<span style="color:#e5c07b;">AttributeRouteModel</span>!.<span style="color:#e5c07b;">Template</span>
                     ),
                 }
             })
-            .ToList();
+            .<span style="color:#61afef;">ToList</span>();
 
-        // Add new selectors to the page
-        foreach(var newSelector in selectors)
+        <span style="color:#5c6370; font-style: italic;">// Add new selectors to the page</span>
+        <span style="color:#c678dd;">foreach</span>(<span style="color:#c678dd;">var</span> newSelector <span style="color:#c678dd;">in</span> selectors)
         {
-            model.Selectors.Add(newSelector);
+            model.<span style="color:#e5c07b;">Selectors</span>.<span style="color:#61afef;">Add</span>(newSelector);
         }
     }
 }</code></pre>
-    </div>
+</div>
 
     <p>Register it in Program.cs:</p>
-
-    <div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
-<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.Services.AddRazorPages()
-    .AddRazorPagesOptions(options =>
+<div style="background:#282c34;border-radius:var(--radius);padding:20px;margin:20px 0;overflow-x:auto;">
+<pre><code style="color:#abb2bf;font-family:var(--mono);font-size:13px;line-height:1.8;">builder.<span style="color:#e5c07b;">Services</span>.<span style="color:#61afef;">AddRazorPages</span>()
+    .<span style="color:#61afef;">AddRazorPagesOptions</span>(options =>
     {
-        options.Conventions.Add(new PrefixingPageRouteModelConvention());
+        options.<span style="color:#e5c07b;">Conventions</span>.<span style="color:#61afef;">Add</span>(<span style="color:#c678dd;">new</span> <span style="color:#e5c07b;">PrefixingPageRouteModelConvention</span>());
     });</code></pre>
-    </div>
-
+</div>
     <h3>Available Convention Interfaces</h3>
 
     <p>Razor Pages provides three powerful interfaces for customization:</p>
@@ -1026,6 +1024,7 @@ public class KebabCaseParameterTransformer : IOutboundParameterTransformer
         </div>
       </div>
     </div>
+
   </section>
 
 

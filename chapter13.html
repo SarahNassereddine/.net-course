@@ -580,14 +580,16 @@ app.Run();</code></pre>
     <p>Let's look at the <code>Privacy.cshtml</code> Razor Page:</p>
 
     <div class="code-block">
-      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Privacy.cshtml</span></div>
-   <pre><code class="no-highlight">@page                          // ← marks this file as a Razor Page (MUST be first line)
-@model PrivacyModel            // ← links to the PageModel class
-@{
-    ViewData["Title"] = "Privacy Policy";   // ← C# code block (no output)
-}
-&lt;h1&gt;@ViewData["Title"]&lt;/h1&gt;   // ← @ writes C# value into the HTML
-&lt;p&gt;Use this page to detail your site's privacy policy.&lt;/p&gt;</p></code></pre>
+<div class="code-body">
+    <span class="kw">@page</span> <span class="cm">// ← marks this file as a Razor Page (MUST be first line)</span>
+    <span class="kw">@model</span> <span class="tp">PrivacyModel</span> <span class="cm">// ← links to the PageModel class</span>
+    <span class="kw">@{</span>
+        <span class="str">ViewData</span>[<span class="str">"Title"</span>] = <span class="str">"Privacy Policy"</span>; <span class="cm">// ← C# code block (no output)</span>
+    <span class="kw">}</span>
+    
+    &lt;h1&gt;<span class="kw">@</span><span class="str">ViewData</span>[<span class="str">"Title"</span>]&lt;/h1&gt; <span class="cm">// ← @ writes C# value into the HTML</span>
+    &lt;p&gt;Use this page to detail your site's privacy policy.&lt;/p&gt;
+  </div>
     </div>
 
     <!-- DIAGRAM: Razor syntax annotated -->
@@ -814,6 +816,49 @@ namespace WebApplication1.Pages
         </div>
       </div>
     </div>
+
+    <!-- DIAGRAM: Full request lifecycle through ASP.NET Core for a Razor Page -->
+    <h3>Full Request Lifecycle for a Razor Page</h3>
+    <p>When a browser requests <code>/Privacy</code>, here is exactly what happens end-to-end inside ASP.NET Core:</p>
+    <div class="diagram-wrap">
+      <div class="diagram-title">Complete Request Flow — /Privacy Example</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+        <!-- Left: numbered steps -->
+        <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:8px;font-size:12px;color:var(--text2);line-height:1.6;">
+          <div><strong style="color:var(--text);">1.</strong> An HTTP request is made to the URL <code>/Privacy</code>.</div>
+          <div><strong style="color:var(--text);">2.</strong> The request is forwarded by the web host (IIS/Nginx/Apache) to ASP.NET Core.</div>
+          <div><strong style="color:var(--text);">3.</strong> ASP.NET Core web server receives the HTTP request and passes it to the middleware.</div>
+          <div><strong style="color:var(--text);">4.</strong> The request path <code>/Privacy</code> is routed to <code>Privacy.cshtml</code> Razor Page — it passes through the middleware pipeline unmodified.</div>
+          <div><strong style="color:var(--text);">5.</strong> The <code>Privacy.cshtml.cs</code> Razor Page handles the request by executing the <code>OnGet</code> page handler.</div>
+          <div><strong style="color:var(--text);">6.</strong> The <code>OnGet</code> handler returns <code>void</code>, indicating the Razor Page should generate an HTML response from its template in <code>Privacy.cshtml</code>.</div>
+          <div><strong style="color:var(--text);">7.</strong> The HTML response passes back through each middleware to the ASP.NET Core web server.</div>
+          <div><strong style="color:var(--text);">8.</strong> The HTTP response containing HTML for the Privacy page is sent to the browser.</div>
+        </div>
+        <!-- Right: visual pipeline -->
+        <div style="flex:1;min-width:200px;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="background:rgba(9,105,218,0.12);border:1.5px solid rgba(9,105,218,0.35);border-radius:8px;padding:8px 20px;font-size:12px;font-weight:700;color:var(--blue);text-align:center;min-width:160px;">Web host / Reverse proxy<br><span style="font-size:10px;font-weight:400;color:var(--text3);">(IIS / Nginx / Apache)</span></div>
+          <div class="arrow-v-wrap"><div class="arrow-v" style="height:14px;"></div></div>
+          <div style="border:1.5px dashed rgba(124,106,247,0.4);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;align-items:center;gap:0;min-width:180px;">
+            <div style="font-size:10px;font-weight:700;color:var(--accent2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">ASP.NET Core Application</div>
+            <div style="background:rgba(207,34,46,0.12);border:1.5px solid rgba(207,34,46,0.4);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;color:var(--red);min-width:140px;text-align:center;">Error handling middleware</div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <div style="background:rgba(207,34,46,0.12);border:1.5px solid rgba(207,34,46,0.4);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;color:var(--red);min-width:140px;text-align:center;">Static-file middleware</div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <div style="background:rgba(0,212,170,0.12);border:1.5px solid rgba(0,212,170,0.4);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;color:#009e80;min-width:140px;text-align:center;">Routing middleware</div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <!-- Razor Page box -->
+            <div style="border:1.5px dashed rgba(124,106,247,0.5);border-radius:8px;padding:10px 14px;text-align:center;min-width:140px;">
+              <div style="font-size:10px;color:var(--accent2);font-weight:700;margin-bottom:6px;">Privacy context</div>
+              <div style="background:rgba(207,34,46,0.18);border:1.5px solid rgba(207,34,46,0.5);border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--red);">OnGet</div>
+              <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:10px;"></div></div>
+              <div style="background:rgba(45,164,78,0.12);border:1.5px solid rgba(45,164,78,0.4);border-radius:6px;padding:6px 10px;font-size:11px;font-weight:600;color:var(--green);">Render Razor to HTML</div>
+            </div>
+            <div class="arrow-v-wrap"><div class="arrow-v"></div></div>
+            <div style="background:rgba(9,105,218,0.10);border:1.5px solid rgba(9,105,218,0.3);border-radius:6px;padding:7px 14px;font-size:11px;font-weight:600;color:var(--blue);min-width:140px;text-align:center;">Endpoint middleware</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ══ SECTION 6 ══ -->
@@ -824,31 +869,33 @@ namespace WebApplication1.Pages
     </div>
 <p>Let's look at a more complete example that shows how all the pieces fit together. Consider a product listing page that displays products from a database.</p>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Products.cshtml — the View</span></div>
-      <pre><code class="no-highlight">@page
-@model ProductsModel          // ← binds this view to ProductsModel
+   <div class="code-block">
+  <div class="code-header">
+    <span class="code-lang">Razor</span>
+    <span class="code-label">Pages/Products.cshtml — the View</span>
+  </div>
+  <pre><code class="no-highlight"><span class="kw">@page</span>
+<span class="kw">@model</span> <span class="tp">ProductsModel</span>          <span class="cm">// ← binds this view to ProductsModel</span>
 
 &lt;h1&gt;Our Products&lt;/h1&gt;
 
-@if (Model.Products.Count == 0)   // ← access PageModel properties via Model
+<span class="kw">@if</span> (Model.Products.Count == 0)   <span class="cm">// ← access PageModel properties via Model</span>
 {
     &lt;p&gt;No products found.&lt;/p&gt;
 }
 else
 {
     &lt;div class="product-grid"&gt;
-        @foreach (var product in Model.Products)   // ← iterate over list from PageModel
+        <span class="kw">@foreach</span> (<span class="kw">var</span> product <span class="kw">in</span> Model.Products)   <span class="cm">// ← iterate over list from PageModel</span>
         {
             &lt;div class="product-card"&gt;
-                &lt;h3&gt;@product.Name&lt;/h3&gt;
-                &lt;p&gt;@product.Price.ToString("C")&lt;/p&gt;
+                &lt;h3&gt;<span class="kw">@</span>product.Name&lt;/h3&gt;
+                &lt;p&gt;<span class="kw">@</span>product.Price.ToString(<span class="str">"C"</span>)&lt;/p&gt;
             &lt;/div&gt;
         }
     &lt;/div&gt;
 }</code></pre>
-    </div>
-
+</div>
     <div class="code-block">
       <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Pages/Products.cshtml.cs — the PageModel</span></div>
       <pre><code>public class ProductsModel : PageModel
@@ -1022,6 +1069,47 @@ else
             <div style="font-weight:600;color:var(--text);font-size:13px;margin-bottom:4px;">PageModel class + Page Handlers (OnGet, OnPost…)</div>
             <div style="font-size:12px;color:var(--text2);line-height:1.5;">Coordinates between the application model and the view. Validates input, calls services, populates PageModel properties, and selects the response.</div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <h3>How the MVC Pattern Is Implemented in ASP.NET Core</h3>
+    <p>The MVC pattern in Razor Pages is not implemented in one place — it is spread across the middleware pipeline. Each middleware gets an opportunity to handle the request, and the endpoint middleware at the end is where the Razor Page (and thus the MVC pattern) executes:</p>
+
+    <div class="diagram-wrap">
+      <div class="diagram-title">The Middleware Pipeline Implements the MVC Pattern</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;font-size:12px;color:var(--text2);line-height:1.9;">
+          <div>→ The request passes through each middleware in the pipeline.</div>
+          <div>→ Each middleware gets an opportunity to handle the request.</div>
+          <div>→ The <strong>routing middleware</strong> attempts to find an endpoint that will handle the request.</div>
+          <div>→ The <strong>endpoint middleware</strong> is the last in the pipeline. The MVC pattern is implemented entirely by individual Razor Page endpoints.</div>
+        </div>
+        <div style="flex:0 0 220px;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="display:flex;gap:16px;margin-bottom:6px;">
+            <div style="background:rgba(9,105,218,0.10);border:1.5px solid rgba(9,105,218,0.3);border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;color:var(--blue);">Request</div>
+            <div style="background:rgba(0,212,170,0.10);border:1.5px solid rgba(0,212,170,0.3);border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;color:#009e80;">Response</div>
+          </div>
+          <div style="display:flex;gap:28px;">
+            <div class="arrow-v-wrap"><div class="arrow-v" style="height:12px;"></div></div>
+            <div style="width:2px;height:12px;background:var(--border);"></div>
+          </div>
+          <div style="background:rgba(207,34,46,0.12);border:1.5px solid rgba(207,34,46,0.4);border-radius:8px;padding:10px 20px;font-size:12px;font-weight:700;color:var(--red);text-align:center;min-width:160px;">Error handling<br>middleware</div>
+          <div style="display:flex;gap:28px;">
+            <div class="arrow-v-wrap"><div class="arrow-v" style="height:10px;"></div></div>
+            <div style="width:2px;height:10px;background:var(--border);"></div>
+          </div>
+          <div style="background:rgba(207,34,46,0.12);border:1.5px solid rgba(207,34,46,0.4);border-radius:8px;padding:10px 20px;font-size:12px;font-weight:700;color:var(--red);text-align:center;min-width:160px;">Static-file<br>middleware</div>
+          <div style="display:flex;gap:28px;">
+            <div class="arrow-v-wrap"><div class="arrow-v" style="height:10px;"></div></div>
+            <div style="width:2px;height:10px;background:var(--border);"></div>
+          </div>
+          <div style="background:rgba(9,105,218,0.12);border:1.5px solid rgba(9,105,218,0.4);border-radius:8px;padding:10px 20px;font-size:12px;font-weight:700;color:var(--blue);text-align:center;min-width:160px;">Routing<br>middleware</div>
+          <div style="display:flex;gap:28px;">
+            <div class="arrow-v-wrap"><div class="arrow-v" style="height:10px;"></div></div>
+            <div style="width:2px;height:10px;background:var(--border);"></div>
+          </div>
+          <div style="background:rgba(9,105,218,0.12);border:1.5px solid rgba(9,105,218,0.4);border-radius:8px;padding:10px 20px;font-size:12px;font-weight:700;color:var(--blue);text-align:center;min-width:160px;">Endpoint<br>middleware</div>
         </div>
       </div>
     </div>
@@ -1273,6 +1361,47 @@ else
     <div class="definition">
       <div class="definition-term">Definition: View Model</div>
       <div class="definition-desc">A view model in the MVC pattern is all the data required by the view to render a UI. It's typically some transformation of the data contained in the application model, plus extra information required to render the page (such as the page's title).</div>
+    </div>
+
+    <!-- DIAGRAM: Page handler calls application model then builds view model -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Handler → Application Model → View Model → HTML</div>
+      <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;font-size:12px;color:var(--text2);line-height:1.9;">
+          <div><strong style="color:var(--text);">1.</strong> The page handler builds a view model from the data provided by the application model by setting properties on the PageModel.</div>
+          <div><strong style="color:var(--text);">2.</strong> The page handler indicates that a view should be rendered (e.g. by returning <code>Page()</code> or <code>void</code>).</div>
+          <div><strong style="color:var(--text);">3.</strong> The Razor view uses the provided view model to generate an HTML response containing the details to display.</div>
+          <div><strong style="color:var(--text);">4.</strong> The response is sent back through the middleware pipeline.</div>
+        </div>
+        <div style="flex:0 0 240px;display:flex;flex-direction:column;align-items:center;gap:0;">
+          <div style="border:1.5px dashed rgba(124,106,247,0.4);border-radius:10px;padding:12px 16px;display:flex;flex-direction:column;align-items:center;gap:0;min-width:180px;">
+            <div style="font-size:10px;color:var(--accent2);font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:6px;">Razor Page</div>
+            <div style="background:rgba(207,34,46,0.18);border:1.5px solid rgba(207,34,46,0.5);border-radius:6px;padding:8px 18px;font-size:12px;font-weight:700;color:var(--red);">Page handler</div>
+          </div>
+          <div style="display:flex;gap:40px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <div class="arrow-v-wrap"><div class="arrow-v" style="height:12px;"></div></div>
+              <div style="font-size:10px;color:var(--text3);">calls</div>
+            </div>
+            <div style="width:2px;height:40px;"></div>
+          </div>
+          <!-- Application model -->
+          <div style="border:1.5px dashed rgba(9,105,218,0.4);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-width:180px;">
+            <div style="font-size:10px;color:var(--blue);font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-align:center;margin-bottom:2px;">Application model</div>
+            <div style="display:flex;gap:8px;justify-content:center;">
+              <div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--blue);">Services</div>
+              <div style="background:rgba(124,106,247,0.10);border:1px solid rgba(124,106,247,0.3);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--accent2);">Domain model</div>
+            </div>
+            <div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:5px;padding:5px 10px;font-size:11px;color:var(--blue);text-align:center;">Database interaction</div>
+          </div>
+          <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:10px;"></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:2px;">returns data → View model</div>
+          <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:10px;"></div></div>
+          <div style="background:rgba(45,164,78,0.12);border:1.5px solid rgba(45,164,78,0.4);border-radius:8px;padding:8px 18px;font-size:12px;font-weight:700;color:var(--green);text-align:center;min-width:140px;">View (HTML)</div>
+          <div class="arrow-v-wrap" style="margin:0 auto;"><div class="arrow-v" style="height:10px;"></div></div>
+          <div style="background:rgba(9,105,218,0.10);border:1px solid rgba(9,105,218,0.3);border-radius:6px;padding:6px 14px;font-size:11px;color:var(--blue);">→ Middleware pipeline → Browser</div>
+        </div>
+      </div>
     </div>
 
     <h3>View Model in Razor Pages vs MVC</h3>

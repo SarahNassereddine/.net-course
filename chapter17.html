@@ -132,6 +132,93 @@
 
     <p>A Razor view is responsible for generating the HTML that gets sent to the browser. It has access to the <code>PageModel</code> instance to read data, but it should never <strong>call methods</strong> on it — only access already-prepared properties.</p>
 
+    <!-- ▸ DIAGRAM: Request Pipeline (Slide 3) -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🔄 How a request flows through Razor Pages to the View</div>
+      <div style="padding:24px 20px;background:var(--bg);">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0;font-size:13px;font-family:var(--sans);">
+
+          <!-- Step 1: Request -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:1px solid var(--border);border-radius:6px;padding:8px 18px;background:var(--bg2);font-size:13px;color:var(--text);min-width:120px;text-align:center;">📨 Request<br><span style="font-size:11px;color:var(--text3);font-family:var(--mono);">GET /ToDo/View/3</span></div>
+            </div>
+            <div style="flex:1;padding-top:6px;font-size:12px;color:var(--text2);">
+              <span style="color:var(--accent2);font-weight:700;">①</span> Routing middleware matches the URL <code>/ToDo/View/3</code> to the Razor Page and derives <code>id = 3</code>.
+            </div>
+          </div>
+
+          <!-- Arrow down -->
+          <div style="display:flex;width:100%;max-width:600px;align-items:center;"><div style="flex:1;display:flex;justify-content:center;"><div style="width:2px;height:28px;background:var(--border);"></div></div><div style="flex:1;"></div></div>
+
+          <!-- Step 2: Model Binding -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:1px solid rgba(0,212,170,.4);border-radius:6px;padding:8px 18px;background:rgba(0,212,170,.08);font-size:13px;color:var(--accent);min-width:120px;text-align:center;">Model Binding<br><span style="font-size:11px;font-family:var(--mono);color:var(--text2);">id = 3</span></div>
+            </div>
+            <div style="flex:1;"></div>
+          </div>
+
+          <!-- Arrow down -->
+          <div style="display:flex;width:100%;max-width:600px;align-items:center;"><div style="flex:1;display:flex;justify-content:center;"><div style="width:2px;height:28px;background:var(--border);"></div></div><div style="flex:1;"></div></div>
+
+          <!-- Step 3: Page Handler + App Model -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:2px solid rgba(207,34,46,.4);border-radius:8px;padding:12px 18px;background:rgba(207,34,46,.08);font-size:13px;font-weight:600;color:var(--red);min-width:140px;text-align:center;">Page Handler<br><span style="font-size:11px;font-weight:400;color:var(--text3);">Razor Pages</span></div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+              <div style="font-size:12px;color:var(--text2);padding-top:4px;"><span style="color:var(--accent2);font-weight:700;">②</span> The page handler calls services and the DB to fetch the to-do item details.</div>
+              <div style="display:flex;gap:8px;margin-top:4px;">
+                <div style="border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;background:var(--bg2);color:var(--text2);">Services</div>
+                <div style="border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;background:var(--bg2);color:var(--text2);">Domain model</div>
+                <div style="border:1px solid var(--border);border-radius:5px;padding:5px 10px;font-size:11px;background:var(--bg2);color:var(--text2);">Database</div>
+              </div>
+              <div style="font-size:11px;color:var(--text3);font-style:italic;">Application model</div>
+            </div>
+          </div>
+
+          <!-- Arrow down -->
+          <div style="display:flex;width:100%;max-width:600px;align-items:center;"><div style="flex:1;display:flex;justify-content:center;"><div style="width:2px;height:28px;background:var(--border);"></div></div><div style="flex:1;"></div></div>
+
+          <!-- Step 4: PageModel -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:1px dashed var(--border);border-radius:6px;padding:8px 18px;background:var(--bg2);font-size:13px;color:var(--text2);min-width:120px;text-align:center;">📄 PageModel</div>
+            </div>
+            <div style="flex:1;padding-top:4px;font-size:12px;color:var(--text2);">
+              <span style="color:var(--accent2);font-weight:700;">③</span> The handler exposes the data as <strong>properties on the PageModel</strong> for the view to read.
+            </div>
+          </div>
+
+          <!-- Arrow down -->
+          <div style="display:flex;width:100%;max-width:600px;align-items:center;"><div style="flex:1;display:flex;justify-content:center;"><div style="width:2px;height:28px;background:var(--border);"></div></div><div style="flex:1;"></div></div>
+
+          <!-- Step 5: View -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:1px solid rgba(0,212,170,.4);border-radius:6px;padding:8px 18px;background:rgba(0,212,170,.08);font-size:13px;color:var(--accent);min-width:120px;text-align:center;">Razor View</div>
+            </div>
+            <div style="flex:1;"></div>
+          </div>
+
+          <!-- Arrow down -->
+          <div style="display:flex;width:100%;max-width:600px;align-items:center;"><div style="flex:1;display:flex;justify-content:center;"><div style="width:2px;height:28px;background:var(--border);"></div></div><div style="flex:1;"></div></div>
+
+          <!-- Step 6: HTML -->
+          <div style="display:flex;align-items:flex-start;gap:20px;width:100%;max-width:600px;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <div style="border:1px solid var(--border);border-radius:6px;padding:8px 18px;background:var(--bg2);font-size:13px;color:var(--text);min-width:120px;text-align:center;">🌐 HTML Response</div>
+            </div>
+            <div style="flex:1;padding-top:4px;font-size:12px;color:var(--text2);">
+              <span style="color:var(--accent2);font-weight:700;">④</span> The view uses the provided model to generate the HTML response, which is returned to the user.
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <div class="callout warn">
       <div class="callout-icon">⚠️</div>
       <div class="callout-body">
@@ -163,6 +250,47 @@
     <span class="cm">@* ❺ Tag Helpers outside forms — e.g., generating links *@</span>
     &lt;a <span class="tp">asp-page</span>=<span class="str">"Details"</span> <span class="tp">asp-route-id</span>=<span class="str">"@item.Id"</span>&gt;View&lt;/a&gt;
 &lt;/form&gt;</div>
+    </div>
+
+    <!-- ▸ DIAGRAM: PageModel data + Razor markup → browser output (Slide 4) -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🔗 How PageModel data + Razor markup combine to produce dynamic HTML</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">PageModel — the data</div>
+            <div style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:1.8;color:#abb2bf;"><span style="color:#ff79c6;">public</span> ExistingUsers = <span style="color:#ff79c6;">new</span>[] {<br>&nbsp;&nbsp;<span style="color:#f1fa8c;">"Andrew"</span>, <span style="color:#f1fa8c;">"Robbie"</span>, <span style="color:#f1fa8c;">"Jimmy"</span><br>};</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:5px;">The PageModel contains the data to display.</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Razor view — the markup</div>
+            <div style="border:1px solid var(--border);border-radius:6px;padding:10px 12px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:1.8;color:#abb2bf;"><span style="color:#ff79c6;">@foreach</span>(<span style="color:#ff79c6;">var</span> user <span style="color:#ff79c6;">in</span> Model.ExistingUsers) {<br>&nbsp;&nbsp;&lt;li&gt;&lt;span&gt;<span style="color:#7dd4e7;">@user</span>&lt;/span&gt; &lt;button&gt;View&lt;/button&gt;&lt;/li&gt;<br>}</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:5px;">Razor markup describes how to display data using HTML + C#.</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;padding:0 20px;">
+          <div style="font-size:22px;color:var(--accent);">→</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;text-align:center;max-width:80px;">combined at runtime</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Browser output</div>
+          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+            <div style="background:#2c3e50;padding:5px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="display:flex;gap:4px;"><div style="width:7px;height:7px;border-radius:50%;background:#ff5f57;"></div><div style="width:7px;height:7px;border-radius:50%;background:#febc2e;"></div><div style="width:7px;height:7px;border-radius:50%;background:#28c840;"></div></div>
+              <div style="flex:1;background:rgba(255,255,255,.15);border-radius:3px;padding:2px 8px;font-size:10px;color:rgba(255,255,255,.7);">https://localhost/ManageUsers</div>
+            </div>
+            <div style="padding:12px;background:#fff;font-size:13px;color:#333;">
+              <div style="font-size:12px;color:#666;margin-bottom:6px;">Number of users: 3</div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#f5f5f5;border-radius:3px;"><span>Robbie</span><button style="background:#17a2b8;color:#fff;border:none;border-radius:3px;padding:2px 8px;font-size:11px;">View</button></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#f5f5f5;border-radius:3px;"><span>Jimmy</span><button style="background:#17a2b8;color:#fff;border:none;border-radius:3px;padding:2px 8px;font-size:11px;">View</button></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#f5f5f5;border-radius:3px;"><span>Andrew</span><button style="background:#17a2b8;color:#fff;border:none;border-radius:3px;padding:2px 8px;font-size:11px;">View</button></div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">HTML is generated <em>dynamically</em> at runtime. Form elements can also send values back to the application.</div>
+        </div>
+      </div>
     </div>
 
     <div class="callout info">
@@ -272,8 +400,7 @@
 
 <span class="cm">@* C# inline expression — @ symbol *@</span>
 &lt;h1&gt;@Model.ProductName&lt;/h1&gt;
-&lt;p&gt;Price: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b490f4f9dbd0d1d89ae4c6ddd7d19ae0dbe7c0c6dddad3">[email&#160;protected]</a>("F2")&lt;/p&gt;
-
+&lt;p&gt;Price: @Model.Price.ToString("F2")&lt;/p&gt;
 <span class="cm">@* C# code block — @{} *@</span>
 @{
     <span class="kw">var</span> isOnSale = Model.Price &lt; <span class="nm">10.00m</span>;
@@ -284,6 +411,82 @@
 
 &lt;/body&gt;
 &lt;/html&gt;</div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Razor template → Generated HTML → Browser (Slide 7) -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🔀 Razor template compiles to HTML — what goes in vs what comes out</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;">
+
+        <!-- Razor source -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Razor template (.cshtml)</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @page<br>
+            @{<br>
+            &nbsp;&nbsp;<span style="color:#ff79c6;">var</span> tasks = <span style="color:#ff79c6;">new</span> List&lt;string&gt;<br>
+            &nbsp;&nbsp;{ <span style="color:#f1fa8c;">"Buy milk"</span>, <span style="color:#f1fa8c;">"Buy eggs"</span>, <span style="color:#f1fa8c;">"Buy bread"</span> };<br>
+            }<br>
+            &lt;h1&gt;Tasks to complete&lt;/h1&gt;<br>
+            &lt;ul&gt;<br>
+            &nbsp;&nbsp;<span style="color:#ff79c6;">@for</span>(<span style="color:#ff79c6;">var</span> i=0; i&lt;tasks.Count; i++)<br>
+            &nbsp;&nbsp;{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff79c6;">var</span> task = tasks[i];<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<span style="color:#7dd4e7;">@i</span> - <span style="color:#7dd4e7;">@task</span>&lt;/li&gt;<br>
+            &nbsp;&nbsp;}<br>
+            &lt;/ul&gt;
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);">
+            <span style="color:var(--accent2);">❶</span> Arbitrary C# executes; variables stay in scope throughout the page.<br>
+            <span style="color:var(--accent);">❷</span> Standard HTML flows to the output unchanged.<br>
+            <span style="color:var(--blue);">❸</span> Mixing C# and HTML generates HTML dynamically at runtime.
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="padding:30px 16px 0;font-size:20px;color:var(--border);">→</div>
+
+        <!-- Generated HTML -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Generated HTML output</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            &lt;h1&gt;Tasks to complete&lt;/h1&gt; <span style="color:#6272a4;">❶</span><br>
+            &lt;ul&gt; <span style="color:#6272a4;">❶</span><br>
+            &nbsp;&nbsp;&lt;li&gt;0 - Buy milk&lt;/li&gt; <span style="color:#6272a4;">❷</span><br>
+            &nbsp;&nbsp;&lt;li&gt;1 - Buy eggs&lt;/li&gt; <span style="color:#6272a4;">❷</span><br>
+            &nbsp;&nbsp;&lt;li&gt;2 - Buy bread&lt;/li&gt; <span style="color:#6272a4;">❷</span><br>
+            &lt;/ul&gt; <span style="color:#6272a4;">❸</span>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);">
+            <span style="color:#6272a4;">❶</span> HTML from template written directly to output.<br>
+            <span style="color:#6272a4;">❷</span> &lt;li&gt; elements generated dynamically by the for loop.<br>
+            <span style="color:#6272a4;">❸</span> HTML from template written directly to output.
+          </div>
+        </div>
+
+        <!-- Arrow -->
+        <div style="padding:30px 16px 0;font-size:20px;color:var(--border);">→</div>
+
+        <!-- Browser mockup -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Rendered in browser</div>
+          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+            <div style="background:#2c3e50;padding:5px 10px;display:flex;align-items:center;gap:5px;">
+              <div style="display:flex;gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:#ff5f57;"></div><div style="width:7px;height:7px;border-radius:50%;background:#febc2e;"></div><div style="width:7px;height:7px;border-radius:50%;background:#28c840;"></div></div>
+              <div style="flex:1;background:rgba(255,255,255,.15);border-radius:3px;padding:1px 8px;font-size:10px;color:rgba(255,255,255,.7);">https://localhost/ToDoList</div>
+            </div>
+            <div style="padding:12px 14px;background:#fff;color:#333;font-size:13px;">
+              <div style="font-weight:700;font-size:15px;margin-bottom:8px;">Tasks to complete:</div>
+              <ul style="padding-left:18px;margin:0;font-size:13px;color:#444;">
+                <li style="margin-bottom:3px;">0 - Buy milk</li>
+                <li style="margin-bottom:3px;">1 - Buy eggs</li>
+                <li style="margin-bottom:3px;">2 - Buy bread</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -335,6 +538,25 @@
     </div>
 
     <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor + C#</span><span class="code-label">PageModel properties — the preferred approach</span></div>
+      <div class="code-body"><span class="cm">// ① The PageModel class — passed to the Razor view when it executes</span>
+<span class="kw">public class</span> <span class="tp">ToDoItemModel</span> : <span class="tp">PageModel</span>
+{
+    <span class="kw">public</span> <span class="tp">List</span>&lt;<span class="tp">string</span>&gt; Tasks { <span class="kw">get</span>; <span class="kw">set</span>; }   <span class="cm">// ② public properties accessible from the view</span>
+    <span class="kw">public</span> <span class="tp">string</span> Title { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public void</span> <span class="fn">OnGet</span>(<span class="tp">int</span> id)
+    {
+        Title = <span class="str">"Tasks for today"</span>;           <span class="cm">// ③ building data — normally calls a service/DB</span>
+        Tasks = <span class="kw">new</span> <span class="tp">List</span>&lt;<span class="tp">string</span>&gt; { <span class="str">"Get fuel"</span>, <span class="str">"Check oil"</span>, <span class="str">"Check tyre pressure"</span> };
+    }
+}
+
+<span class="cm">// In the Razor view:</span>
+&lt;h1&gt;@Model.Title&lt;/h1&gt;    <span class="cm">// renders: &lt;h1&gt;Tasks for today&lt;/h1&gt;</span></div>
+    </div>
+
+    <div class="code-block">
       <div class="code-header"><span class="code-lang">Razor + C#</span><span class="code-label">ViewData — passing the page title to a layout</span></div>
       <div class="code-body"><span class="cm">@* In the Razor Page view — set the title in ViewData *@</span>
 @{
@@ -355,6 +577,36 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
     &lt;div class=<span class="str">"alert"</span>&gt;@msg&lt;/div&gt;
     <span class="cm">@* TempData is now deleted — gone on next request *@</span>
 }</div>
+    </div>
+
+    <!-- ▸ DIAGRAM: ViewData [ViewData] attribute pattern (Slide 10) -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">📌 ViewData — two ways to use it (dictionary key OR [ViewData] attribute)</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Razor view — setting via dictionary</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @{<br>
+            &nbsp;&nbsp;ViewData[<span style="color:#f1fa8c;">"Title"</span>] = <span style="color:#f1fa8c;">"Home Page"</span>;<br>
+            }<br>
+            &lt;h2&gt;<span style="color:#7dd4e7;">@ViewData["Title"]</span>.&lt;/h2&gt;
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">Set and immediately read — the set makes the key available to the layout too.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">PageModel — using [ViewData] attribute</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            [<span style="color:#7dd4e7;">ViewData</span>] <span style="color:#6272a4;">// ① property stored in ViewData dict</span><br>
+            <span style="color:#ff79c6;">public string</span> Title { <span style="color:#ff79c6;">get</span>; <span style="color:#ff79c6;">set</span>; }<br><br>
+            <span style="color:#ff79c6;">public void</span> OnGet()<br>
+            {<br>
+            &nbsp;&nbsp;Title = <span style="color:#f1fa8c;">"Home Page"</span>; <span style="color:#6272a4;">// ② ViewData["Title"] = "Home Page"</span><br>
+            &nbsp;&nbsp;ViewData[<span style="color:#f1fa8c;">"Subtitle"</span>] = <span style="color:#f1fa8c;">"Welcome"</span>; <span style="color:#6272a4;">// ③ direct dict</span><br>
+            }
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">❶ Properties marked <code>[ViewData]</code> are automatically stored in ViewData. ❷ Setting the property sets the dict key. ❸ You can also set keys directly.</div>
+        </div>
+      </div>
     </div>
 
     <div id="quiz-data1" class="quiz-block">
@@ -378,13 +630,47 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
 
     <p>Razor provides two ways to embed C# into HTML:</p>
 
-    <div class="compare-grid">
+    <!-- ▸ DIAGRAM: @ expression anatomy (Slide 11) -->
+    <div style="margin:20px 0 24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🔬 Anatomy of a Razor @ expression</div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:24px;">
+
+        <!-- Simple expression -->
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:12px;">Simple expression — whitespace ends the C# part:</div>
+          <div style="position:relative;font-family:var(--mono);font-size:15px;font-weight:600;padding:16px 20px;background:#282c34;border-radius:8px;color:#abb2bf;letter-spacing:.02em;">
+            &lt;p&gt;Copyright&nbsp;<span style="color:#ff79c6;border-bottom:2px solid #ff79c6;">@</span><span style="color:#7dd4e7;border-bottom:2px solid #7dd4e7;">DateTime.Now.Year</span>&nbsp;<span style="color:#abb2bf;">&amp;copy;</span>&lt;/p&gt;
+          </div>
+          <div style="display:flex;gap:24px;margin-top:10px;font-size:12px;">
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:3px;background:#abb2bf;border-radius:1px;"></div><span style="color:var(--text2);">HTML — sent to browser unchanged</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:3px;background:#ff79c6;border-radius:1px;"></div><span style="color:var(--text2);"><code>@</code> indicates start of C# expression</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:12px;height:3px;background:#7dd4e7;border-radius:1px;"></div><span style="color:var(--text2);">C# expression — result written to HTML output</span></div>
+          </div>
+          <div style="margin-top:8px;padding:8px 12px;background:rgba(0,212,170,.06);border-radius:6px;font-size:12px;color:var(--text2);">Whitespace after <code>DateTime.Now.Year</code> signals the end of the C# expression — the <code>&amp;copy;</code> is back to HTML.</div>
+        </div>
+
+        <!-- Parenthesized expression -->
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:12px;">Parenthesized expression — use <code>@()</code> when expression has spaces or operators:</div>
+          <div style="position:relative;font-family:var(--mono);font-size:15px;font-weight:600;padding:16px 20px;background:#282c34;border-radius:8px;color:#abb2bf;letter-spacing:.02em;">
+            &lt;p&gt;The sum of 1 and 2 is &lt;i&gt;<span style="color:#ff79c6;">@(</span><span style="color:#7dd4e7;">1 + 2</span><span style="color:#ff79c6;">)</span>&lt;/i&gt;&lt;/p&gt;
+          </div>
+          <div style="margin-top:8px;padding:8px 12px;background:rgba(124,106,247,.06);border-radius:6px;font-size:12px;color:var(--text2);">The whole C# expression within <code>@()</code> is evaluated and written to the HTML output. Use parentheses whenever the expression contains spaces, operators, or method calls with arguments.</div>
+        </div>
+
+        <!-- Literal @ -->
+        <div style="padding:10px 14px;background:rgba(191,135,0,.06);border:1px solid rgba(191,135,0,.2);border-radius:6px;font-size:12px;color:var(--text2);">
+          💡 <strong>To write a literal <code>@</code> character</strong> in your HTML output, use <code>@@</code>. For example: <code>&lt;p&gt;Email us at info@@myapp.com&lt;/p&gt;</code> renders as <em>info@myapp.com</em>.
+        </div>
+
+      </div>
+    </div>
       <div class="compare-card">
         <div class="compare-card-header neutral">@ — Inline expression</div>
         <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
 <span class="cm">@* Writes the result of an expression to HTML *@</span>
 &lt;h1&gt;@Model.Title&lt;/h1&gt;
-&lt;p&gt;Price: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ba9efaf7d5dedfd694eac8d3d9df">[email&#160;protected]</a>&lt;/p&gt;
+&lt;p&gt;Price: @Model.Price.ToString("F2")&lt;/p&gt;
 &lt;span&gt;@(Model.First + " " + Model.Last)&lt;/span&gt;
 
 <span class="cm">@* Use parentheses for complex expressions *@</span>
@@ -392,7 +678,7 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
 
 <span class="cm">@* Literal @ character — use @@ *@</span>
 &lt;p&gt;Email us at info@@myapp.com&lt;/p&gt;</div>
-      </div>
+      
       <div class="compare-card">
         <div class="compare-card-header neutral">@{} — Code block</div>
         <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
@@ -455,6 +741,33 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
 {
     &lt;p&gt;@(i + 1). @Model.Items[i].Name&lt;/p&gt;
 }</div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Loops + conditionals — code → browser output (Slide 13) -->
+    <div style="margin:24px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🖥️ How if/foreach controls which HTML gets generated — code vs browser output</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:start;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">PageModel data</div>
+            <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:1.9;color:#abb2bf;padding:8px 12px;">Model.IsComplete = <span style="color:#ff79c6;">false</span>;<br>Model.Tasks = <span style="color:#ff79c6;">new</span> List&lt;string&gt; {<br>&nbsp;&nbsp;<span style="color:#f1fa8c;">"Get fuel"</span>, <span style="color:#f1fa8c;">"Check oil"</span>,<br>&nbsp;&nbsp;<span style="color:#f1fa8c;">"Check Tyre pressure"</span><br>};</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Razor markup — if + foreach</div>
+            <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:1.9;color:#abb2bf;padding:8px 12px;"><span style="color:#ff79c6;">@if</span> (Model.IsComplete) {<br>&nbsp;&nbsp;&lt;p&gt;&lt;strong&gt;Well done!&lt;/strong&gt;&lt;/p&gt;<br>} <span style="color:#ff79c6;">else</span> {<br>&nbsp;&nbsp;&lt;strong&gt;The following tasks remain:&lt;/strong&gt;<br>&nbsp;&nbsp;&lt;ul&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#ff79c6;">@foreach</span> (<span style="color:#ff79c6;">var</span> task <span style="color:#ff79c6;">in</span> Model.Tasks)<br>&nbsp;&nbsp;&nbsp;&nbsp;{ &lt;li&gt;<span style="color:#7dd4e7;">@task</span>&lt;/li&gt; }<br>&nbsp;&nbsp;&lt;/ul&gt;<br>}</div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(0,212,170,.05);border-radius:5px;">Only the relevant <code>if</code>/<code>else</code> block renders. The <code>foreach</code> generates one <code>&lt;li&gt;</code> per item.</div>
+        </div>
+        <div style="padding:50px 16px 0;font-size:20px;color:var(--border);">→</div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Browser renders (IsComplete = false)</div>
+          <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+            <div style="background:#2c3e50;padding:5px 10px;display:flex;align-items:center;gap:5px;"><div style="display:flex;gap:3px;"><div style="width:7px;height:7px;border-radius:50%;background:#ff5f57;"></div><div style="width:7px;height:7px;border-radius:50%;background:#febc2e;"></div><div style="width:7px;height:7px;border-radius:50%;background:#28c840;"></div></div><div style="flex:1;background:rgba(255,255,255,.15);border-radius:3px;padding:1px 8px;font-size:10px;color:rgba(255,255,255,.7);">https://localhost/ToDoList</div></div>
+            <div style="padding:12px 14px;background:#fff;color:#333;font-size:13px;"><div style="font-weight:600;margin-bottom:8px;">The following tasks remain:</div><ul style="padding-left:18px;margin:0;font-size:13px;color:#444;"><li style="margin-bottom:3px;">Get fuel</li><li style="margin-bottom:3px;">Check oil</li><li>Check Tyre pressure</li></ul></div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);">Because <code>IsComplete = false</code>, the <code>else</code> block runs and <code>foreach</code> generates 3 list items. If <code>IsComplete</code> were <code>true</code>, only "Well done!" would appear.</div>
+        </div>
+      </div>
     </div>
 
     <div id="quiz-loop1" class="quiz-block">
@@ -624,6 +937,59 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
       <li>ASP.NET Core apps can have <strong>multiple layouts</strong>, and layouts can reference other layouts</li>
     </ul>
 
+    <!-- ▸ DIAGRAM: Multiple layouts (Slide 16) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🗂️ Multiple layouts — different sections of an app can use different layouts</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px;">Three-column layout (product page)</div>
+          <div style="border:2px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;color:#333;">
+            <div style="background:#1a3a5c;color:#fff;padding:6px 10px;font-weight:600;">📚 Manning Publications</div>
+            <div style="display:grid;grid-template-columns:80px 1fr 90px;gap:0;min-height:100px;">
+              <div style="background:#f8f8f8;padding:8px 6px;border-right:1px solid #eee;font-size:10px;color:#666;">Sidebar<br>Nav</div>
+              <div style="padding:8px;background:#fff;font-size:10px;color:#333;"><div style="font-weight:600;margin-bottom:4px;">ASP.NET Core in Action</div><div style="color:#666;">Book details...</div></div>
+              <div style="background:#f0f0f0;padding:8px 6px;border-left:1px solid #eee;font-size:10px;color:#666;">Cart<br>$69.99</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);margin-bottom:8px;">Single-column layout (checkout page)</div>
+          <div style="border:2px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;color:#333;">
+            <div style="background:#1a3a5c;color:#fff;padding:6px 10px;font-weight:600;">📚 Manning Publications</div>
+            <div style="min-height:100px;padding:12px;background:#fff;font-size:10px;color:#333;"><div style="font-weight:600;margin-bottom:4px;">🛒 Your Cart</div><div style="color:#666;">ASP.NET Core in Action × 1</div><div style="margin-top:8px;padding:6px;background:#f0f7f0;border:1px solid #c3e6c3;border-radius:4px;font-weight:600;color:#2a7a2a;">Subtotal: $69.99</div></div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 16px;background:var(--bg2);border-top:1px solid var(--border);font-size:12px;color:var(--text2);">Both pages share the same header (defined in <code>_Layout.cshtml</code>), but use different column layouts defined in separate layout files.</div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Layout composition — view + layout → merged HTML output (Slide 18) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🔀 How the layout and child view merge into final HTML output</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;">
+        <!-- Layout code -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">_Layout.cshtml</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11px;line-height:2;color:#abb2bf;padding:8px 12px;">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;&lt;head&gt;<br>&lt;title&gt;<span style="color:#7dd4e7;">@ViewData["Title"]</span>&lt;/title&gt; <span style="color:#6272a4;">❶</span><br>&lt;link ... site.css /&gt; <span style="color:#6272a4;">❷</span><br>&lt;/head&gt;&lt;body&gt;<br><span style="color:#ff79c6;">@RenderBody()</span> <span style="color:#6272a4;">❸</span><br>&lt;/body&gt;&lt;/html&gt;</div>
+          <div style="margin-top:6px;font-size:10.5px;color:var(--text3);"><span style="color:var(--blue);">❶</span> ViewData set in the view is used here.<br><span style="color:var(--blue);">❷</span> Common CSS defined once in the layout.<br><span style="color:var(--red);">❸</span> RenderBody() inserts the child view content.</div>
+        </div>
+        <div style="padding:40px 10px 0;font-size:16px;color:var(--text3);">+</div>
+        <!-- Child view code -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Index.cshtml (child view)</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11px;line-height:2;color:#abb2bf;padding:8px 12px;">@{<br>&nbsp;&nbsp;Layout = <span style="color:#f1fa8c;">"_Layout"</span>; <span style="color:#6272a4;">❶</span><br>&nbsp;&nbsp;ViewData[<span style="color:#f1fa8c;">"Title"</span>] = <span style="color:#f1fa8c;">"Home Page"</span>; <span style="color:#6272a4;">❷</span><br>}<br>&lt;h1&gt;<span style="color:#7dd4e7;">@ViewData["Title"]</span>&lt;/h1&gt; <span style="color:#6272a4;">❸</span><br>&lt;p&gt;This is the home page&lt;/p&gt; <span style="color:#6272a4;">❸</span></div>
+          <div style="margin-top:6px;font-size:10.5px;color:var(--text3);"><span style="color:var(--blue);">❶</span> Sets _Layout as the layout to use.<br><span style="color:var(--blue);">❷</span> ViewData passes the title to the layout.<br><span style="color:var(--blue);">❸</span> This content is inserted at RenderBody().</div>
+        </div>
+        <div style="padding:40px 10px 0;font-size:20px;color:var(--border);">→</div>
+        <!-- Final HTML output -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Final HTML sent to browser</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11px;line-height:2;color:#abb2bf;padding:8px 12px;">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;&lt;head&gt;<br>&lt;title&gt;<span style="color:#f1fa8c;">Home Page</span>&lt;/title&gt; <span style="color:#6272a4;">❶</span><br>&lt;link ... site.css /&gt;<br>&lt;/head&gt;&lt;body&gt;<br>&lt;h1&gt;<span style="color:#f1fa8c;">Home Page</span>&lt;/h1&gt; <span style="color:#6272a4;">❷</span><br>&lt;p&gt;This is the home page&lt;/p&gt; <span style="color:#6272a4;">❷</span><br>&lt;/body&gt;&lt;/html&gt;</div>
+          <div style="margin-top:6px;font-size:10.5px;color:var(--text3);"><span style="color:var(--blue);">❶</span> ViewData["Title"] resolved to "Home Page".<br><span style="color:var(--blue);">❷</span> Child view content inserted at RenderBody().</div>
+        </div>
+      </div>
+    </div>
+
     <div id="quiz-layout1" class="quiz-block">
       <div class="quiz-question">🧠 What is the minimum requirement for every layout file in ASP.NET Core Razor Pages?</div>
       <div class="quiz-options">
@@ -675,7 +1041,106 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
 @<span class="fn">RenderSection</span>(<span class="str">"Sidebar"</span>, required: <span class="kw">true</span>)
 
 <span class="cm">@* ❹ Optional section — silently ignored if not defined *@</span>
-@<span class="fn">RenderSection</span>(<span class="str">"Scripts"</span>, required: <span class="kw">false</span>)</div>
+@<span class="fn">RenderSection</span>(<span class="str">"Scripts"</span>, required: <span class="kw">false</span>)      <br> <br> <br> <br> <br> <br> <br><br></div>
+ </div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Sections annotated code side-by-side (Slide 20) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">📐 Sections in practice — defining in child view, rendering in layout</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Child view (defining sections)</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @{<br>
+            &nbsp;&nbsp;Layout = <span style="color:#f1fa8c;">"_TwoColumn"</span>;<br>
+            }<br>
+            <span style="color:#ff79c6;">@section</span> Sidebar { <span style="color:#6272a4;">❶</span><br>
+            &nbsp;&nbsp;&lt;p&gt;This is the sidebar content&lt;/p&gt; <span style="color:#6272a4;">❶</span><br>
+            } <span style="color:#6272a4;">❶</span><br>
+            &lt;p&gt;This is the main content&lt;/p&gt; <span style="color:#6272a4;">❷</span>
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">
+            <span style="color:var(--accent2);">❶</span> All content inside <code>@section Sidebar {}</code> goes to the Sidebar slot — not the main body.<br>
+            <span style="color:var(--accent2);">❷</span> Any content outside a section block is rendered by <code>@RenderBody()</code>.
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">_TwoColumn.cshtml layout (rendering sections)</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @{<br>
+            &nbsp;&nbsp;Layout = <span style="color:#f1fa8c;">"_Layout"</span>; <span style="color:#6272a4;">❶</span><br>
+            }<br>
+            &lt;div class=<span style="color:#f1fa8c;">"main-content"</span>&gt;<br>
+            &nbsp;&nbsp;<span style="color:#ff79c6;">@RenderBody()</span> <span style="color:#6272a4;">❷</span><br>
+            &lt;/div&gt;<br>
+            &lt;div class=<span style="color:#f1fa8c;">"side-bar"</span>&gt;<br>
+            &nbsp;&nbsp;<span style="color:#ffb86c;">@RenderSection(<span style="color:#f1fa8c;">"Sidebar"</span>, required: <span style="color:#ff79c6;">true</span>)</span> <span style="color:#6272a4;">❸</span><br>
+            &lt;/div&gt;<br>
+            <span style="color:#7dd4e7;">@RenderSection(<span style="color:#f1fa8c;">"Scripts"</span>, required: <span style="color:#ff79c6;">false</span>)</span> <span style="color:#6272a4;">❹</span>
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">
+            <span style="color:var(--accent2);">❶</span> This layout is itself nested inside <code>_Layout.cshtml</code>.<br>
+            <span style="color:var(--accent2);">❷</span> Renders all non-section content from the child view.<br>
+            <span style="color:var(--red);">❸</span> Required — throws an error if the child view doesn't define this section.<br>
+            <span style="color:var(--accent);">❹</span> Optional — silently ignored if the child view doesn't define it.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Nested layouts browser rendering (Slide 21) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🌐 What nested layouts look like in the browser — who renders what</div>
+      <div style="padding:20px;display:flex;gap:24px;align-items:flex-start;">
+        <div style="flex:1;">
+          <div style="border:2px solid #cf222e;border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.1);">
+            <!-- Browser chrome -->
+            <div style="background:#2c3e50;padding:6px 10px;display:flex;align-items:center;gap:6px;">
+              <div style="display:flex;gap:4px;"><div style="width:8px;height:8px;border-radius:50%;background:#ff5f57;"></div><div style="width:8px;height:8px;border-radius:50%;background:#febc2e;"></div><div style="width:8px;height:8px;border-radius:50%;background:#28c840;"></div></div>
+              <div style="flex:1;background:rgba(255,255,255,.15);border-radius:4px;padding:2px 8px;font-size:10px;color:rgba(255,255,255,.7);">https://localhost/NestedLayouts — Home Page</div>
+            </div>
+            <!-- _Layout.cshtml content (red border) -->
+            <div style="background:#fff2f2;padding:8px 12px;border-bottom:2px dashed #cf222e;">
+              <span style="font-size:10px;font-weight:600;color:#cf222e;">_Layout.cshtml — header &amp; footer</span>
+              <div style="display:flex;gap:12px;font-size:12px;color:#333;margin-top:4px;">
+                <span style="font-weight:600;">NestedLayouts</span>
+                <span style="color:#0969da;text-decoration:underline;">Home</span>
+                <span style="color:#0969da;text-decoration:underline;">Privacy</span>
+              </div>
+            </div>
+            <!-- _TwoColumn.cshtml (green border) -->
+            <div style="border:2px solid #2da44e;margin:10px;border-radius:6px;overflow:hidden;">
+              <div style="background:#f0fff4;padding:4px 8px;font-size:10px;font-weight:600;color:#2da44e;border-bottom:1px solid #c3e6c3;">_TwoColumn.cshtml — rendered inside _Layout.cshtml</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:70px;">
+                <div style="padding:10px 12px;border-right:1px solid #e0e0e0;font-size:12px;color:#333;">
+                  <div style="font-size:10px;font-weight:600;color:#666;margin-bottom:4px;">Main content (RenderBody)</div>
+                  This is the main content
+                </div>
+                <div style="padding:10px 12px;background:#fafafa;font-size:12px;color:#333;">
+                  <div style="font-size:10px;font-weight:600;color:#666;margin-bottom:4px;">Sidebar (RenderSection)</div>
+                  This is the sidebar content
+                </div>
+              </div>
+            </div>
+            <!-- Footer -->
+            <div style="background:#fff2f2;padding:6px 12px;border-top:2px dashed #cf222e;font-size:10px;color:#cf222e;font-weight:600;">_Layout.cshtml — footer</div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding-top:20px;">
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:14px;height:14px;border-radius:3px;background:#cf222e;flex-shrink:0;margin-top:2px;"></div>
+            <div style="font-size:12px;color:var(--text2);"><strong style="color:var(--text);">_Layout.cshtml</strong> defines the HTML in the header and footer — navigation, common CSS, branding. This wraps everything.</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:14px;height:14px;border-radius:3px;border:2px solid #2da44e;flex-shrink:0;margin-top:2px;"></div>
+            <div style="font-size:12px;color:var(--text2);"><strong style="color:var(--text);">_TwoColumn.cshtml</strong> is rendered inside <code>_Layout.cshtml</code>. It defines the two-column grid and renders <code>RenderBody()</code> (main) and <code>RenderSection("Sidebar")</code> (right column).</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:10px;">
+            <div style="width:14px;height:14px;border-radius:3px;background:#0969da;flex-shrink:0;margin-top:2px;"></div>
+            <div style="font-size:12px;color:var(--text2);"><strong style="color:var(--text);">The child view</strong> provides both the main content (via <code>RenderBody</code>) and the sidebar content (via <code>@section Sidebar</code>).</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -702,6 +1167,45 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
       <div class="callout-body">
         <div class="callout-title"> Note — What partial views are</div>
         <div class="callout-text">Partial views are a bit like Razor Pages without the PageModel and handlers. They are purely about rendering small sections of HTML — no routing, no model binding, no validation, no handlers. They just render.</div>
+      </div>
+    </div>
+
+    <!-- ▸ DIAGRAM: Partial views two-file pattern (Slide 22) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">🧩 Partial views — the partial file vs the page that calls it</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">_ToDo.cshtml — the partial view</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @model ToDoItemViewModel <span style="color:#6272a4;">// ❶ has its own @model</span><br>
+            &lt;h2&gt;<span style="color:#7dd4e7;">@Model.Title</span>&lt;/h2&gt; <span style="color:#6272a4;">// ❷ renders model data</span><br>
+            &lt;ul&gt;<br>
+            &nbsp;&nbsp;<span style="color:#ff79c6;">@foreach</span> (<span style="color:#ff79c6;">var</span> task <span style="color:#ff79c6;">in</span> Model.Tasks)<br>
+            &nbsp;&nbsp;{ &lt;li&gt;<span style="color:#7dd4e7;">@task</span>&lt;/li&gt; }<br>
+            &lt;/ul&gt;
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">
+            ❶ Partial views bind to data in their own Model property — just like a Razor Page view uses its PageModel.<br>
+            ❷ The content of the partial — previously in the full view file, now extracted here.
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">RecentToDos.cshtml — the calling page</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:11.5px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @page <span style="color:#6272a4;">// ❶ Razor Pages use @page; partials do NOT</span><br>
+            @model RecentToDoListModel<br><br>
+            <span style="color:#ff79c6;">@foreach</span> (<span style="color:#ff79c6;">var</span> todo <span style="color:#ff79c6;">in</span> Model.RecentItems)<br>
+            {<br>
+            &nbsp;&nbsp;&lt;partial name=<span style="color:#f1fa8c;">"_ToDo"</span> model=<span style="color:#f1fa8c;">"todo"</span> /&gt; <span style="color:#6272a4;">// ❹</span><br>
+            }
+          </div>
+          <div style="margin-top:6px;font-size:11px;color:var(--text3);">
+            ❶ This is a Razor Page so it uses <code>@page</code>. Partial views do <strong>not</strong> use <code>@page</code>.<br>
+            ❷ The PageModel contains the list of recent items to render.<br>
+            ❸ Loops through recent items; each <code>todo</code> is a <code>ToDoItemViewModel</code>.<br>
+            ❹ Uses the <code>&lt;partial&gt;</code> tag helper to render <code>_ToDo.cshtml</code>, passing the model.
+          </div>
+        </div>
       </div>
     </div>
 
@@ -763,6 +1267,46 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
         <div class="callout-text">You should only put Razor <strong>directives</strong> in <code>_ViewImports.cshtml</code> (like <code>@using</code>, <code>@addTagHelper</code>, <code>@model</code>). You can't put arbitrary C# code there. For code that should run before every view (like setting the <code>Layout</code>), use <code>_ViewStart.cshtml</code> instead.</div>
       </div>
     </div>
+
+    <!-- ▸ DIAGRAM: _ViewImports folder scope (Slide 24) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">📁 _ViewImports.cshtml applies to all views in its folder and subfolders</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Example _ViewImports.cshtml</div>
+          <div style="border:1px solid var(--border);border-radius:6px;background:#282c34;font-family:var(--mono);font-size:12px;line-height:2;color:#abb2bf;padding:10px 14px;">
+            @using WebApplication1 <span style="color:#6272a4;">❶</span><br>
+            @using WebApplication1.Pages <span style="color:#6272a4;">❶</span><br>
+            <span style="font-weight:600;">@using WebApplication1.Models</span> <span style="color:#6272a4;">❷</span><br>
+            @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers <span style="color:#6272a4;">❸</span>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);">
+            <span style="color:var(--accent2);">❶</span> Default namespace of the app and Pages folder.<br>
+            <span style="color:var(--accent2);">❷</span> Add this to avoid repeating it in every view that uses models.<br>
+            <span style="color:var(--accent2);">❸</span> Makes Tag Helpers available (e.g. <code>asp-for</code>, <code>asp-page</code>) — added by default in new projects.
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Folder scope — where it applies</div>
+          <div style="font-family:var(--mono);font-size:12px;line-height:2;">
+            <div style="padding:8px 12px;border:1px solid rgba(0,212,170,.35);border-radius:6px;background:rgba(0,212,170,.05);">
+              <span style="color:var(--accent);font-weight:600;">📁 Pages/</span><br>
+              <span style="padding-left:16px;">📄 _ViewImports.cshtml</span> <span style="color:var(--accent);font-size:11px;font-weight:600;">← applies here…</span><br>
+              <span style="padding-left:16px;">📄 Index.cshtml</span> <span style="color:var(--text3);font-size:11px;">✓ inherits</span><br>
+              <span style="padding-left:16px;">📄 Privacy.cshtml</span> <span style="color:var(--text3);font-size:11px;">✓ inherits</span><br>
+              <span style="padding-left:16px;color:var(--accent2);">📁 Shared/</span><br>
+              <span style="padding-left:32px;">📄 _Layout.cshtml</span> <span style="color:var(--text3);font-size:11px;">✓ inherits</span><br>
+              <span style="padding-left:16px;color:var(--accent2);">📁 Products/</span><br>
+              <span style="padding-left:32px;">📄 Index.cshtml</span> <span style="color:var(--text3);font-size:11px;">✓ inherits</span><br>
+              <span style="padding-left:32px;">📄 _ViewImports.cshtml</span> <span style="color:var(--blue);font-size:11px;">← can override/add more</span>
+            </div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text3);padding:6px 10px;background:rgba(124,106,247,.05);border-radius:5px;">
+            Place <code>_ViewImports.cshtml</code> in <code>Pages/</code> to apply to all views. You can add a more specific one in a subfolder to add or override directives for just that section.
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ══ SECTION 13 ══ -->
@@ -808,6 +1352,53 @@ TempData[<span class="str">"Success"</span>] = <span class="str">"Order placed s
           <strong>What:</strong> Any Razor code (most commonly sets <code>Layout</code>)<br>
           <strong>When:</strong> Runs before each view renders<br>
           <strong>Runs for:</strong> Razor Page views only — NOT layouts or partials
+        </div>
+      </div>
+    </div>
+
+    <!-- ▸ DIAGRAM: _ViewStart execution order (Slide 25) -->
+    <div style="margin:20px 0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+      <div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text2);">⚡ What _ViewStart.cshtml does — and what it doesn't run for</div>
+      <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- Execution order -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Execution order for a Razor Page request</div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;align-items:center;gap:0;">
+              <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:rgba(0,212,170,.15);border:2px solid var(--accent);color:var(--accent);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div><div style="width:2px;height:20px;background:var(--border);"></div></div>
+              <div style="padding:0 12px;font-size:12px;color:var(--text2);">Page Handler runs (<code>OnGet()</code>, <code>OnPost()</code>, etc.)</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0;">
+              <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:rgba(124,106,247,.15);border:2px solid var(--accent2);color:var(--accent2);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div><div style="width:2px;height:20px;background:var(--border);"></div></div>
+              <div style="padding:0 12px;font-size:12px;color:var(--text2);"><strong>_ViewStart.cshtml executes</strong> — sets <code>Layout = "_Layout"</code></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0;">
+              <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:rgba(9,105,218,.15);border:2px solid var(--blue);color:var(--blue);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div><div style="width:2px;height:20px;background:var(--border);"></div></div>
+              <div style="padding:0 12px;font-size:12px;color:var(--text2);">The Razor Page view renders — can override <code>Layout</code> or set it to <code>null</code></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0;">
+              <div style="display:flex;flex-direction:column;align-items:center;"><div style="width:28px;height:28px;border-radius:50%;background:rgba(191,135,0,.15);border:2px solid var(--yellow);color:var(--yellow);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div></div>
+              <div style="padding:0 12px;font-size:12px;color:var(--text2);">The layout renders (wraps the view output)</div>
+            </div>
+          </div>
+        </div>
+        <!-- What it does NOT run for -->
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">⚠️ _ViewStart does NOT run for:</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div style="padding:10px 14px;border:1px solid rgba(207,34,46,.2);border-radius:6px;background:rgba(207,34,46,.04);font-size:12px;color:var(--text2);">
+              ❌ <strong>Layout files</strong> (<code>_Layout.cshtml</code>) — they are rendered after the view, not as a standalone page request
+            </div>
+            <div style="padding:10px 14px;border:1px solid rgba(207,34,46,.2);border-radius:6px;background:rgba(207,34,46,.04);font-size:12px;color:var(--text2);">
+              ❌ <strong>Partial views</strong> (<code>_ToDo.cshtml</code>) — they have no request of their own, they are rendered inline
+            </div>
+            <div style="padding:10px 14px;border:1px solid rgba(0,212,170,.2);border-radius:6px;background:rgba(0,212,170,.04);font-size:12px;color:var(--text2);">
+              ✅ Only runs for <strong>Razor Page views</strong> that are the direct response to a request (files with <code>@page</code>)
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text3);padding:6px 10px;background:rgba(124,106,247,.05);border-radius:5px;">
+            💡 Individual views can still override: <code>@{ Layout = "_TwoColumn"; }</code> or disable: <code>@{ Layout = null; }</code>
+          </div>
         </div>
       </div>
     </div>

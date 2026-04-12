@@ -133,7 +133,8 @@
     <span class="cm">&lt;!-- Tag Helpers generate correct id, name, --&gt;</span>
     <span class="cm">&lt;!-- value, type AND validation attributes --&gt;</span>
     <span class="cm">&lt;!-- Cannot mis-spell the property name --&gt;</span>
-&lt;/form&gt;</div>
+&lt;/form&gt;
+<br><br><br></div>
       </div>
     </div>
 
@@ -278,7 +279,90 @@
         <div class="callout-text">For simplicity in examples, the same class is used for both binding and display. In production, you should use <strong>two separate objects</strong> — a binding model (what comes from the request) and a view model (what gets displayed). This prevents <strong>mass-assignment attacks</strong> where a user crafts a POST body with extra fields they shouldn't be able to set.</div>
       </div>
     </div>
-  </section>
+
+    <!-- From slide 9: complete form using all Tag Helpers together -->
+    <h3>Putting It All Together — A Complete Form with Tag Helpers</h3>
+    <p>Here is a complete Razor Page form using all the common Tag Helpers together. The Tag Helpers generate the correct <code>action</code>, <code>id</code>, <code>name</code>, <code>type</code>, and <code>data-val-*</code> attributes automatically from the PageModel:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">Razor</span><span class="code-label">Pages/Checkout.cshtml — complete form using Tag Helpers</span></div>
+      <div class="code-body">@page
+@model <span class="tp">CheckoutModel</span>                                        <span class="cm">#A</span>
+@{
+    ViewData[<span class="str">"Title"</span>] = <span class="str">"Checkout"</span>;
+}
+
+&lt;h1&gt;@ViewData[<span class="str">"Title"</span>]&lt;/h1&gt;
+
+&lt;form <span class="tp">asp-page</span>=<span class="str">"Checkout"</span>&gt;                                    <span class="cm">#B</span>
+    &lt;div class=<span class="str">"form-group"</span>&gt;
+        &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span>&gt;&lt;/label&gt;             <span class="cm">#C</span>
+        &lt;input class=<span class="str">"form-control"</span> <span class="tp">asp-for</span>=<span class="str">"Input.FirstName"</span> /&gt;
+        &lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Input.FirstName"</span>&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=<span class="str">"form-group"</span>&gt;
+        &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.LastName"</span>&gt;&lt;/label&gt;
+        &lt;input class=<span class="str">"form-control"</span> <span class="tp">asp-for</span>=<span class="str">"Input.LastName"</span> /&gt;
+        &lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Input.LastName"</span>&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=<span class="str">"form-group"</span>&gt;
+        &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.Email"</span>&gt;&lt;/label&gt;
+        &lt;input class=<span class="str">"form-control"</span> <span class="tp">asp-for</span>=<span class="str">"Input.Email"</span> /&gt;   <span class="cm">#D</span>
+        &lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Input.Email"</span>&gt;&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=<span class="str">"form-group"</span>&gt;
+        &lt;label <span class="tp">asp-for</span>=<span class="str">"Input.PhoneNumber"</span>&gt;&lt;/label&gt;
+        &lt;input class=<span class="str">"form-control"</span> <span class="tp">asp-for</span>=<span class="str">"Input.PhoneNumber"</span> /&gt;
+        &lt;span <span class="tp">asp-validation-for</span>=<span class="str">"Input.PhoneNumber"</span>&gt;&lt;/span&gt;  <span class="cm">#E</span>
+    &lt;/div&gt;
+    &lt;button type=<span class="str">"submit"</span> class=<span class="str">"btn btn-primary"</span>&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+
+<span class="cm">#A The CheckoutModel is the PageModel, which exposes a UserBindingModel on the Input property
+#B Form Tag Helper uses routing to determine the URL the form will be posted to.
+#C The Label Tag Helper uses DataAnnotations on a property to determine the caption to display.
+#D The Input Tag Helper uses DataAnnotations to determine the type of input to generate.
+#E The Validation Tag Helper displays error messages associated with the given property.</span></div>
+    </div>
+
+    <!-- Visual of what the rendered form looks like -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">What the Rendered Form Looks Like in the Browser</div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+        <!-- Rendered form mock -->
+        <div style="background:white;border:1px solid #ddd;border-radius:8px;padding:20px;min-width:220px;flex:0 0 250px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+          <div style="font-size:13px;color:#555;margin-bottom:4px;font-family:sans-serif;font-weight:700;">Your name</div>
+          <div style="background:#fff;border:1px solid #ccc;border-radius:4px;padding:7px 10px;font-size:13px;color:#888;margin-bottom:12px;">Andrew</div>
+          <div style="font-size:13px;color:#555;margin-bottom:4px;font-family:sans-serif;font-weight:700;">Last name</div>
+          <div style="background:#fff;border:1px solid #e00;border-radius:4px;padding:7px 10px;font-size:13px;color:#888;margin-bottom:2px;"></div>
+          <div style="color:#c00;font-size:11px;margin-bottom:12px;">The Last name field is required.</div>
+          <div style="font-size:13px;color:#555;margin-bottom:4px;font-family:sans-serif;font-weight:700;">Email</div>
+          <div style="background:#fff;border:1px solid #ccc;border-radius:4px;padding:7px 10px;font-size:13px;color:#888;margin-bottom:12px;">test@example.com</div>
+          <div style="font-size:13px;color:#555;margin-bottom:4px;font-family:sans-serif;font-weight:700;">Phone number</div>
+          <div style="background:#fff;border:1px solid #ccc;border-radius:4px;padding:7px 10px;font-size:13px;color:#888;margin-bottom:14px;"></div>
+          <button style="background:#0d6efd;color:white;border:none;border-radius:4px;padding:8px 16px;font-size:13px;cursor:pointer;">Submit</button>
+        </div>
+        <!-- Callouts -->
+        <div style="flex:1;min-width:200px;display:flex;flex-direction:column;gap:10px;font-size:12px;">
+          <div style="background:rgba(0,212,170,0.08);border-left:3px solid var(--accent);padding:10px 14px;border-radius:4px;">
+            <strong style="color:var(--accent);">Label Tag Helper</strong><br>
+            <span style="color:var(--text2);">Uses the <code>[Display(Name="Your name")]</code> annotation to determine the caption. Falls back to the property name if no attribute is set.</span>
+          </div>
+          <div style="background:rgba(124,106,247,0.08);border-left:3px solid var(--accent2);padding:10px 14px;border-radius:4px;">
+            <strong style="color:var(--accent2);">Input Tag Helper</strong><br>
+            <span style="color:var(--text2);">Generates <code>type="email"</code> for the Email field based on the <code>[EmailAddress]</code> annotation. Also generates all <code>data-val-*</code> client validation attributes.</span>
+          </div>
+          <div style="background:rgba(207,34,46,0.08);border-left:3px solid var(--red);padding:10px 14px;border-radius:4px;">
+            <strong style="color:var(--red);">Validation Message Tag Helper</strong><br>
+            <span style="color:var(--text2);">The <code>&lt;span asp-validation-for="..."&gt;</code> shows the error message for that specific field when validation fails.</span>
+          </div>
+          <div style="background:rgba(9,105,218,0.08);border-left:3px solid var(--blue);padding:10px 14px;border-radius:4px;">
+            <strong style="color:var(--blue);">Form Tag Helper</strong><br>
+            <span style="color:var(--text2);">Generates <code>action="/Checkout" method="post"</code> and automatically adds the hidden anti-CSRF token field.</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <!-- ══ SECTION 5 ══ -->
   <section class="section" id="form-helper">
@@ -428,9 +512,8 @@
     type=<span class="str">"email"</span>
     id=<span class="str">"Input_Email"</span>
     name=<span class="str">"Input.Email"</span>
-    value=<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="86f2e3f5f2c6e3fee7ebf6eae3a8e5e9eb">[email&#160;protected]</a>"</span>
+    value=<span class="str">"info@example.com"</span>
     data-val=<span class="str">"true"</span>
-    data-val-email=<span class="str">"The Email Address field is not a valid e-mail address."</span>
     data-val-required=<span class="str">"The Email Address field is required."</span>
 /&gt;
 

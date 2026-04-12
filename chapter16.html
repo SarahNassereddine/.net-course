@@ -169,6 +169,53 @@
 
     <p>Binding models in Razor Pages are typically defined by creating a <strong>public property</strong> on the page's <code>PageModel</code> decorated with <code>[BindProperty]</code>, or passed directly as handler parameters.</p>
 
+    <!-- From slide 9: "Which part is the binding model?" -->
+    <div class="callout info">
+      <div class="callout-icon">🔍</div>
+      <div class="callout-body">
+        <div class="callout-title">Which Part Is the Binding Model?</div>
+        <div class="callout-text">
+          A Razor Page can use <strong>multiple binding models</strong> at the same time — for example, a <code>Category</code> property, a <code>Username</code> property, and a <code>ProductModel</code> parameter in <code>OnPost</code> are all model-bound. However, a preferred and cleaner approach is to keep all binding in a <strong>single nested class</strong> called <code>InputModel</code>:
+        </div>
+      </div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header bad">❌ Multiple scattered [BindProperty] properties</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="kw">public class</span> <span class="tp">IndexModel</span> : <span class="tp">PageModel</span>
+{
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public string</span> Category { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    [<span class="tp">BindProperty</span>(SupportsGet = <span class="kw">true</span>)]
+    <span class="kw">public string</span> Username { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public void</span> <span class="fn">OnPost</span>(<span class="tp">ProductModel</span> product)
+    { ... }
+}</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header good">✅ Single nested InputModel — preferred</div>
+        <div class="code-body" style="font-family:var(--mono);font-size:12px;padding:14px 16px;line-height:1.8;">
+<span class="kw">public class</span> <span class="tp">IndexModel</span> : <span class="tp">PageModel</span>
+{
+    [<span class="tp">BindProperty</span>]
+    <span class="kw">public</span> <span class="tp">InputModel</span> Input { <span class="kw">get</span>; <span class="kw">set</span>; }
+
+    <span class="kw">public void</span> <span class="fn">OnGet</span>() { }
+
+    <span class="kw">public class</span> <span class="tp">InputModel</span>
+    {
+        <span class="kw">public string</span> Category { <span class="kw">get</span>; <span class="kw">set</span>; }
+        <span class="kw">public string</span> Username { <span class="kw">get</span>; <span class="kw">set</span>; }
+        <span class="kw">public</span> <span class="tp">ProductModel</span> Model { <span class="kw">get</span>; <span class="kw">set</span>; }
+    }
+}</div>
+      </div>
+    </div>
+
     <div class="code-block">
       <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Defining a binding model with [BindProperty]</span></div>
       <div class="code-body"><span class="kw">public class</span> <span class="tp">CheckoutModel</span> : <span class="tp">PageModel</span>
@@ -224,7 +271,7 @@
         <div class="compare-card-header neutral">📋 PageModel — Two Jobs</div>
         <div class="code-body" style="font-family:var(--sans);font-size:13px;padding:16px;line-height:1.8;color:var(--text2);">
           <strong style="color:var(--text);">1. Acts as Controller</strong> — exposes page handler methods (<code>OnGet</code>, <code>OnPost</code>, etc.) that respond to HTTP verbs.<br><br>
-          <strong style="color:var(--text);">2. Acts as ViewModel</strong> — all data required for the Razor view to render is exposed as public properties on the PageModel. The view accesses it via <code>Model.PropertyName</code>.
+          <strong style="color:var(--text);">2. Acts as ViewModel</strong> — all data required for the Razor view to render is exposed as public properties on the PageModel. The view accesses it via <code>Model.PropertyName </code>.<br><br><br>
         </div>
       </div>
       <div class="compare-card">
@@ -413,6 +460,64 @@
     </div>
 
     <p>When a handler has many parameters, it becomes messy fast. The solution is to bind to a <strong>complex type</strong> — a class that groups multiple properties. The binder creates an instance of the class and populates each property individually.</p>
+
+    <!-- From slide 19: three-step evolution of complex binding -->
+    <div class="diagram-wrap">
+      <div class="diagram-title">Evolution: Many Parameters → Complex Type → [BindProperty]</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <!-- Step 1: many params -->
+        <div style="background:rgba(207,34,46,0.06);border:1px solid rgba(207,34,46,0.2);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:8px;">① Messy — too many individual parameters</div>
+          <div style="font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);">
+            <span style="color:#c678dd;">public</span> <span style="color:#61afef;">IActionResult</span> <span style="color:#61afef;">OnPost</span>(<br>
+            &nbsp;&nbsp;<span style="color:#c678dd;">string</span> firstName, <span style="color:#c678dd;">string</span> lastName,<br>
+            &nbsp;&nbsp;<span style="color:#c678dd;">string</span> phoneNumber, <span style="color:#c678dd;">string</span> email)<br>
+            { ... }
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">⚠️ What happens when requirements change and you need to collect more details?</div>
+        </div>
+
+        <!-- Step 2: complex type as param -->
+        <div style="background:rgba(232,114,12,0.06);border:1px solid rgba(232,114,12,0.2);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:8px;">② Better — complex type as method parameter</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);">
+              <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">OnPost</span>(<span style="color:#e5c07b;">UserBindingModel</span> user)<br>
+              { <span style="color:#6272a4;">// user.FirstName, user.Email…</span> }
+            </div>
+            <div style="font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);">
+              <span style="color:#c678dd;">public class</span> <span style="color:#e5c07b;">UserBindingModel</span><br>
+              {<br>
+              &nbsp;&nbsp;<span style="color:#c678dd;">public string</span> FirstName { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+              &nbsp;&nbsp;<span style="color:#c678dd;">public string</span> LastName  { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+              &nbsp;&nbsp;<span style="color:#c678dd;">public string</span> Email     { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+              &nbsp;&nbsp;<span style="color:#c678dd;">public string</span> PhoneNumber { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: [BindProperty] approach -->
+        <div style="background:rgba(45,164,78,0.06);border:1px solid rgba(45,164,78,0.2);border-radius:8px;padding:14px 16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px;">③ Preferred — [BindProperty] on the PageModel</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);">
+              <span style="color:#6272a4;">// No parameters needed — already bound</span><br>
+              <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">IActionResult</span> <span style="color:#61afef;">OnPost</span>()<br>
+              {<br>
+              &nbsp;&nbsp;<span style="color:#6272a4;">// User is already populated</span><br>
+              }
+            </div>
+            <div style="font-family:var(--mono);font-size:12px;line-height:1.8;color:var(--text2);">
+              [<span style="color:#e5c07b;">BindProperty</span>]<br>
+              <span style="color:#c678dd;">public</span> <span style="color:#e5c07b;">UserBindingModel</span> User { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px;">✅ You can bind only properties that are <strong>public and settable</strong>. The class must have a <strong>default public constructor</strong>.</div>
+        </div>
+      </div>
+    </div>
 
     <div class="compare-grid">
       <div class="compare-card">
