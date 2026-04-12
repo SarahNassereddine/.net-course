@@ -105,7 +105,7 @@ body {
 .nav-link.active .dot { background: var(--accent); }
 .nav-link.done .dot { background: var(--green); }
 
-.main { flex: 1; max-width: 860px; padding: 48px 52px; }
+.main { flex: 1; max-width: 860px; padding: 48px 52px; min-width: 0; overflow-x: hidden; }
 
 /* ── Chapter header ── */
 .chapter-header {
@@ -175,11 +175,13 @@ p strong { color: var(--text); font-weight: 600; }
 
 /* ── Code blocks ── */
 .code-block {
-background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code */
-  color: #abb2bf;     /* نص الكود فاتح */
+background: #282c34;
+  color: #abb2bf;
   border: 1px solid #dcdcdc;
+  border-radius: var(--radius);
   overflow: hidden;
   margin: 20px 0;
+  max-width: 100%;
 }
 .code-header {
   display: flex;
@@ -226,12 +228,16 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
   border-left: 3px solid;
   display: flex;
   gap: 14px;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-.callout-body { flex: 1; }
+.callout-body { flex: 1; min-width: 0; overflow-wrap: break-word; word-break: break-word; }
 .callout-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-.callout-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+.callout-text { font-size: 13px; color: var(--text2); line-height: 1.6; overflow-wrap: break-word; word-break: break-word; min-width: 0; }
 .callout-text strong { color: var(--text); }
+.callout-text code { word-break: break-all; }
 
 .callout.tip    { background: rgba(0,212,170,.06); border-color: var(--accent); }
 .callout.tip    .callout-title { color: var(--accent); }
@@ -555,6 +561,13 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
   .code-body        { font-size:12px; }
   .data-table       { display:block; overflow-x:auto; }
 
+  /* ── Word wrapping — prevent text escaping boxes ── */
+  .callout-text, .callout-title, .callout-body,
+  p, li, td, th { overflow-wrap: break-word; word-break: break-word; }
+
+  /* ── inline <code> tags — break long paths/class names ── */
+  code { word-break: break-all; }
+
   /* ── FAB — floating sections button ── */
   .fab-sections {
     display: flex !important;
@@ -646,25 +659,32 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
    lecture content without touching any other components.
 ══════════════════════════════════════════════════════ */
 
-/* 1. Any div that uses display:grid AND grid-template-columns
-      inside a .section — make it horizontally scrollable on
-      narrow screens so nothing gets clipped.
-      overflow:hidden on .section is NOT set, so this is safe. */
-.section [style*="grid-template-columns"] {
-  min-width: 0;
+/* Global: sections are the hard boundary — nothing escapes them */
+.section {
+  overflow-x: hidden;
 }
 
-/* 2. Dark code boxes inside diagrams — always scrollable, never overflow */
+/* All images inside sections are always bounded */
+.section img, .section svg {
+  max-width: 100% !important;
+  height: auto;
+}
+
+/* Dark code boxes inside diagrams — always scrollable, never overflow */
 .section [style*="background:#282c34"] {
   overflow-x: auto !important;
   max-width: 100%;
 }
 
-/* 3. The outer diagram wrapper divs (the ones with a border + border-radius
-      that wrap each visual) — clip internally, never bleed out */
+/* Outer diagram wrapper divs — clip internally */
 .section > div[style*="border:1px solid var(--border)"],
 .section > div[style*="border: 1px solid var(--border)"] {
   overflow: hidden;
+  max-width: 100%;
+}
+
+/* Any inline-styled div with a fixed pixel width — cap it */
+.section > div > div[style*="px"] {
   max-width: 100%;
 }
 
@@ -672,7 +692,7 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
 
   /* ── Collapse ALL multi-column inline-grid diagrams ── */
 
-  /* 3-col: A → B → C  (pipeline / template-to-HTML diagrams) */
+  /* 3-col: A → B → C */
   .section [style*="grid-template-columns: 1fr auto 1fr auto 1fr"],
   .section [style*="grid-template-columns:1fr auto 1fr auto 1fr"] {
     display: flex !important;
@@ -680,7 +700,7 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     gap: 12px !important;
   }
 
-  /* 3-col: A → B  (code + arrow + browser) */
+  /* 3-col: A → B */
   .section [style*="grid-template-columns: 1fr auto 1fr"],
   .section [style*="grid-template-columns:1fr auto 1fr"] {
     display: flex !important;
@@ -688,7 +708,7 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     gap: 12px !important;
   }
 
-  /* 2-col: side-by-side diagrams */
+  /* 2-col */
   .section [style*="grid-template-columns: 1fr 1fr"],
   .section [style*="grid-template-columns:1fr 1fr"] {
     display: flex !important;
@@ -696,37 +716,36 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     gap: 12px !important;
   }
 
-  /* 3-col fixed-width: browser sidebar layouts (80px 1fr 90px) */
+  /* Fixed-width 3-col browser mock (80px 1fr 90px) */
   .section [style*="grid-template-columns:80px"],
   .section [style*="grid-template-columns: 80px"] {
     display: flex !important;
     flex-direction: column !important;
   }
 
-  /* Arrow separators between columns — hide horizontal arrows,
-     they become irrelevant when stacked */
+  /* Arrow separators — center when stacked */
   .section [style*="font-size:20px"][style*="color:var(--border)"],
   .section [style*="font-size: 20px"][style*="color:var(--border)"] {
-    text-align: center;
+    text-align: center !important;
     padding: 4px 0 !important;
     font-size: 16px !important;
   }
 
-  /* "+" separators in layout composition diagrams */
+  /* "+" separators in composition diagrams */
   .section [style*="font-size:16px"][style*="color:var(--text3)"],
   .section [style*="font-size: 16px"][style*="color:var(--text3)"] {
-    text-align: center;
+    text-align: center !important;
     padding: 4px 0 !important;
   }
 
-  /* Pipeline diagram inner rows: cap max-width */
+  /* Pipeline max-width rows */
   .section [style*="max-width:600px"],
   .section [style*="max-width: 600px"] {
     max-width: 100% !important;
     width: 100% !important;
   }
 
-  /* Diagram body padding: reduce on mobile */
+  /* Diagram body padding reduction */
   .section > div[style*="border:1px solid var(--border)"] > div[style*="padding:20px"],
   .section > div[style*="border: 1px solid var(--border)"] > div[style*="padding:20px"],
   .section > div[style*="border:1px solid var(--border)"] > div[style*="padding: 20px"],
@@ -734,10 +753,15 @@ background: #282c34; /* خلي الـ Code Block غامق مثل الـ VS Code 
     padding: 14px !important;
   }
 
-  /* XSS demo two-column grid */
+  /* XSS demo grid */
   .section [style*="grid-template-columns:1fr 1fr;gap:12px"],
   .section [style*="grid-template-columns: 1fr 1fr; gap: 12px"] {
     display: flex !important;
     flex-direction: column !important;
+  }
+
+  /* Browser mock chrome row — keep it flex but allow wrapping */
+  .section [style*="background:#2c3e50"] {
+    flex-wrap: wrap;
   }
 }
