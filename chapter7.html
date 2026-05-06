@@ -364,7 +364,7 @@ app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>, (<
         <span class="cm">// ❺ Checks that string starts with 'p'</span>
         <span class="kw">if</span> (value <span class="kw">is not null</span> && value[<span class="nm">0</span>] == <span class="str">'p'</span>
             <span class="cm">// ❻ Parses remaining chars as int (skips first char efficiently)</span>
-            && <span class="kw">int</span>.<span class="fn">TryParse</span>(value.<span class="fn">AsSpan</span>(<span class="nm">1</span>), <span class="kw">out var</span> id))
+            && <span class="kw">int</span>.<span class="fn">TryParse</span>(value.<span class="fn">AsSpan</span>().Slice(<span class="nm">1</span>), <span class="kw">out var</span> id))
         {
             <span class="cm">// ❼ Parsed successfully → return true with the value</span>
             result = <span class="kw">new</span> <span class="tp">ProductId</span>(id);
