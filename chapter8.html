@@ -644,7 +644,7 @@ builder.Services.<span class="fn">AddTransient</span>&lt;<span class="tp">IEmail
 
 <span class="cm">// app.Services is an IServiceProvider — the DI container's public API</span>
 <span class="kw">var</span> sender = app.Services.<span class="fn">GetRequiredService</span>&lt;<span class="tp">IEmailSender</span>&gt;();
-sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b0a0f0602052b0e130a061b070e45080406">[email&#160;protected]</a>"</span>); <span class="cm">// send startup notification</span>
+sender.<span class="fn">SendWelcomeEmail</span>(<span class="str">"example@gmail.com"</span>); <span class="cm">// send startup notification</span>
 
 app.<span class="fn">Run</span>();</div>
     </div>
