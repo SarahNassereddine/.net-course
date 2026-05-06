@@ -350,7 +350,7 @@ app.<span class="fn">MapGet</span>(<span class="str">"/search/{id}"</span>,
       <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Custom type with TryParse — ProductId example from the slides</span></div>
       <div class="code-body"><span class="cm">// ❶ ProductId is a C# 10 record struct</span>
 <span class="cm">// ❷ Implements TryParse → treated as simple type by minimal APIs</span>
-<span class="cm">// ❸ Binds from route: GET /products/p-42  →  ProductId { Value = 42 }</span>
+<span class="cm">// ❸ Binds from route: GET /products/p42  →  ProductId { Value = 42 }</span>
 
 app.<span class="fn">MapGet</span>(<span class="str">"/products/{id}"</span>, (<span class="tp">ProductId</span> id) => <span class="str">$"Product {id.Value}"</span>);
 
