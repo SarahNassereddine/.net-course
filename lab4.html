@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 4 — Arithmetic Razor Pages App</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Lab 4 — Arithmetic Razor Pages</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span>
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span>
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Lab 4</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="objective" onclick="scrollPageTo('objective')"><span class="dot"></span>Objective</button>
+    <button class="nav-link" data-target="functional" onclick="scrollPageTo('functional')"><span class="dot"></span>Functional Requirements</button>
+    <button class="nav-link" data-target="pages" onclick="scrollPageTo('pages')"><span class="dot"></span>Razor Pages</button>
+    <button class="nav-link" data-target="database" onclick="scrollPageTo('database')"><span class="dot"></span>Database Requirements</button>
+    <button class="nav-link" data-target="model" onclick="scrollPageTo('model')"><span class="dot"></span>Entity Model</button>
+    <button class="nav-link" data-target="technical" onclick="scrollPageTo('technical')"><span class="dot"></span>Technical Notes</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Solution</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce</a>
+    <a class="nav-link active" href="lab4.html"><span class="dot"></span>Lab 4 — Arithmetic Razor Pages</a>
+   <a class="nav-link" href="lab5.html"><span class="dot"></span>Lab 5 — CV Application</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Lab 4</div>
+    <h1 class="chapter-title">Arithmetic Operations Web Application</h1>
+    <p class="chapter-subtitle">Build a Razor Pages web application that processes arithmetic operations via query strings and route parameters, with a service layer, EF Core persistence, and a Minimal API history endpoint.</p>
+  </div>
+
+  <!-- OBJECTIVE -->
+  <section class="section" id="objective">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Objective</h2>
+    </div>
+
+    <p>Create a web application that processes various arithmetic operations based on parameters received either through <strong>query strings</strong> or <strong>route parameters</strong>. This application will be developed using ASP.NET Core with <strong>Razor Pages</strong>. Postman may optionally be used to send requests and test the application.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">What You'll Practice</div>
+        <div class="callout-text">
+          Razor Pages with named page handlers (OnGet…)<br>
+          Route parameters and query string binding<br>
+          Route constraints for input validation<br>
+          Service layer with Dependency Injection<br>
+          EF Core In-Memory provider and history logging<br>
+          Exposing a Minimal API endpoint alongside Razor Pages
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUNCTIONAL REQUIREMENTS -->
+  <section class="section" id="functional">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Functional Requirements</h2>
+    </div>
+
+    <p>The application must support the following <strong>six arithmetic operations</strong>, grouped into three Razor Pages:</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 10px 14px; background: rgba(0,212,170,.08); border-bottom: 1px solid rgba(0,212,170,.15); font-size: 12px; font-weight: 700; color: var(--accent);">➕ SumMul Page</div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(0,212,170,.15); color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">SUM</span><span style="color: var(--text2);">Sum of three integers</span></div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(0,212,170,.15); color: var(--accent); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">MUL</span><span style="color: var(--text2);">Product of three integers</span></div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 10px 14px; background: rgba(88,166,255,.08); border-bottom: 1px solid rgba(88,166,255,.15); font-size: 12px; font-weight: 700; color: var(--blue);">📊 MinMax Page</div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(88,166,255,.15); color: var(--blue); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">MIN</span><span style="color: var(--text2);">Minimum of three integers ≥ 0</span></div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(88,166,255,.15); color: var(--blue); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">MAX</span><span style="color: var(--text2);">Maximum of three integers ≥ 0</span></div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 10px 14px; background: rgba(124,106,247,.08); border-bottom: 1px solid rgba(124,106,247,.15); font-size: 12px; font-weight: 700; color: var(--accent2);">🔢 LcmGcd Page</div>
+        <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(124,106,247,.15); color: var(--accent2); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">LCM</span><span style="color: var(--text2);">Least Common Multiple (2 ints > 0)</span></div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;"><span style="background: rgba(124,106,247,.15); color: var(--accent2); font-family: var(--mono); font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">GCD</span><span style="color: var(--text2);">Greatest Common Divisor (2 ints > 0)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+        <strong style="color: var(--text);">Route Constraints:</strong> Validate input directly in route templates. Sum/Mul accept <code>int</code>; Min/Max accept <code>int</code> values <code>≥ 0</code>; GCD/LCM accept <code>int</code> values <code>&gt; 0</code>. Test with non-matching routes to ensure graceful handling.
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+        <strong style="color: var(--text);">Default Values:</strong> For Sum and Mul/Min/Max, if fewer than the required parameters are passed, page handlers must assign sensible default values.
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+        <strong style="color: var(--text);">Layout Customization:</strong> Modify <code>_Layout.cshtml</code> to include a customized header and footer. Remove unrelated links and menus.
+      </div>
+    </div>
+  </section>
+
+  <!-- RAZOR PAGES -->
+  <section class="section" id="pages">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Razor Pages &amp; Handlers</h2>
+    </div>
+
+    <p>Implement three Razor Pages, each with specific handler bindings as described below.</p>
+
+    <!-- SumMul -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">1</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">SumMul Razor Page</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Handles <strong>SUM</strong> and <strong>MUL</strong> operations. Accepts <strong>three route parameters</strong> via GET request and displays the summation and multiplication of the received values.</p>
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; margin: 12px 0;">
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+            <div><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Handlers</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetSum</code><span style="color: var(--text2);">— computes the sum of three values</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetMul</code><span style="color: var(--text2);">— computes the product of three values</span></div>
+            <div style="margin-top: 8px;"><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Binding</span></div>
+            <div style="color: var(--text2);">Handler name passed via <strong>route parameter</strong>. Binding done via <strong>page handler parameters</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MinMax -->
+    <div style="margin-bottom: 28px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">2</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">MinMax Razor Page</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Handles <strong>MIN</strong> and <strong>MAX</strong> operations. Accepts <strong>three route parameters</strong> via GET request and displays the minimum and maximum of the received values.</p>
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; margin: 12px 0;">
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+            <div><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Handlers</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetMin</code><span style="color: var(--text2);">— returns the minimum value</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetMax</code><span style="color: var(--text2);">— returns the maximum value</span></div>
+            <div style="margin-top: 8px;"><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Binding</span></div>
+            <div style="color: var(--text2);">Handler name passed via <strong>query string parameter</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LcmGcd -->
+    <div style="margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <div style="width: 28px; height: 28px; border-radius: 8px; background: rgba(0,212,170,.12); border: 1px solid rgba(0,212,170,.3); color: var(--accent); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">3</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: var(--text);">LcmGcd Razor Page</h3>
+      </div>
+      <div style="padding-left: 40px;">
+        <p>Handles <strong>LCM</strong> and <strong>GCD</strong> operations. Accepts <strong>two route parameters</strong> via GET request and displays the Least Common Multiple and Greatest Common Divisor.</p>
+        <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; margin: 12px 0;">
+          <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+            <div><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Handlers</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetLCM</code><span style="color: var(--text2);">— computes the Least Common Multiple</span></div>
+            <div style="display: flex; gap: 8px; align-items: center;"><code style="color: var(--accent2);">OnGetGCD</code><span style="color: var(--text2);">— computes the Greatest Common Divisor</span></div>
+            <div style="margin-top: 8px;"><span style="color: var(--text3); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;">Binding</span></div>
+            <div style="color: var(--text2);">Handler name passed via <strong>route parameter or query string</strong>. Binding done via <strong>page handler properties</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATABASE REQUIREMENTS -->
+  <section class="section" id="database">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Database Requirements</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin: 20px 0;">
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">💾</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Persist Every Call</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Create an <strong>ArithmeticRequest</strong> entity to log each operation, its operands, result, and timestamp.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🗄️</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">EF Core In-Memory Provider</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Install <code>Microsoft.EntityFrameworkCore.InMemory</code> (v 8.0.16) and wire up an <code>AppDbContext</code> that includes a <code>DbSet&lt;ArithmeticRequest&gt;</code>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🔧</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">History Service</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Implement an interface <code>IArithmeticHistoryService</code> whose concrete class receives the binding model, converts it to an entity, and saves it via the <code>DbContext</code>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🌱</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Seed Demo Rows at Startup</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Inside <strong>Program.cs</strong>, inject a scoped <code>AppDbContext</code>; when the table is empty, insert a few sample records to simplify testing.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🌐</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Minimal API History Endpoint</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Create a route — e.g. <code>GET /api/requests</code> — that returns the full contents of the <code>ArithmeticRequest</code> table so you can verify persistence with Postman or a browser.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ENTITY MODEL -->
+  <section class="section" id="model">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Entity Model</h2>
+    </div>
+
+    <p>Use the following <strong>ArithmeticRequest</strong> class as your persistence model:</p>
+
+    <div class="code-block">
+      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">ArithmeticRequest.cs</span></div>
+      <div class="code-body" style="color: #abb2bf;">
+        <span style="color:#c678dd;">using</span> System;<br>
+        <span style="color:#c678dd;">using</span> System.ComponentModel.DataAnnotations;<br><br>
+        <span style="color:#c678dd;">public class</span> <span class="tp">ArithmeticRequest</span><br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[<span class="tp">Key</span>]<span style="color:#5c6370;">  // primary key (autoincrement)</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public int</span> Id { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[<span class="tp">Required</span>] [<span class="tp">MaxLength</span>(<span style="color:#d19a66;">12</span>)]<span style="color:#5c6370;">  // e.g. "SUM", "GCD", "LCM"</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public string</span> Operation { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; } = <span style="color:#c678dd;">default</span>!;<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#5c6370;">// Operands — nullable to handle 2- or 3-argument ops</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public int?</span> A { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public int?</span> B { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public int?</span> C { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; }<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;[<span class="tp">Required</span>]<span style="color:#5c6370;">  // store numeric or composite result as text</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public string</span> Result { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; } = <span style="color:#c678dd;">default</span>!;<br><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#5c6370;">// Automatically stamped when the row is created</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c678dd;">public</span> <span class="tp">DateTime</span> AtUtc { <span style="color:#c678dd;">get</span>; <span style="color:#c678dd;">set</span>; } = <span class="tp">DateTime</span>.UtcNow;<br>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- TECHNICAL NOTES -->
+  <section class="section" id="technical">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Technical Notes</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">binding</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Route Data vs. RouteData.Values</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">To extract route parameters in a Razor Page, you could use <code>RouteData.Values["parameterName"]</code>, but this lab requires using proper <strong>binding concepts</strong> (handler parameters or handler properties).</div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill yellow">service</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Service Classes &amp; DI</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">All arithmetic logic must be encapsulated within <strong>service classes</strong> injected into Razor Pages using <strong>Dependency Injection</strong>.</div>
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill" style="background: rgba(248,81,73,.15); color: var(--red);">test</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Testing Non-Matching Routes</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Attempt to send requests where no route template matches, to ensure the application handles unmatched routes gracefully.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- GitHub -->
+  <section id="github" class="section">
+    <div style="padding: 15px; border-top: 1px solid var(--border);">
+      <a href="https://github.com/SarahNassereddine/.net-examples-solutions" target="_blank"
+         style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Final solution coming soon. Your turn now!</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">Link will be uploaded soon.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+const visibleSections = new Set();
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      visibleSections.add(entry.target);
+    } else {
+      visibleSections.delete(entry.target);
+    }
+  });
+  // Pick the visible section whose top is closest to (but not above) the viewport top
+  let best = null;
+  let bestTop = Infinity;
+  visibleSections.forEach(section => {
+    const top = section.getBoundingClientRect().top;
+    const absTop = Math.abs(top);
+    if (absTop < bestTop) {
+      bestTop = absTop;
+      best = section;
+    }
+  });
+  if (best) {
+    document.querySelectorAll('.nav-link[data-target]').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector(`.nav-link[data-target="${best.id}"]`);
+    if (link) link.classList.add('active');
+  }
+}, { rootMargin: '0px 0px -60% 0px', threshold: 0 });
+document.querySelectorAll('section.section').forEach(s => observer.observe(s));
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer  = function(){ sidebar.classList.add('open');    overlay.classList.add('show'); };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.addEventListener('click', () => { if (window.innerWidth <= 900) closeDrawer(); });
+  });
+})();
+
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if (!fill) return;
+  window.addEventListener('scroll', () => {
+    var pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    fill.style.width = Math.min(pct, 100) + '%';
+  });
+})();
+</script>
+</body>
+</html>

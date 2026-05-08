@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab 5 — CV Application (Razor Pages)</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="sidebar-overlay"></div>
+<div class="mobile-topbar">
+  <button class="menu-toggle" onclick="openDrawer()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+  <div style="flex:1">
+    <div class="mobile-topbar-sub">ASP.NET Core 8</div>
+    <div class="mobile-topbar-title">Lab 5 — CV Application</div>
+  </div>
+</div>
+<div class="mobile-progress"><div class="mobile-progress-fill" id="mobileProgressFill"></div></div>
+<div class="course-wrap">
+
+<!-- Sidebar -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="course-title">ASP.NET Core 8</div>
+    <div style="font-size: 11px; color: var(--text3); margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; line-height: 1.2;">
+      <div style="margin-bottom: 2px;">
+        <span style="opacity: 0.7;">Prepared by</span>
+        <span style="color: var(--text2); font-weight: 500;">Sarah N.</span>
+      </div>
+      <div>
+        <span style="opacity: 0.7;">Supervised by</span>
+        <span style="color: var(--text2); font-weight: 500;">Dr. Kamal B.</span>
+      </div>
+    </div>
+    <div class="chapter-label">Lab 5</div>
+    <div class="progress-bar"><div class="progress-fill" id="readProgress" style="width:0%"></div></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Sections</div>
+    <button class="nav-link active" data-target="objective" onclick="scrollPageTo('objective')"><span class="dot"></span>Overview</button>
+    <button class="nav-link" data-target="part1" onclick="scrollPageTo('part1')"><span class="dot"></span>Part 1 — Home Page</button>
+    <button class="nav-link" data-target="part2" onclick="scrollPageTo('part2')"><span class="dot"></span>Part 2 — CV Form</button>
+    <button class="nav-link" data-target="part3" onclick="scrollPageTo('part3')"><span class="dot"></span>Part 3 — Validation</button>
+    <button class="nav-link" data-target="part4" onclick="scrollPageTo('part4')"><span class="dot"></span>Part 4 — Summary Page</button>
+    <button class="nav-link" data-target="part5" onclick="scrollPageTo('part5')"><span class="dot"></span>Part 5 — Database</button>
+    <button class="nav-link" data-target="part6" onclick="scrollPageTo('part6')"><span class="dot"></span>Part 6 — Technical Requirements</button>
+    <button class="nav-link" data-target="bonus" onclick="scrollPageTo('bonus')"><span class="dot"></span>Bonus Ideas</button>
+    <button class="nav-link" data-target="github" onclick="scrollPageTo('github')"><span class="dot"></span>GitHub Solution</button>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Chapters</div>
+    <a class="nav-link" href="index.html"><span class="dot"></span>Ch 1 — Getting Started</a>
+    <a class="nav-link" href="chapter2.html"><span class="dot"></span>Ch 2 — Understanding Core</a>
+    <a class="nav-link" href="chapter3.html"><span class="dot"></span>Ch 3 — Your First App</a>
+    <a class="nav-link" href="chapter4.html"><span class="dot"></span>Ch 4 — Middleware Pipeline</a>
+    <a class="nav-link" href="chapter5.html"><span class="dot"></span>Ch 5 — Minimal APIs</a>
+    <a class="nav-link" href="chapter6.html"><span class="dot"></span>Ch 6 — Routing</a>
+    <a class="nav-link" href="chapter7.html"><span class="dot"></span>Ch 7 — Model Binding</a>
+    <a class="nav-link" href="chapter8.html"><span class="dot"></span>Ch 8 — Intro to DI</a>
+    <a class="nav-link" href="chapter9.html"><span class="dot"></span>Ch 9 — Registering Services</a>
+    <a class="nav-link" href="chapter10.html"><span class="dot"></span>Ch 10 — Configuring ASP.NET Core</a>
+    <a class="nav-link" href="chapter11.html"><span class="dot"></span>Ch 11 — Documenting APIs with OpenAPI</a>
+    <a class="nav-link" href="chapter12.html"><span class="dot"></span>Ch 12 — Saving Data with EF Core</a>
+    <a class="nav-link" href="chapter13.html"><span class="dot"></span>Ch 13 — Razor Pages</a>
+    <a class="nav-link" href="chapter14.html"><span class="dot"></span>Ch 14 — Mapping URLs to Razor Pages</a>
+    <a class="nav-link" href="chapter15.html"><span class="dot"></span>Ch 15 — Page Handlers</a>
+    <a class="nav-link" href="chapter16.html"><span class="dot"></span>Ch 16 — Binding and Validating</a>
+    <a class="nav-link" href="chapter17.html"><span class="dot"></span>Ch 17 — Razor Views</a>
+    <a class="nav-link" href="chapter18.html"><span class="dot"></span>Ch 18 — Tag Helpers</a>
+  </div>
+  <div class="nav-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+    <div class="nav-section-title">Labs</div>
+    <a class="nav-link" href="lab1.html"><span class="dot"></span>Lab 1 — Student API</a>
+    <a class="nav-link" href="lab2.html"><span class="dot"></span>Lab 2 — Advanced Binding</a>
+    <a class="nav-link" href="lab3.html"><span class="dot"></span>Lab 3 — EF Core E-Commerce</a>
+    <a class="nav-link" href="lab4.html"><span class="dot"></span>Lab 4 — Arithmetic Razor Pages</a>
+    <a class="nav-link active" href="lab5.html"><span class="dot"></span>Lab 5 — CV Application</a>
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="mainContent">
+
+  <div class="chapter-header">
+    <div class="chapter-badge">Lab 5</div>
+    <h1 class="chapter-title">CV Application — Razor Pages</h1>
+    <p class="chapter-subtitle">Build a complete ASP.NET Core Razor Pages application for managing Curriculum Vitae data — with a multi-field form, server-side validation, EF Core persistence, photo upload, and a summary page.</p>
+  </div>
+
+  <!-- OVERVIEW -->
+  <section class="section" id="objective">
+    <div class="section-header">
+      
+      <h2 class="section-title">Overview</h2>
+    </div>
+
+    <p>Develop a simple ASP.NET Core web application for managing <strong>Curriculum Vitae (CV)</strong> information using <strong>Razor Pages</strong>. The application allows users to enter personal information through a form, validate the entered data, save it in a database, and display a summary page.</p>
+
+    <div class="callout info">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">Key Technologies</div>
+        <div class="callout-text">
+          Razor Pages with Tag Helpers (asp-for, asp-page, asp-validation-for, asp-items)<br>
+          Dependency Injection with a clean service layer<br>
+          Server-side validation with Data Annotations and ModelState<br>
+          EF Core Migrations for database persistence<br>
+          Separate Binding Model and View Model<br>
+          File upload for profile photo
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 1 -->
+  <section class="section" id="part1">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <h2 class="section-title">Part 1 — Home Page</h2>
+    </div>
+
+    <p>Create a home page that welcomes users to the CV application.</p>
+
+    <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin: 20px 0;">
+      <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 16px;">🏠</span>
+        <span style="font-size: 14px; font-weight: 700; color: var(--text);">Index Page Requirements</span>
+      </div>
+      <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;">
+        <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
+          <span style="color: var(--text2);">Display a welcome message: <strong style="color: var(--text);">"Welcome to our CV Application"</strong></span>
+        </div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0;"></span>
+          <span style="color: var(--text2);">Include a button labeled <strong style="color: var(--text);">"Fill New CV"</strong> that redirects the user to the CV form page.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 2 -->
+  <section class="section" id="part2">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <h2 class="section-title">Part 2 — CV Form Page</h2>
+    </div>
+
+    <p>Create a Razor Page containing a complete CV form implemented using <strong>ASP.NET Core Tag Helpers</strong>.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-card-header neutral">📋 Form Fields</div>
+        <div style="padding: 16px 18px;">
+          <table style="width:100%; font-size: 13px; border-collapse: collapse;">
+            <thead>
+              <tr>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Field</th>
+                <th style="text-align:left; padding: 6px 0; color: var(--text3); font-size: 11px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; border-bottom: 1px solid var(--border);">Input Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">First Name</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Text input</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Last Name</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Text input</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Birthday</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Date input</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Nationality</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Multi-selection dropdown</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Gender</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Radio buttons (Male / Female)</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Skills</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Checkboxes (Java, Python, ASP.NET…)</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Email</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Email input</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Email Confirmation</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Email input (must match)</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Password</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Password input</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border);"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Verification Operation</strong></td>
+                <td style="padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text2);">Number input (captcha-style)</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0;"><strong style="font-family: var(--mono); font-size:12px; color: var(--text);">Photo Upload</strong></td>
+                <td style="padding: 8px 0; color: var(--text2);">File input</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-card-header neutral">🏷️ Required Tag Helpers</div>
+        <div style="padding: 16px 18px; display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-size: 13px; color: var(--text2);">All form elements must be implemented using ASP.NET Core Tag Helpers:</div>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 4px;">
+            <div style="display: flex; align-items: center; gap: 8px;"><code style="color: var(--accent2); font-size: 12px;">asp-for</code><span style="font-size: 12px; color: var(--text3);">— binds input to model property</span></div>
+            <div style="display: flex; align-items: center; gap: 8px;"><code style="color: var(--accent2); font-size: 12px;">asp-page</code><span style="font-size: 12px; color: var(--text3);">— generates page-relative hrefs</span></div>
+            <div style="display: flex; align-items: center; gap: 8px;"><code style="color: var(--accent2); font-size: 12px;">asp-validation-for</code><span style="font-size: 12px; color: var(--text3);">— displays validation error messages</span></div>
+            <div style="display: flex; align-items: center; gap: 8px;"><code style="color: var(--accent2); font-size: 12px;">asp-items</code><span style="font-size: 12px; color: var(--text3);">— populates select/dropdown items</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 3 -->
+  <section class="section" id="part3">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <h2 class="section-title">Part 3 — Validation Requirements</h2>
+    </div>
+
+    <p>Implement proper <strong>server-side validation</strong> using Data Annotations and Razor Pages validation features.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin: 20px 0;">
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">📧</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Email Validation</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          The email field must contain a valid email address. The <strong>Email Confirmation</strong> field must exactly match the email field.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🔒</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Password Validation</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          The password must contain <strong>letters</strong>, <strong>digits</strong>, and <strong>symbols</strong>, and be at least <strong>8 characters</strong> long.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🔢</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Verification Operation (Captcha)</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Display two random numbers with a mathematical operation (addition), for example: <strong style="color: var(--text);">5 + 3 = ?</strong>. The user must enter the correct result. If the answer is incorrect, an error message must be displayed.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">⚠️</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">Required Fields &amp; Photo</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Important fields must not be left empty. The user must also be able to upload a personal photo via the file input.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PART 4 -->
+  <section class="section" id="part4">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <h2 class="section-title">Part 4 — Summary Page</h2>
+    </div>
+
+    <p>After a successful form submission, the application must validate all data, save it to the database, and redirect to a <strong>Summary Page</strong>.</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em;">Summary Page Must Display</div>
+        <div style="display: flex; flex-direction: column; gap: 7px; font-size: 13px; color: var(--text2);">
+          <div style="display: flex; gap: 8px;"><span style="color: var(--accent);">✓</span> All entered CV information</div>
+          <div style="display: flex; gap: 8px;"><span style="color: var(--accent);">✓</span> The uploaded profile photo</div>
+          <div style="display: flex; gap: 8px;"><span style="color: var(--accent);">✓</span> A <strong style="color: var(--text);">Random Number</strong> value</div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--accent2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .05em;">Random Number</div>
+        <div style="font-size: 13px; color: var(--text2); line-height: 1.7;">
+          The random number must be received through a <strong style="color: var(--text);">route parameter</strong> and displayed on the Summary Page.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 5 -->
+  <section class="section" id="part5">
+    <div class="section-header">
+      <div class="section-number">5</div>
+      <h2 class="section-title">Part 5 — Database Requirements</h2>
+    </div>
+
+    <p>The application must store CV information in a database using <strong>Entity Framework Core Migrations</strong> (obligatory).</p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">db</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Create the Database</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Set up a database for storing CV information using EF Core migrations.</div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">db</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Save All Submitted Data</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Persist all user data (including the uploaded photo path) after successful validation.</div>
+        </div>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px;">
+        <span class="pill purple">db</span>
+        <div>
+          <div style="font-size: 13px; color: var(--text); font-weight: 600;">Retrieve for Summary Page</div>
+          <div style="font-size: 12px; color: var(--text3); margin-top: 3px;">Fetch saved CV information from the database and display it on the Summary Page.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PART 6 -->
+  <section class="section" id="part6">
+    <div class="section-header">
+      <div class="section-number">6</div>
+      <h2 class="section-title">Part 6 — Technical Requirements</h2>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin: 20px 0;">
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">📄</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">1. Razor Pages Only</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          The entire application must be implemented using <strong>ASP.NET Core Razor Pages only</strong>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">💉</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">2. Dependency Injection</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Create a service responsible for saving CV data and inject it into Razor Page Models using <strong>Dependency Injection</strong>.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🧩</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">3. Separate Models</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Use two distinct models: a <strong>Binding Model</strong> for receiving form data, and a <strong>View Model</strong> for displaying information.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🏷️</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">4. Tag Helpers</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          All forms and navigation elements must use ASP.NET Core Tag Helpers: Form, Input, Validation, Anchor, and Select Tag Helpers.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">✅</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">5. Server-Side Validation</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          All validations must be implemented on the server side using <strong>Data Annotations</strong> and <strong>ModelState</strong> validation.
+        </div>
+      </div>
+
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;">
+        <div style="padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 16px;">🗂️</span>
+          <span style="font-size: 14px; font-weight: 700; color: var(--text);">6. Clean Project Structure</span>
+        </div>
+        <div style="padding: 14px 18px; font-size: 13px; color: var(--text2); line-height: 1.7;">
+          Organize the project using the following folder structure:
+          <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="pill" style="background: rgba(0,212,170,.1); color: var(--accent); font-family: var(--mono); font-size: 12px;">Pages/</span>
+            <span class="pill" style="background: rgba(0,212,170,.1); color: var(--accent); font-family: var(--mono); font-size: 12px;">Models/</span>
+            <span class="pill" style="background: rgba(0,212,170,.1); color: var(--accent); font-family: var(--mono); font-size: 12px;">Services/</span>
+            <span class="pill" style="background: rgba(0,212,170,.1); color: var(--accent); font-family: var(--mono); font-size: 12px;">Data/</span>
+            <span class="pill" style="background: rgba(0,212,170,.1); color: var(--accent); font-family: var(--mono); font-size: 12px;">wwwroot/uploads/</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BONUS -->
+  <section class="section" id="bonus">
+    <div class="section-header">
+      <div class="section-number">7</div>
+      <h2 class="section-title">Bonus Ideas <span style="font-size: 13px; color: var(--yellow); background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.25); padding: 3px 10px; border-radius: 20px; font-weight: 600; margin-left: 8px; vertical-align: middle;">Optional</span></h2>
+    </div>
+
+    <p>Students may additionally implement any of the following enhancements:</p>
+
+    <div style="display: flex; flex-direction: column; gap: 10px; margin: 20px 0;">
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="font-size: 18px;">🎨</span>
+        <span style="color: var(--text2);">Better UI design using <strong style="color: var(--text);">Bootstrap</strong></span>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="font-size: 18px;">🛠️</span>
+        <span style="color: var(--text2);"><strong style="color: var(--text);">Edit / Delete</strong> CV functionality</span>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="font-size: 18px;">⚡</span>
+        <span style="color: var(--text2);"><strong style="color: var(--text);">Client-side validation</strong> in addition to server-side</span>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="font-size: 18px;">🌙</span>
+        <span style="color: var(--text2);"><strong style="color: var(--text);">Dark mode</strong> styling</span>
+      </div>
+      <div style="background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 12px; font-size: 13px;">
+        <span style="font-size: 18px;">📂</span>
+        <span style="color: var(--text2);">Additional <strong style="color: var(--text);">skills / categories</strong> in the form</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- GitHub -->
+  <section id="github" class="section">
+    <div style="padding: 15px; border-top: 1px solid var(--border);">
+      <a href="https://github.com/SarahNassereddine/.net-examples-solutions" target="_blank"
+         style="display: block; text-decoration: none; padding: 12px; background: var(--bg2); border-radius: var(--radius); border: 1px solid var(--border); transition: 0.3s;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text2)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          <span style="font-size: 13px; color: var(--text); font-weight: 600;">Final solution coming soon. Your turn now!</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text3); line-height: 1.4;">Link will be uploaded soon.</div>
+      </a>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+function scrollPageTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('readProgress').style.width = Math.min(pct, 100) + '%';
+});
+
+const visibleSections = new Set();
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      visibleSections.add(entry.target);
+    } else {
+      visibleSections.delete(entry.target);
+    }
+  });
+  // Pick the visible section whose top is closest to (but not above) the viewport top
+  let best = null;
+  let bestTop = Infinity;
+  visibleSections.forEach(section => {
+    const top = section.getBoundingClientRect().top;
+    const absTop = Math.abs(top);
+    if (absTop < bestTop) {
+      bestTop = absTop;
+      best = section;
+    }
+  });
+  if (best) {
+    document.querySelectorAll('.nav-link[data-target]').forEach(l => l.classList.remove('active'));
+    const link = document.querySelector(`.nav-link[data-target="${best.id}"]`);
+    if (link) link.classList.add('active');
+  }
+}, { rootMargin: '0px 0px -60% 0px', threshold: 0 });
+document.querySelectorAll('section.section').forEach(s => observer.observe(s));
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 900) document.querySelector('.sidebar').classList.remove('open');
+  });
+});
+
+(function(){
+  var overlay = document.querySelector('.sidebar-overlay');
+  var sidebar = document.querySelector('.sidebar');
+  if (!overlay || !sidebar) return;
+  window.openDrawer  = function(){ sidebar.classList.add('open');    overlay.classList.add('show'); };
+  window.closeDrawer = function(){ sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+  overlay.addEventListener('click', closeDrawer);
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.addEventListener('click', () => { if (window.innerWidth <= 900) closeDrawer(); });
+  });
+})();
+
+(function(){
+  var fill = document.getElementById('mobileProgressFill');
+  if (!fill) return;
+  window.addEventListener('scroll', () => {
+    var pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    fill.style.width = Math.min(pct, 100) + '%';
+  });
+})();
+</script>
+</body>
+</html>
