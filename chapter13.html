@@ -428,31 +428,30 @@ The title of the page, as shown in the tab of the browser, changes to match the 
       </div>
     </div>
 
-    <div class="code-block">
-      <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs for Razor Pages App</span></div>
-      <pre><code>WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+<div class="code-block">
+  <div class="code-header"><span class="code-lang">C#</span><span class="code-label">Program.cs for Razor Pages App</span></div>
+  <pre><code class="no-highlight"><span class="kw">WebApplicationBuilder</span> builder = <span class="kw">WebApplication</span>.<span class="kw">CreateBuilder</span>(args);
 
-builder.Services.AddRazorPages();  // Register Razor Pages services
+builder.Services.<span class="kw">AddRazorPages</span>();  <span class="cm">// Register Razor Pages services</span>
 
-WebApplication app = builder.Build();
+<span class="kw">WebApplication</span> app = builder.<span class="kw">Build</span>();
 
-// These two are only added outside Development:
-if (!app.Environment.IsDevelopment())
+<span class="cm">// These two are only added outside Development:</span>
+<span class="kw">if</span> (!app.Environment.<span class="kw">IsDevelopment</span>())
 {
-    app.UseExceptionHandler("/Error");  // friendly error page
-    app.UseHsts();                      // security headers
+    app.<span class="kw">UseExceptionHandler</span>(<span class="str">"/Error"</span>);  <span class="cm">// friendly error page</span>
+    app.<span class="kw">UseHsts</span>();                      <span class="cm">// security headers</span>
 }
 
-app.UseHttpsRedirection();  // ensure HTTPS only
-app.UseStaticFiles();       // serve files from wwwroot
-app.UseRouting();           // select the right endpoint
-app.UseAuthorization();     // check if endpoint is allowed to run
+app.<span class="kw">UseHttpsRedirection</span>();  <span class="cm">// ensure HTTPS only</span>
+app.<span class="kw">UseStaticFiles</span>();       <span class="cm">// serve files from wwwroot</span>
+app.<span class="kw">UseRouting</span>();           <span class="cm">// select the right endpoint</span>
+app.<span class="kw">UseAuthorization</span>();     <span class="cm">// check if endpoint is allowed to run</span>
 
-app.MapRazorPages();  // register Razor Page endpoints
+app.<span class="kw">MapRazorPages</span>();  <span class="cm">// register Razor Page endpoints</span>
 
-app.Run();</code></pre>
-    </div>
-
+app.<span class="kw">Run</span>();</code></pre>
+</div>
     <h3>Middleware Pipeline Overview</h3>
 
     <!-- DIAGRAM: Middleware pipeline — request flows down, response flows up -->
@@ -1818,7 +1817,7 @@ document.querySelectorAll('.code-block pre code:not(.no-highlight)').forEach(el 
     let t = raw.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
     const lines = t.split('\n');
     const result = lines.map(line => {
-      let lcm = line.match(/^(.*?)(\/\/.*)$/);
+let lcm = line.match(/^((?:"[^"]*"|[^"])*?)(\/\/.*)$/);
       if (lcm) return highlight(lcm[1]) + '<span class="cm">' + esc(lcm[2]) + '</span>';
       return highlight(line);
     });
@@ -1826,7 +1825,7 @@ document.querySelectorAll('.code-block pre code:not(.no-highlight)').forEach(el 
   });
   function highlight(s) {
     s = s.replace(/"([^"\\]|\\.)*"/g, m => '<span class="str">' + esc(m) + '</span>');
-    s = s.replace(/\b(public|private|protected|internal|static|async|await|new|return|var|using|class|void|bool|string|int|if|else|foreach|throw|null|true|false|is|not|in)\b/g, '<span class="kw">$1</span>');
+   s = s.replace(/\b(public|private|protected|internal|static|async|await|new|return|var|using|class|void|bool|string|int|if|else|foreach|throw|null|true|false|is|not|in)\b/g, '<span class="kw">$1</span>');
     s = s.replace(/\b(PageModel|IActionResult|ILogger|Task|List|ActionResult|ToDoService|ToDoListModel|WebApplicationBuilder|WebApplication|IProductService)\b/g, '<span class="tp">$1</span>');
     s = s.replace(/\b([A-Z][a-zA-Z]+)(?=\s*\()/g, m => '<span class="fn">' + m + '</span>');
     return s;
