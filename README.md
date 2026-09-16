@@ -13,10 +13,12 @@ Test your knowledge and explore the course material live:
 
 ---
 
+
 ## 💡 What Makes This Special?
 
 
 - **Interactive Quizzes**: Dynamic knowledge checks after each module with real-time feedback.
+  
   <img width="1432" height="755" alt="image" src="https://github.com/user-attachments/assets/f40750ce-0638-4f35-9aec-31a09611bbfd" />
 
 - **Hands-on Labs**: Step-by-step practical coding exercises to apply theoretical concepts.
